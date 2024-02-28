@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from rest_framework import JSONParser
+from rest_framework.parsers import JSONParser
 from userApp.serializers import UserSerializer
 from userApp.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 @csrf_exempt
