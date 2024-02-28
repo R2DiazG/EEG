@@ -1,0 +1,30 @@
+<div class="login-container">
+    <div *ngIf="!forgotPassword">
+      <h1>UDEM</h1>
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <input type="email"  name="email" placeholder="Correo electrónico" required>
+        </div>
+        <div class="form-group">
+          <input type="password" name="password" placeholder="Contraseña" required>
+        </div>
+        <div *ngIf="loginError" class="error-message">
+          Usuario o contraseña incorrectos.
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <a href="#" (click)="forgotPassword = true">Olvidé la contraseña</a>
+    </div>
+    <div *ngIf="forgotPassword">
+      <h1>UDEM</h1>
+      <p>Introduce tu dirección de correo electrónico para recuperar tu contraseña.</p>
+      <form (ngSubmit)="onResetPassword()">
+        <div class="form-group">
+          <input type="email"  name="resetEmail" placeholder="Correo electrónico" required>
+        </div>
+        <button type="submit">Enviar</button>
+      </form>
+      <a href="#" (click)="forgotPassword = false">Regresar</a>
+    </div>
+  </div>
+  
