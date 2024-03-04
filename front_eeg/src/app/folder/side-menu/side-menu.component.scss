@@ -1,54 +1,48 @@
-.sidebar {
-    width: 250px;
+.side-menu {
+    width: 250px; 
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    background-color: #333;
+    height: 100%;
+    background-color: #f0f0f0;
+    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .logo-container {
+    width: 100%;
     padding: 20px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    
-    &.open {
-      transform: translateX(0);
-    }
+    background-color: #ffc107; // color amarillo UDEM
+    text-align: center;
   
-    .logo-container {
-      text-align: center;
-      margin-bottom: 20px;
-      
-      .logo {
-        max-width: 100%;
-        height: auto;
-      }
+    .logo {
+      max-width: 100%;
+      height: auto;
     }
+  }
   
-    .username {
-      color: #fff;
-      margin-bottom: 20px;
-    }
+  .username {
+    margin: 20px 0;
+    font-weight: bold;
+  }
   
-    .nav-list {
-      .nav-item {
-        display: block;
-        color: #fff;
-        padding: 10px 20px;
-        text-decoration: none;
-        &:hover {
-          background-color: #444;
-        }
-        &.active {
-          background-color: #555;
-        }
+  .nav-list {
+    width: 100%;
+  
+    .nav-item {
+      display: block;
+      padding: 10px 20px;
+      color: #333;
+      text-decoration: none;
+      &:hover,
+      &.active {
+        background-color: #e0e0e0;
       }
     }
   }
   
   .content {
-    margin-left: 0;
-    transition: margin-left 0.3s ease;
-    
-    &.expanded {
-      margin-left: 250px;
-    }}
+    margin-left: 250px; // mismo ancho que el .side-menu
+    padding: 20px;
+  }
   
