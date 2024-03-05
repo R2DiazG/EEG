@@ -1,0 +1,48 @@
+.side-menu {
+    width: 250px; 
+    position: fixed;
+    height: 100%;
+    background-color: #f0f0f0;
+    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .logo-container {
+    width: 100%;
+    padding: 20px;
+    background-color: #ffc107; // color amarillo UDEM
+    text-align: center;
+  
+    .logo {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  
+  .username {
+    margin: 20px 0;
+    font-weight: bold;
+  }
+  
+  .nav-list {
+    width: 100%;
+  
+    .nav-item {
+      display: block;
+      padding: 10px 20px;
+      color: #333;
+      text-decoration: none;
+      &:hover,
+      &.active {
+        background-color: #e0e0e0;
+      }
+    }
+  }
+  
+  .content {
+    margin-left: 250px; // mismo ancho que el .side-menu
+    padding: 20px;
+  }
+  
