@@ -80,10 +80,10 @@ WSGI_APPLICATION = 'back_eeg.wsgi.application'
 import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.parse('mysql://root:@localhost:3306/eeg')
+    'default': dj_database_url.parse('mysql://root:ma12172296*@localhost:3306/eeg')
 }
 
-DATABASES['default'] = dj_database_url.parse('mysql://root:@localhost:3306/eeg')
+DATABASES['default'] = dj_database_url.parse('mysql://root:ma12172296*@localhost:3306/eeg')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
