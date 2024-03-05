@@ -20,6 +20,7 @@ from django.urls import path, re_path
 from userApp import views
 
 urlpatterns = [
+    path('', views.home, name='home'),
     re_path(r'^user/$', views.userApi),
     re_path(r'^user/([0-9]+)$', views.userApi),
     path('admin/', admin.site.urls),

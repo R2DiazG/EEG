@@ -6,6 +6,11 @@ from userApp.models import User
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Bienvenido a la aplicación de gestión de usuarios!")
+
 @csrf_exempt
 def userApi(request,id=0):
     if request.method=='GET':
