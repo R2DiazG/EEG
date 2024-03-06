@@ -1,9 +1,18 @@
+.container{
+// Add your image path here
+    background-color: blue;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100vh;
+}
 .login-container {
-    max-width: 300px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    max-width: 25rem;
     margin: auto;
     padding: 20px;
     border-radius: 5px;
-    background-color: #f3f3f3;
+    background-color: #333;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     form {
       display: flex;
@@ -16,7 +25,7 @@
         margin-bottom: 5px;
       }
       input {
-        width: 100%;
+        width: 95%;
         padding: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;

@@ -3,6 +3,7 @@
     <h1>Editar paciente</h1>
     <form (ngSubmit)="onSubmit()">
       <!-- Información del paciente -->
+      <h2>Información del paciente</h2>
       <div class="form-section">
         <label for="internalId">Identificador:</label>
         <input type="text" id="internalId" name="internalId" required>
@@ -42,6 +43,7 @@
       </div>
       
       <!-- Historial del paciente -->
+      <h2>Historial del paciente</h2>
       <div class="form-section">
         <label for="medicalHistory">Historial médico:</label>
         <textarea id="medicalHistory" name="medicalHistory"></textarea>
@@ -56,6 +58,7 @@
       </div>
       
       <!-- Consulta -->
+      <h2>Consulta</h2>
       <div class="form-section">
         <label for="consultationDate">Fecha de consulta:</label>
         <input type="date" id="consultationDate" name="consultationDate">
@@ -68,6 +71,7 @@
       </div>
       
       <!-- Información del familiar -->
+      <h2>Información del familiar</h2>
       <div class="form-section">
         <label for="relativeFirstName">Nombre(s):</label>
         <input type="text" id="relativeFirstName" name="relativeFirstName">
@@ -80,6 +84,7 @@
       </div>
       
       <!-- Consentimiento del paciente -->
+      <h2>Consentimiento del paciente</h2>
       <div class="form-section">
         <label for="patientConsent">
           <input type="checkbox" id="patientConsent" name="patientConsent" required> 

@@ -1,0 +1,33 @@
+.sidebar {
+    background: #333;
+    color: white;
+    min-height: 100vh;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+    .sidebar-header {
+      padding: 1rem;
+      text-align: center;
+      h2 {
+        margin: 0;
+      }
+    }
+  
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      .nav-link {
+        padding: 1rem;
+        color: white;
+        text-decoration: none;
+        &:hover, &.active {
+          background: yellow;
+          color: black;
+        }
+      }
+      .user-info {
+        margin-top: 1rem;
+        padding: 1rem;
+      }
+    }
+  }
+  

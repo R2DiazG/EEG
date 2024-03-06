@@ -2,45 +2,93 @@
 <div class="patient-registration-container">
     <h1>Registrar nuevo paciente</h1>
     <form (ngSubmit)="onSubmit()" ngForm>
-      <!-- Patient Information -->
+      <h2>Información del paciente</h2>
       <div class="form-section">
+        <label for="internalId">Identificador:</label>
+        <input type="text" id="internalId" name="internalId" required>
+        
         <label for="firstName">Nombre:</label>
-        <input type="text" id="firstName" name="firstName" required>
+        <input type="text" id="firstName"  name="firstName" required>
         
         <label for="lastName">Apellido paterno:</label>
         <input type="text" id="lastName"  name="lastName" required>
         
-        <label for="mothersName">Apellido materno:</label>
-        <input type="text" id="mothersName"  name="mothersName">
+        <label for="surname">Apellido materno:</label>
+        <input type="text" id="surname" name="surname">
         
         <label for="birthDate">Fecha de nacimiento:</label>
-        <input type="date" id="birthDate" name="birthDate">
+        <input type="date" id="birthDate" name="birthDate" required>
         
         <label for="gender">Género:</label>
-        <select id="gender" name="gender">
-          <option value="" disabled selected>Seleccione</option>
+        <select id="gender" name="gender" required>
+          <option value="" disabled>Seleccione</option>
           <option value="male">Masculino</option>
           <option value="female">Femenino</option>
         </select>
-      </div>
-      
-      <!-- Contact Information -->
-      <div class="form-section">
-        <label for="phone">Teléfono:</label>
-        <input type="tel" id="phone" name="phone">
         
-        <label for="email">Correo electrónico:</label>
-        <input type="email" id="email" name="email">
+        <label for="civilStatus">Estado civil:</label>
+        <select id="civilStatus" name="civilStatus">
+          <option value="" disabled>Seleccione</option>
+          <option value="single">Soltero/a</option>
+          <option value="married">Casado/a</option>
+          <!-- Add other options here -->
+        </select>
+        
+        <label for="educationLevel">Nivel de educación:</label>
+        <input type="text" id="educationLevel" name="educationLevel">
+        
+        <label for="occupation">Ocupación:</label>
+        <input type="text" id="occupation" name="occupation">
       </div>
       
-      <!-- Consent -->
+      <!-- Historial del paciente -->
+      <h2>Historial del paciente</h2>
       <div class="form-section">
-        <label for="consent">
-          <input type="checkbox" id="consent" name="consent" required> 
+        <label for="medicalHistory">Historial médico:</label>
+        <textarea id="medicalHistory" name="medicalHistory"></textarea>
+        
+        <label for="currentMedication">Medicamentos actuales:</label>
+        <div *ngFor="let medication of patient.currentMedications; let i = index">
+          <input type="text" name="medication-{{i}}">
+        </div>
+        <!-- <button (click)="addMedication()">Agregar medicamentos</button> -->
+        <button>Agregar medicamentos</button>
+      </div>
+      
+      <!-- Consulta -->
+      <h2>Consulta</h2>
+      <div class="form-section">
+        <label for="consultationDate">Fecha de consulta:</label>
+        <input type="date" id="consultationDate" name="consultationDate">
+        
+        <label for="consultationNumber">Número de consulta:</label>
+        <input type="text" id="consultationNumber" name="consultationNumber">
+        
+        <label for="previousDiagnosis">Diagnóstico previo:</label>
+        <textarea id="previousDiagnosis" name="previousDiagnosis"></textarea>
+      </div>
+      
+      <!-- Información del familiar -->
+      <h2>Información del familiar</h2>
+      <div class="form-section">
+        <label for="relativeFirstName">Nombre(s):</label>
+        <input type="text" id="relativeFirstName" name="relativeFirstName">
+        
+        <label for="relativeLastName">Apellido paterno:</label>
+        <input type="text" id="relativeLastName" name="relativeLastName">
+        
+        <label for="relativeSurname">Apellido materno:</label>
+        <input type="text" id="relativeSurname" name="relativeSurname">
+      </div>
+      
+      <!-- Consentimiento del paciente -->
+      <h2>Consentimiento del paciente</h2>
+      <div class="form-section">
+        <label for="patientConsent">
+          <input type="checkbox" id="patientConsent" name="patientConsent" required> 
           Consentimiento del paciente
         </label>
       </div>
-      
       <button type="submit">Registrar</button>
     </form>
   </div>
