@@ -23,5 +23,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     re_path(r'^user/$', views.userApi),
     re_path(r'^user/([0-9]+)$', views.userApi),
+    path('login/', views.login),
     path('admin/', admin.site.urls),
 ]
