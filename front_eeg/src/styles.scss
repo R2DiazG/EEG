@@ -1,0 +1,22 @@
+.container{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+    h1 {
+        color: #333;
+        text-align: left;
+        margin-bottom: 2rem;
+    }
+    button{
+        background-color: #333333;
+        margin: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: white;
+        border: none;
+        border-radius: 5px;
+            cursor: pointer;
+            
+            &:hover {
+            background-color: black;
+            color: white;
+            }
+    }
