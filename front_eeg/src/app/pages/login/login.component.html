@@ -1,0 +1,34 @@
+<div class="login-container">
+    <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <!--<input type="email" id="email" class="form-control" [(ngModel)]="user.email" name="email" required #email="ngModel" autocomplete="username" placeholder="Ingrese su correo">-->
+        <input type="email" id="email" class="form-control" name="email" required autocomplete="username" placeholder="Ingrese su correo">
+        <div class="alert alert-danger">
+          <div>Correo electrónico es requerido.</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <!--<input type="password" id="password" class="form-control" [(ngModel)]="user.password" name="password" required #password="ngModel" autocomplete="current-password" placeholder="Ingrese su contraseña">-->
+        <input type="password" id="password" class="form-control"  name="password" required autocomplete="current-password" placeholder="Ingrese su contraseña">
+        <div class="alert alert-danger">
+          <div>Contraseña es requerida.</div>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn btn-primary" >Enviar</button>
+      
+      <a (click)="toggleForgotPassword()">Olvidé la contraseña</a>
+    </form>
+    
+    <div *ngIf="showForgotPassword">
+      <label for="forgot-email">Por favor ingrese su dirección de correo electrónico:</label>
+      <!--<input type="email" id="forgot-email" class="form-control" [(ngModel)]="forgotPasswordEmail" (keyup.enter)="onForgotPassword()" placeholder="Correo electrónico">-->
+      <input type="email" id="forgot-email" class="form-control" (keyup.enter)="onForgotPassword()" placeholder="Correo electrónico">
+      <button (click)="onForgotPassword()" class="btn btn-secondary">Enviar</button>
+      <button (click)="toggleForgotPassword()" class="btn btn-secondary">Regresar</button>
+    </div>
+  </div>

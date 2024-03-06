@@ -1,0 +1,30 @@
+<app-menu-lateral></app-menu-lateral>
+<div class="eeg-upload-container">
+    <h1>Subir nuevo EEG</h1>
+    <div class="upload-form">
+      <div class="form-group">
+        <label for="patientName">Ingresa el nombre del paciente</label>
+        <select id="patientName">
+          <!-- Options will be dynamically loaded here -->
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="title">Título</label>
+        <input type="text" id="title">
+      </div>
+  
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea id="description"></textarea>
+      </div>
+  
+      <div class="form-group">
+        <label for="file">Subir un nuevo archivo CSV</label>
+        <input type="file" id="file" (change)="onFileSelected($event)">
+      </div>
+  
+      <button (click)="onUpload()">Subir archivo</button>
+    </div>
+</div>
+  
