@@ -25,7 +25,7 @@ export class ListaPacientesComponent {
     // Logic to navigate to the patient registration form
   }
 
-  viewDetails(patient) {
-    // Logic to view details for a given patient
-  }
+  // viewDetails(patient) {
+  //   // Logic to view details for a given patient
+  // }
 }

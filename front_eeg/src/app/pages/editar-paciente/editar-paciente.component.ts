@@ -8,6 +8,15 @@ import { InfoPaciente } from '../../models/info-paciente.model';
   styleUrl: './editar-paciente.component.scss'
 })
 export class EditarPacienteComponent {
+confirmDelete() {
+throw new Error('Method not implemented.');
+}
+onCancel() {
+throw new Error('Method not implemented.');
+}
+addMedication() {
+throw new Error('Method not implemented.');
+}
   patient: InfoPaciente = new InfoPaciente();
 
   constructor(

@@ -9,6 +9,9 @@ import { EditarPacienteComponent } from './pages/editar-paciente/editar-paciente
 import { ListaPacientesComponent } from './pages/lista-pacientes/lista-pacientes.component';
 import { EegSubirDocsComponent } from './pages/eeg-subir-docs/eeg-subir-docs.component';
 import { ConfirmDialogComponent } from './pages/confirm-dialog/confirm-dialog.component';
+import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.component';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,11 +21,13 @@ import { ConfirmDialogComponent } from './pages/confirm-dialog/confirm-dialog.co
     EditarPacienteComponent,
     ListaPacientesComponent,
     EegSubirDocsComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    MenuLateralComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
   ],
   providers: [
     provideClientHydration()

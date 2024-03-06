@@ -1,32 +1,33 @@
+<app-menu-lateral></app-menu-lateral>
 <div class="patient-edit-container">
     <h1>Editar paciente</h1>
-    <form (ngSubmit)="onSubmit()" #editPatientForm="ngForm">
+    <form (ngSubmit)="onSubmit()">
       <!-- Información del paciente -->
       <div class="form-section">
         <label for="internalId">Identificador:</label>
-        <input type="text" id="internalId" [(ngModel)]="patient.internalId" name="internalId" required>
+        <input type="text" id="internalId" name="internalId" required>
         
         <label for="firstName">Nombre:</label>
-        <input type="text" id="firstName" [(ngModel)]="patient.firstName" name="firstName" required>
+        <input type="text" id="firstName"  name="firstName" required>
         
         <label for="lastName">Apellido paterno:</label>
-        <input type="text" id="lastName" [(ngModel)]="patient.lastName" name="lastName" required>
+        <input type="text" id="lastName"  name="lastName" required>
         
         <label for="surname">Apellido materno:</label>
-        <input type="text" id="surname" [(ngModel)]="patient.surname" name="surname">
+        <input type="text" id="surname" name="surname">
         
         <label for="birthDate">Fecha de nacimiento:</label>
-        <input type="date" id="birthDate" [(ngModel)]="patient.birthDate" name="birthDate" required>
+        <input type="date" id="birthDate" name="birthDate" required>
         
         <label for="gender">Género:</label>
-        <select id="gender" [(ngModel)]="patient.gender" name="gender" required>
+        <select id="gender" name="gender" required>
           <option value="" disabled>Seleccione</option>
           <option value="male">Masculino</option>
           <option value="female">Femenino</option>
         </select>
         
         <label for="civilStatus">Estado civil:</label>
-        <select id="civilStatus" [(ngModel)]="patient.civilStatus" name="civilStatus">
+        <select id="civilStatus" name="civilStatus">
           <option value="" disabled>Seleccione</option>
           <option value="single">Soltero/a</option>
           <option value="married">Casado/a</option>
@@ -34,61 +35,64 @@
         </select>
         
         <label for="educationLevel">Nivel de educación:</label>
-        <input type="text" id="educationLevel" [(ngModel)]="patient.educationLevel" name="educationLevel">
+        <input type="text" id="educationLevel" name="educationLevel">
         
         <label for="occupation">Ocupación:</label>
-        <input type="text" id="occupation" [(ngModel)]="patient.occupation" name="occupation">
+        <input type="text" id="occupation" name="occupation">
       </div>
       
       <!-- Historial del paciente -->
       <div class="form-section">
         <label for="medicalHistory">Historial médico:</label>
-        <textarea id="medicalHistory" [(ngModel)]="patient.medicalHistory" name="medicalHistory"></textarea>
+        <textarea id="medicalHistory" name="medicalHistory"></textarea>
         
         <label for="currentMedication">Medicamentos actuales:</label>
         <div *ngFor="let medication of patient.currentMedications; let i = index">
-          <input type="text" [(ngModel)]="patient.currentMedications[i]" name="medication-{{i}}">
+          <input type="text" name="medication-{{i}}">
           <button (click)="removeMedication(i)">Eliminar</button>
         </div>
-        <button (click)="addMedication()">Agregar medicamentos</button>
+        <!-- <button (click)="addMedication()">Agregar medicamentos</button> -->
+        <button>Agregar medicamentos</button>
       </div>
       
       <!-- Consulta -->
       <div class="form-section">
         <label for="consultationDate">Fecha de consulta:</label>
-        <input type="date" id="consultationDate" [(ngModel)]="patient.consultationDate" name="consultationDate">
+        <input type="date" id="consultationDate" name="consultationDate">
         
         <label for="consultationNumber">Número de consulta:</label>
-        <input type="text" id="consultationNumber" [(ngModel)]="patient.consultationNumber" name="consultationNumber">
+        <input type="text" id="consultationNumber" name="consultationNumber">
         
         <label for="previousDiagnosis">Diagnóstico previo:</label>
-        <textarea id="previousDiagnosis" [(ngModel)]="patient.previousDiagnosis" name="previousDiagnosis"></textarea>
+        <textarea id="previousDiagnosis" name="previousDiagnosis"></textarea>
       </div>
       
       <!-- Información del familiar -->
       <div class="form-section">
         <label for="relativeFirstName">Nombre(s):</label>
-        <input type="text" id="relativeFirstName" [(ngModel)]="patient.relativeFirstName" name="relativeFirstName">
+        <input type="text" id="relativeFirstName" name="relativeFirstName">
         
         <label for="relativeLastName">Apellido paterno:</label>
-        <input type="text" id="relativeLastName" [(ngModel)]="patient.relativeLastName" name="relativeLastName">
+        <input type="text" id="relativeLastName" name="relativeLastName">
         
         <label for="relativeSurname">Apellido materno:</label>
-        <input type="text" id="relativeSurname" [(ngModel)]="patient.relativeSurname" name="relativeSurname">
+        <input type="text" id="relativeSurname" name="relativeSurname">
       </div>
       
       <!-- Consentimiento del paciente -->
       <div class="form-section">
         <label for="patientConsent">
-          <input type="checkbox" id="patientConsent" [(ngModel)]="patient.consent" name="patientConsent" required> 
+          <input type="checkbox" id="patientConsent" name="patientConsent" required> 
           Consentimiento del paciente
         </label>
       </div>
       
       <div class="form-actions">
-        <button type="button" (click)="onCancel()">Cancelar</button>
-        <button type="button" class="delete-button" (click)="confirmDelete()">Eliminar Paciente</button>
-        <button type="submit" [disabled]="!editPatientForm.valid">Guardar</button>
+        <!-- <button type="button" (click)="onCancel()">Cancelar</button>
+        <button type="button" class="delete-button" (click)="confirmDelete()">Eliminar Paciente</button> -->
+        <button type="button" >Cancelar</button>
+        <button type="button" class="delete-button">Eliminar Paciente</button>
+        <button type="submit">Guardar</button>
       </div>
     </form>
   </div>
