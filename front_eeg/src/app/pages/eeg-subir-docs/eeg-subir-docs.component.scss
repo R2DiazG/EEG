@@ -1,0 +1,64 @@
+.eeg-upload-container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: auto;
+  
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+  
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+  
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        
+        label {
+          margin-bottom: 0.5rem;
+        }
+        
+        input[type='text'],
+        select,
+        textarea {
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          
+          &:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+          }
+        }
+        
+        input[type='file'] {
+          border: none;
+        }
+        
+        textarea {
+          resize: vertical;
+        }
+      }
+      
+      button {
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+  

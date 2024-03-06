@@ -1,0 +1,31 @@
+<div class="patient-list-container">
+    <div class="header">
+      <h1>Pacientes</h1>
+      <input type="search" placeholder="Nombre del Paciente">
+      <button (click)="registerPatient()">+ Registrar nuevo paciente</button>
+    </div>
+  
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Edad</th>
+          <th>Número de Consultas</th>
+          <th>Diagnostico</th>
+          <th>Ver más</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of patients">
+          <td>{{ patient?.nombre }}</td>
+          <td>{{ patient.apellido }}</td>
+          <td>{{ patient.edad }}</td>
+          <td>{{ patient.numeroConsultas }}</td>
+          <td>{{ patient.diagnostico }}</td>
+          <td><button (click)="viewDetails(patient)">Ver más</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
