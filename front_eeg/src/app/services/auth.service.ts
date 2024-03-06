@@ -5,18 +5,17 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AuthService {
-  
-  private loginUrl = 'http://your-django-api-url/user/login/';
 
-constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-// Login method
-login(email: string, password: string) {
-  return this.http.post(this.loginUrl, { email, password });
-}
+  login(email: string, password: string): Promise<any> {
+      const body = JSON.stringify({email, password});
+      return this.http.post('/api/login/', body, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      }).toPromise();
+  }
 
-// Logout method
-logout() {
-  // Your logout logic here, like clearing the localStorage
-}
+  // Implement logout and password reset methods here...
 }

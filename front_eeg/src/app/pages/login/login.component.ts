@@ -1,37 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
-  user = {
-    email: '',
-    password: ''
-  };
+export class LoginComponent implements OnInit {
+    user = {
+      email: '',
+      password: '',
+    };
+    constructor(private authService: AuthService) {}
+    ngOnInit() {}
 
-  forgotPasswordEmail = '';
-  showForgotPassword = false;
-
-  constructor() {}
-
-  onSubmit() {
-    // Logic for when the form is submitted
-    if (this.user.email && this.user.password) {
-      // Call to authentication service
+    onSubmit() {
+      const email = this.user.email;
+      const password = this.user.password;
+      this.authService.login(email, password).then((response: any) => {
+          if (response && response.token) {
+              // Almacenar el token de forma segura (localStorage, sessionStorage)
+              // Redirigir a otra ruta dentro de la aplicación
+          } else {
+              // Mostrar un mensaje de error al usuario
+          }
+      });
     }
-  }
-
-  onForgotPassword() {
-    // Logic for forgot password
-    if (this.forgotPasswordEmail) {
-      // Send email for password reset
+    onForgotPassword() {
+      // Inform user about feature status
+      alert('Password reset functionality is currently unavailable.');
     }
-  }
-
-  toggleForgotPassword() {
-    this.showForgotPassword = !this.showForgotPassword;
-  }
+    toggleForgotPassword() {
+      //this.showForgotPassword = !this.showForgotPassword;
+    }
 }
