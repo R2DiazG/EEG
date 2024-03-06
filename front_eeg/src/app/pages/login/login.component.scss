@@ -1,0 +1,73 @@
+.login-container {
+    max-width: 300px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f3f3f3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group {
+      margin-bottom: 15px;
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        &:focus {
+          border-color: #0056b3;
+          outline: none;
+        }
+      }
+      .alert {
+        margin-top: 5px;
+        font-size: 0.85em;
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        padding: 5px;
+        border-radius: 4px;
+      }
+    }
+    button {
+      padding: 10px;
+      border-radius: 4px;
+      border: none;
+      margin-bottom: 5px;
+      &.btn-primary {
+        background-color: #007bff;
+        color: white;
+        &:disabled {
+          background-color: #007bff;
+          opacity: 0.5;
+        }
+      }
+      &.btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+    }
+    a {
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  .showForgotPassword {
+    transition: all 0.3s;
+    display: none;
+    &.active {
+      display: block;
+    }
+  }
+  
