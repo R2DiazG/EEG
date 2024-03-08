@@ -1,4 +1,14 @@
+.container{
+  display: flex;
+  flex-direction: row;
+}
+.sidebar {
+    flex: 0 0 200px;
+    height: 100vh;
+}
 .patient-registration-container {
+    flex: 1;
+    padding: 20px;
     width: 100%;
     max-width: 800px;
     margin: 20px auto;
@@ -6,13 +16,6 @@
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  
-    h1 {
-      font-size: 24px;
-      color: #333;
-      text-align: center;
-      margin-bottom: 30px;
-    }
   
     .form-section {
       margin-bottom: 20px;
@@ -39,16 +42,7 @@
         margin-right: 10px;
       }
   
-      button {
-        width: 100%;
-        padding: 10px 0;
-        margin-top: 20px;
-        background-color: #0056b3;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        
+      button {      
         &:hover {
           background-color: #003d82;
         }

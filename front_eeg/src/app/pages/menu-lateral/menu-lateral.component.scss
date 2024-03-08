@@ -2,6 +2,12 @@
     background: #333;
     color: white;
     min-height: 100vh;
+    height: 100%;
+    width: 15rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overflow-y: auto;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 
     .sidebar-header {
@@ -25,8 +31,10 @@
         }
       }
       .user-info {
+        display: flex;
+        flex-direction: column;
         margin-top: 1rem;
-        padding: 1rem;
+        padding: 1rem !important;
       }
     }
   }
