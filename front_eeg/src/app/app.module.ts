@@ -12,6 +12,9 @@ import { ConfirmDialogComponent } from './pages/confirm-dialog/confirm-dialog.co
 import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.component';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
+import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
+import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
+import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 
 @NgModule({
   declarations: [
@@ -22,12 +25,15 @@ import { HttpClientModule } from '@angular/common/http';
     ListaPacientesComponent,
     EegSubirDocsComponent,
     ConfirmDialogComponent,
-    MenuLateralComponent
+    MenuLateralComponent,
+    InfoPacienteComponent,
+    VerPacienteComponent,
+    GraficasPacienteComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   providers: [
     provideClientHydration()

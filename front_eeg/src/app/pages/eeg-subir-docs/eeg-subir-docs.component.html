@@ -2,12 +2,11 @@
 <app-menu-lateral></app-menu-lateral>
 <div class="eeg-upload-container">
     <h1>Subir nuevo EEG</h1>
+    <app-info-paciente></app-info-paciente>
     <div class="upload-form">
       <div class="form-group">
-        <label for="patientName">Ingresa el nombre del paciente</label>
-        <select id="patientName">
-          <!-- Options will be dynamically loaded here -->
-        </select>
+        <label for="patientName">Ingresa la fecha de la toma del electroencefalograma</label>
+        <input type="date" id="eegDate" name="eegDate" required>
       </div>
       
       <div class="form-group">

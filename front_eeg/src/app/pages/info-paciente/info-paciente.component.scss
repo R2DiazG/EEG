@@ -1,0 +1,31 @@
+/* patient-info.component.scss */
+.patient-info-container {
+    border: 1px solid #000; // Un borde simple para delimitar el contenedor
+    padding: 1rem; // Espaciado interno
+    margin-bottom: 2rem;
+  
+    .patient-basic-info {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); // Divide el espacio en 4 columnas iguales
+      gap: 1rem; // Espacio entre elementos
+      margin-bottom: 1rem; // Margen debajo de la sección de información básica
+  
+      span {
+        display: block; // Asegura que cada elemento se muestre en su propia línea en pantallas pequeñas
+      }
+    }
+  
+    .patient-clinical-info {
+      p {
+        margin: 0; // Elimina el margen por defecto del párrafo
+      }
+    }
+  }
+  
+  // Estilos responsivos para pantallas más pequeñas
+  @media (max-width: 768px) {
+    .patient-basic-info {
+      grid-template-columns: repeat(2, 1fr); // Dos columnas en pantallas pequeñas
+    }
+  }
+  

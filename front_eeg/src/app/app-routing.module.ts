@@ -7,6 +7,9 @@ import { ListaPacientesComponent } from './pages/lista-pacientes/lista-pacientes
 import { EegSubirDocsComponent } from './pages/eeg-subir-docs/eeg-subir-docs.component';
 import { ConfirmDialogComponent } from './pages/confirm-dialog/confirm-dialog.component';
 import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.component';
+import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
+import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
+import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,6 +19,9 @@ const routes: Routes = [
   { path: 'eeg-subir-docs', component: EegSubirDocsComponent },
   { path: 'confirm-dialog', component: ConfirmDialogComponent },
   { path: 'menu-lateral', component: MenuLateralComponent },
+  { path: 'info-paciente', component: InfoPacienteComponent },
+  { path: 'ver-paciente', component: VerPacienteComponent },
+  { path: 'graficas-paciente', component: GraficasPacienteComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 

@@ -1,18 +1,49 @@
 import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-menu-lateral',
   templateUrl: './menu-lateral.component.html',
-  styleUrl: './menu-lateral.component.scss'
+  styleUrls: ['./menu-lateral.component.scss']
 })
 export class MenuLateralComponent {
+  isSidebarActive: boolean = false;
+  activeLink: string | undefined;
 
-  constructor() { }
-
-  logout() {
-    // Here you should implement the logic for logging out a user
-    console.log('Logout function called');
-    // e.g., this.authService.logout();
+  constructor(private router: Router) {
+    // Suscripción a eventos del router, filtrando solo los eventos de tipo NavigationEnd
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe(event => {
+      // Actualizar el enlace activo basado en la URL después de las redirecciones
+      this.activeLink = event.urlAfterRedirects;
+    });
   }
 
+  // Método para comprobar si un enlace está activo
+  isActive(url: string): boolean {
+    return this.activeLink === url;
+  }
+
+  // Método para alternar la visibilidad del sidebar
+  toggleSidebar(): void {
+    this.isSidebarActive = !this.isSidebarActive;
+  }
+
+  // Método para navegar a una ruta específica
+  navigateTo(route: string): void {
+    this.router.navigateByUrl(route);
+    this.isSidebarActive = false; // Opcional: Ocultar el sidebar después de la navegación en pantallas pequeñas
+  }
+
+  // Método para manejar el cierre de sesión del usuario
+  logout(): void {
+    // Aquí deberías implementar la lógica de cierre de sesión
+    console.log('Logout function called');
+    // Suponiendo que tienes un servicio de autenticación inyectado como authService
+    // this.authService.logout();
+    // Navegar de vuelta al login después del logout
+    // this.router.navigate(['/login']);
+  }
 }

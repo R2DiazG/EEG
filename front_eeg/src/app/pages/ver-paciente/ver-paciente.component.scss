@@ -1,0 +1,46 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+  
+  .sidebar {
+    flex: 0 0 200px;
+    height: 100vh;
+  }
+  
+  .patient-info-container {
+    flex: 1;
+    padding: 20px;
+    margin: 1rem 17rem auto; // Centrado en la página
+    width: calc(100% - 200px); // Ajuste para el ancho del sidebar
+    max-width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    @media (max-width: 768px) {
+      width: auto; // Ocupa el ancho completo en pantallas pequeñas
+      margin: 10px; // Margen reducido para pantallas pequeñas
+      max-width: none;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    
+        button {  
+          padding: 0.7rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;      
+          &:hover {
+            background-color: #333;
+          }
+        }
+      }
+  }
+  

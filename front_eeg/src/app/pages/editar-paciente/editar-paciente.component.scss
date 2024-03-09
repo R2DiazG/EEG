@@ -1,51 +1,92 @@
-.container{
+.container {
   display: flex;
   flex-direction: row;
 }
+
 .sidebar {
-    flex: 0 0 200px;
-    height: 100vh;
+  flex: 0 0 200px;
+  height: 100vh;
 }
+
 .patient-edit-container {
   flex: 1;
   padding: 20px;
-  width: 100%;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 1rem 17rem auto; // Centrado en la página
+  max-width: 100%; // Ancho máximo
+  width: 100%; // Asegura que se ajuste al contenedor padre
   background-color: #fff;
+  justify-content: right;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   
-    .form-section {
-      margin-bottom: 20px;
-  
-      label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
+  .form-section {
+    margin-bottom: 20px;
+    width: 90%;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: .625rem;
+      margin-bottom: .625rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;    
+    }
+
+    input[type="checkbox"] {
+      margin-right: 1rem;
+    }
+
+    button {  
+      padding: 0.7rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;      
+      &:hover {
+        background-color: #333;
       }
-  
+      &:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    justify-content: center; // Cambia la dirección del flex en dispositivos móviles
+  }
+  .sidebar {
+    flex: 0 0 auto; // Permite que el sidebar se ajuste al contenido
+    height: auto; // Permite que el sidebar se ajuste en altura
+  }
+  .patient-register-container {
+    flex: 1 0 auto; // Permite que el contenedor se ajuste automáticamente
+    margin: 10px; // Reduce el margen para pantallas pequeñas
+    width: calc(100% - 20px); // Ajusta el ancho para tener en cuenta el padding
+    max-width: none; // Anula el max-width en dispositivos móviles
+    .form-section {
       input[type="text"],
       input[type="tel"],
       input[type="email"],
       input[type="date"],
       select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+          width: 95%;
+          padding: 10px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
       }
-  
-      input[type="checkbox"] {
-        margin-right: 10px;
-      }
-  
-      button {
-        &:disabled {
-          background-color: #cccccc;
-          cursor: not-allowed;
-        }
-      }
-    }}      
+    }
+  }
+}
