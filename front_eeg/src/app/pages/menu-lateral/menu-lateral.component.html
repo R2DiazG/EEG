@@ -1,17 +1,24 @@
-<div class="sidebar">
-    <div class="sidebar-header">
-      <h2>UDEM</h2> <!--Agregar logo-->
-    </div>
-    <div class="user-info">
-        <p>Umberto León Dominguez</p>
-    </div>
-    <nav class="nav-menu">
-    <a href="registrar-paciente" class="nav-link">Registrar Paciente</a>
-    <a href="lista-pacientes" class="nav-link">Pacientes</a>
-    <a href="eeg-subir-docs" class="nav-link">Subir EEG</a>
-    <a href="editar-paciente" class="nav-link">Editar Paciente</a>
-    <a href="login" class="nav-link">Login</a>
-      <a href="#" class="nav-link" (click)="logout()">Cerrar sesión</a>
-    </nav>
+<div class="sidebar" [class.active]="isSidebarActive">
+  <div class="sidebar-header">
+    <img src="assets/img/image 4.png">
   </div>
-  
+  <div class="user-info">
+    <p>Umberto León Dominguez</p>
+  </div>
+  <nav class="nav-menu">
+    <!-- Usar 'routerLink' para la navegación y 'routerLinkActive' para resaltar el enlace activo -->
+    <a routerLink="/registrar-paciente" routerLinkActive="active" class="nav-link">Registrar Paciente</a>
+    <a routerLink="/lista-pacientes" routerLinkActive="active" class="nav-link">Pacientes</a>
+    <a routerLink="/eeg-subir-docs" routerLinkActive="active" class="nav-link">Subir EEG</a>
+    <a routerLink="/editar-paciente" routerLinkActive="active" class="nav-link">Editar Paciente</a>
+    <a routerLink="/info-paciente" routerLinkActive="active" class="nav-link">Info Paciente</a>
+    <a routerLink="/ver-paciente" routerLinkActive="active" class="nav-link">Ver Paciente</a>
+    <a routerLink="/graficas-paciente" routerLinkActive="active" class="nav-link">Gráficas Paciente</a>
+    <a routerLink="/login" routerLinkActive="active" class="nav-link">Login</a>
+    <a (click)="logout()" class="nav-link">Cerrar sesión</a>
+  </nav>
+</div>
+
+<button (click)="toggleSidebar()" class="sidebar-toggle">Menu</button>
+
+

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -7,15 +8,18 @@ import { Component } from '@angular/core';
 })
 export class ConfirmDialogComponent {
   confirmEvent: any;
-  data: any;
   
-  constructor() { }
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
   
   onConfirm() {
     this.confirmEvent.emit(true); // Emit true when confirmed
   }
   
   onDismiss() {
-    this.confirmEvent.emit(false); // Emit false when dismissed/canceled
+    this.dialogRef.close(false);// Emit false when dismissed/canceled
   }
 }
+

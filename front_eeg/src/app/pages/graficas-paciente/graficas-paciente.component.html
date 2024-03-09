@@ -1,0 +1,23 @@
+<div class="container">
+<app-menu-lateral></app-menu-lateral>
+<div class="graphs-container">
+    <h1>Visualizador de Electroencefalograma</h1>
+    <app-info-paciente></app-info-paciente>
+    <div class="search-upload-section">
+        <!-- <input type="search" placeholder="Nombre del Paciente" (input)="searchPatient($event.target.value)"> -->
+        <input type="search" placeholder="Nombre del Paciente">
+        <button (click)="uploadEEG()">Subir nuevo EEG</button>
+      </div>
+    <div class="tab-menu">
+      <button class="tab" (click)="setActiveTab('rawEEG')" [class.active]="activeTab === 'rawEEG'">Raw EEG</button>
+      <button class="tab" (click)="setActiveTab('sessions')" [class.active]="activeTab === 'sessions'">Sesiones</button>
+      <button class="tab" (click)="setActiveTab('preDiagnostic')" [class.active]="activeTab === 'preDiagnostic'">Pre-diagnóstico</button>
+    </div>
+    <div class="tab-content">
+      <!-- Content based on the active tab -->
+      <p *ngIf="activeTab === 'rawEEG'">Contenido de Raw EEG</p>
+      <p *ngIf="activeTab === 'sessions'">Contenido de Sesiones</p>
+      <p *ngIf="activeTab === 'preDiagnostic'">Contenido de Pre-diagnóstico</p>
+    </div>
+  </div>
+</div>

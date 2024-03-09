@@ -36,8 +36,24 @@
           <!-- Add other options here -->
         </select>
         
-        <label for="educationLevel">Nivel de educación:</label>
-        <input type="text" id="educationLevel" name="educationLevel">
+        <label for="laterality">Lateralidad:</label>
+          <select id="laterality" name="laterality" required>
+            <option value="" disabled>Seleccione</option>
+            <option value="left">Zurdo</option>
+            <option value="right">Diestro</option>
+            <option value="ambidextrous">Ambidiestro</option>
+          </select>
+          
+          <label for="educationLevel">Escolaridad:</label>
+          <select id="educationLevel" name="educationLevel" required>
+            <option value="" disabled>Seleccione</option>
+            <option value="elementary">Primaria</option>
+            <option value="secondary">Secundaria</option>
+            <option value="highSchool">Preparatoria</option>
+            <option value="university">Univerisdad</option>
+            <option value="mastersDegree">Maestria</option>
+            <option value="doctorate">Doctorado</option>
+          </select>
         
         <label for="occupation">Ocupación:</label>
         <input type="text" id="occupation" name="occupation">
@@ -98,7 +114,7 @@
         <button type="button" class="delete-button" (click)="confirmDelete()">Eliminar Paciente</button> -->
         <button type="button" >Cancelar</button>
         <button type="button" class="delete-button">Eliminar Paciente</button>
-        <button type="submit">Guardar</button>
+        <button type="submit">Guardar Paciente</button>
       </div>
     </form>
   </div>

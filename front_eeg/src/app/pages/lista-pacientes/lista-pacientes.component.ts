@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lista-pacientes',
@@ -11,7 +12,7 @@ export class ListaPacientesComponent {
     // Populate with patient data, typically fetched from a server
   ];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.loadPatients();
@@ -22,7 +23,7 @@ export class ListaPacientesComponent {
   }
 
   registerPatient() {
-    // Logic to navigate to the patient registration form
+    this.router.navigate(['/registrar-paciente']); // Navega a la ruta de registrar paciente
   }
 
   // viewDetails(patient) {
