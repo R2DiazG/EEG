@@ -5,20 +5,15 @@
   </div>
 <div class="login-container">
   <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="email">Usuario</label>
+        <label for="email">Olvidaste la contraseña</label>
+        <p>Por favor ingrese su dirección de correo electrónico, para recuperar tu contraseña.</p>
         <input type="email" id="email" class="form-control" formControlName="email" placeholder="Ingrese su correo">
       </div>
       
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" class="form-control" formControlName="password" placeholder="Ingrese su contraseña">
-      </div>
-      
-      <button type="submit" class="btn btn-primary" >Enviar</button>
-      <button type="button" (click)="registerUser()">Registrar nuevo usuario</button>
-      <button type="button" (click)="onForgotPassword()">Olvidé la contraseña</button>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+      <button type="button" (click)="cancelForgetPassword()">Cancelar</button>
     </form>    
   <div>
     <!--<label for="forgot-email">Por favor ingrese su dirección de correo electrónico:</label>-->
