@@ -15,6 +15,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
 import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
+import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
+import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
 
 @NgModule({
   declarations: [
@@ -28,12 +32,16 @@ import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-pa
     MenuLateralComponent,
     InfoPacienteComponent,
     VerPacienteComponent,
-    GraficasPacienteComponent
+    GraficasPacienteComponent,
+    RegistrarPsicologoComponent,
+    AprobarPsicologosComponent,
+    OlvideContraComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideClientHydration()

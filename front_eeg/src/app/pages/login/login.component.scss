@@ -68,7 +68,7 @@
           margin-bottom: 5px;
       }
       input {
-          width: 95%;
+          width: 100%;
           padding: 10px;
           border: 1px solid #ddd;
           border-radius: 4px;
@@ -104,6 +104,9 @@
 
       &.btn-secondary {
           background-color: #6c757d;
+      }
+      &.hover {
+          background-color: #0056b3;
       }
   }
 

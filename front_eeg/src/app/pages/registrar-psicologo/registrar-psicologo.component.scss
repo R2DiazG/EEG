@@ -1,0 +1,132 @@
+.container {
+    background-image: url("../../../assets/img/fondo.png");
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+  
+    @media (max-width: 768px) {
+        justify-content: center;
+    }
+  }
+  
+  .header {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 99%;
+    padding: 1rem;
+    text-align: right;
+    background-color: yellow;
+    position: absolute;
+    top: 0;
+  
+    img {
+        width: auto;
+        height: 58px;
+    }
+  
+    @media (max-width: 768px) {
+        text-align: center;
+        width: 100%;
+    }
+  }
+  
+  .login-container {
+    max-width: 25rem;
+    margin-right: 5%;
+    min-width: 20rem;
+    padding: 1.25rem;
+    border-radius: 5px;
+    background-color: #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: white; // As the text is white
+    position: relative; // For absolute positioning of children
+  
+    @media (max-width: 768px) {
+        margin: 0.7rem;
+        max-width: 100%;
+        min-width: auto;
+    }
+  
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+  
+        @media (max-width: 768px) {
+            align-items: center;
+        }
+    }
+  
+    .form-group {
+        margin-bottom: 15px;
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+  
+        @media (max-width: 768px) {
+            width: 100%; // inputs will take full width on small screens
+  
+            input {
+                width: 100%;
+            }
+        }
+    }
+  
+    button {
+        width: 100%; // Full width buttons
+        padding: 10px 0; // Padding for buttons
+        margin-top: 10px; // Margin top for buttons
+        border: none; // Remove border from buttons
+        border-radius: 4px; // Border radius for buttons
+        font-size: 16px; // Font size for buttons
+        cursor: pointer; // Cursor pointer for buttons
+  
+        &.btn-primary {
+            background-color: #007bff;
+            color: white;
+  
+            &:disabled {
+                background-color: #007bff;
+                opacity: 0.5;
+            }
+        }
+  
+        &.btn-secondary {
+            background-color: #6c757d;
+        }
+    }
+  
+    a {
+        color: #007bff;
+        cursor: pointer;
+        text-decoration: none;
+        display: block; // Ensure it's a block to have margin
+        margin-top: 10px; // Margin top for link
+  
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+  
+    .alert {
+        display: none; // Hide by default, can be shown with JS if needed
+    }
+  }
+  
+  // Responsive typography adjustments
+  @media (max-width: 768px) {
+    body {
+        font-size: 14px; // Smaller font size for mobile
+    }
+  }

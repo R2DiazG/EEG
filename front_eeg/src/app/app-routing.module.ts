@@ -10,6 +10,9 @@ import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.componen
 import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
 import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
+import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
+import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
+import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,6 +25,9 @@ const routes: Routes = [
   { path: 'info-paciente', component: InfoPacienteComponent },
   { path: 'ver-paciente', component: VerPacienteComponent },
   { path: 'graficas-paciente', component: GraficasPacienteComponent },
+  { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
+  { path: 'aprobar-psicologos', component: AprobarPsicologosComponent },
+  { path: 'olvide-contra', component: OlvideContraComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
