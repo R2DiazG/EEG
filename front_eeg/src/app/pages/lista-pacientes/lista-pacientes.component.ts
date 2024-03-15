@@ -26,6 +26,9 @@ export class ListaPacientesComponent {
     this.router.navigate(['/registrar-paciente']); // Navega a la ruta de registrar paciente
   }
 
+  viewDetails() { 
+    this.router.navigate(['/ver-paciente']);
+  }
   // viewDetails(patient) {
   //   // Logic to view details for a given patient
   // }
