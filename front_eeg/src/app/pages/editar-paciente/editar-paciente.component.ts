@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { InfoPaciente } from '../../models/info-paciente.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-editar-paciente',
@@ -19,7 +20,7 @@ throw new Error('Method not implemented.');
 }
   patient: InfoPaciente = new InfoPaciente();
 
-  constructor(
+  constructor( private router: Router
     // private patientService: PatientService // You'll need a service to handle data
   ) {}
 
@@ -30,6 +31,10 @@ throw new Error('Method not implemented.');
   getPatientDetails() {
     // This would be populated by calling a service method to get patient details
     // this.patientService.getPatientDetails(id).subscribe(data => this.patient = data);
+  }
+
+  cancelEdit() { 
+    this.router.navigate(['/ver-paciente']);
   }
 
   onSubmit() {
