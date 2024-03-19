@@ -1,4 +1,6 @@
 <div class="container">
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/boost.js"></script>
 <app-menu-lateral></app-menu-lateral>
 <div class="graphs-container">
     <h1>Visualizador de Electroencefalograma</h1>
@@ -15,7 +17,113 @@
     </div>
     <div class="tab-content">
       <!-- Content based on the active tab -->
-      <p *ngIf="activeTab === 'rawEEG'">Contenido de Raw EEG</p>
+      <div *ngIf="activeTab === 'rawEEG'">Contenido de EEG
+        <div id="tabla" style="width:100%; height:1000px;"></div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        // Función donde procesamos los datos EEG y crear series para cada canal.
+        function processEEGData(allText) {
+            const allTextLines = allText.split(/\r\n|\n/);
+            const headers = allTextLines[0].split(',');
+            const lines = [];
+            for (let i = 1; i < allTextLines.length; i++) {
+                const data = allTextLines[i].split(',');
+                if (data.length === headers.length) {
+                    const tarr = [];
+                    for (let j = 0; j < headers.length; j++) {
+                        tarr.push(parseFloat(data[j]));
+                    }
+                    lines.push(tarr);
+                }
+            }
+            // Transponemos los datos para tener series por canales.
+            const series = headers.map((header, i) => ({
+                name: header,
+                data: lines.map(line => line[i]),
+                yAxis: i
+            }));
+            return series;
+        }
+        // Cargamos los datos CSV de asstes y creamos el gráfico.
+        fetch('EEGDataTransposed.csv')
+            .then(response => response.text())
+            .then(text => {
+                const series = processEEGData(text);
+                // Crear un eje Y para cada serie
+                const yAxisOptions = series.map((s, i) => ({
+                    title: { text: s.name },
+                    top: (i * 100 / series.length) + '%',
+                    height: (100 / series.length) - 2 + '%',
+                    offset: 0,
+                    lineWidth: 2
+                }));
+                // Creamos el gráfico de Highcharts.
+                Highcharts.chart('tabla', {
+                    chart: {
+                        type: 'line',
+                        zoomType: 'x',
+                        height: 1000 // Aquí podemos ajustar según la cantidad de subplots para evitar que queden muy apretados
+                    },
+                    boost: {
+                        useGPUTranslations: true
+                    },
+                    title: {
+                        text: 'EEG Data Visualization'
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Sample Number'
+                        }
+                    },
+                    yAxis: yAxisOptions,
+                    tooltip: {
+                        shared: true
+                    },
+                    series: series
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching the CSV data: ', error);
+            });
+        });
+        </script>
+        <div id="container" style="width:100%; height:800px;"></div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cargamos los datos de la PSD desde un archivo JSON generado por Python
+            fetch('data_for_highcharts.json')
+                .then(response => response.json())
+                .then(data_for_highcharts => {
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'line',
+                            zoomType: 'x'
+                        },
+                        title: {
+                            text: 'Power spectral density'
+                        },
+                        xAxis: {
+                            title: {
+                                text: 'Frequency (Hz)'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'PSD (dB/Hz)'
+                            }
+                        },
+                        tooltip: {
+                            valueDecimals: 2
+                        },
+                        series: data_for_highcharts
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching the PSD data: ', error);
+                });
+        });
+        </script>
+      </div>
       <p *ngIf="activeTab === 'sessions'">Contenido de Sesiones</p>
       <p *ngIf="activeTab === 'preDiagnostic'">Contenido de Pre-diagnóstico</p>
     </div>
