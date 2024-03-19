@@ -19,6 +19,7 @@ export class EegSubirDocsComponent {
     if (this.selectedFile) {
       const formData = new FormData();
       formData.append('eegFile', this.selectedFile, this.selectedFile.name);
+      console.log('Uploading EEG');
       // Use a service to upload the file via HTTP request
       // this.uploadService.uploadFile(formData).subscribe(...);
     }
