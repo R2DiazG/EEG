@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
+import { Options } from 'highcharts';
 
 @Component({
   selector: 'app-graficas-paciente',
@@ -29,13 +30,12 @@ export class GraficasPacienteComponent implements OnInit {
   }
 
   loadHighcharts() {
-    this.http.get('assets/data_for_highcharts.json').subscribe(data => {
-      Highcharts.chart('eeg-container', {
+    this.http.get('assets/data_for_highcharts.json').subscribe((data: any) => {
+      const options: Options = {
         chart: {
           type: 'line',
           zoomType: 'x',
-          // Configuración adicional como altura, etc.
-          height: 400 // Altura en píxeles, ajusta según necesidad
+          height: 400
         },
         title: {
           text: 'EEG Data Visualization'
@@ -43,37 +43,34 @@ export class GraficasPacienteComponent implements OnInit {
         xAxis: {
           title: {
             text: 'Sample Number'
-          },
-          // Configuración adicional del eje X como categorías, etc.
+          }
         },
         yAxis: {
-          // Podrías necesitar ajustar esto dependiendo de cómo quieres que se vean tus ejes Y.
-          // Aquí un ejemplo con un solo eje Y.
           title: {
             text: 'Amplitude (µV)'
           },
           labels: {
-            format: '{value:.2f}' // Formato para dos decimales, ajusta según necesidad
+            format: '{value:.2f}'
           }
         },
         tooltip: {
-          // Configuración del tooltip, puedes personalizar esto más.
           shared: true,
           crosshairs: true,
-          valueSuffix: ' µV', // Unidad de medida para mostrar en el tooltip
-          valueDecimals: 2 // Número de decimales en el tooltip
+          valueSuffix: ' µV',
+          valueDecimals: 2
         },
         plotOptions: {
-          // Configuraciones de cómo se dibuja cada serie
           line: {
-            lineWidth: 1, // Grosor de la línea, ajusta según necesidad
+            lineWidth: 1,
             marker: {
-              enabled: false // Oculta los marcadores de puntos individuales
+              enabled: false
             }
           }
         },
         series: data as Highcharts.SeriesOptionsType[]
-      });
+      };
+
+      Highcharts.chart('eeg-container', options);
     }, error => {
       console.error('Error loading the Highcharts data: ', error);
     });
