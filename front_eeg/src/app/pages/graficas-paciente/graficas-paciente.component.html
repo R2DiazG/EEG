@@ -16,7 +16,7 @@
     <div class="tab-content">
       <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'rawEEG'">Contenido de Raw EEG
-        <app-eeg-visualization></app-eeg-visualization>
+        <div id="eeg-container" style="width:100%; height:400px;"></div>
       </div>
       <div *ngIf="activeTab === 'sessions'">Contenido de Sesiones</div>
       <div *ngIf="activeTab === 'preDiagnostic'">Contenido de Pre-diagnóstico</div>
