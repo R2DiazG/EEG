@@ -26,7 +26,42 @@
     margin: 10px; // Margen reducido para pantallas pequeñas
     max-width: none;
   }
+  .tab-menu {
+    .tab {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      background-color: #333;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+
+      &.active {
+        border-bottom-color: #333;
+        background-color: yellow;
+        color: #333;
+      }
+
+      &:hover {
+        background-color: darken(#a2a2a2, 5%);
+      }
+    }
+  }
+
+  .tab-content {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    // Further styles for tab content based on your design
+  }
+
+  .error{
+    color: red;
+  }
 }
+.container{
+  display: flex;
+  flex-direction: row;
+}
+
 
 .form-section {
   margin-bottom: 20px;
@@ -51,7 +86,29 @@
   input[type="checkbox"] {
     margin-right: 1rem;
   }
-  button {
+  .disabled-option {
+    color: #ccc;
+  }
+  select:disabled, option:disabled {
+    color: #cccccc;
+  }
+
+  textarea {
+    width: 100%;
+    padding: .625rem;
+    margin-bottom: .625rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  button {  
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;      
+    &:hover {
+      background-color: #333;
+    }
     &:disabled {
       background-color: #cccccc;
       cursor: not-allowed;

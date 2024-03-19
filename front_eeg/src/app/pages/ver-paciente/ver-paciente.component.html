@@ -6,44 +6,144 @@
             <button (click)="editPatient()">Editar paciente</button>
             <button (click)="deletePatient()">Eliminar paciente</button>
         </div>
+        <div class="tab-menu">
+          <button class="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
+          <button class="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
+          <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Historial del paciente</button>
+          <button class="tab" (click)="setActiveTab('consult')" [class.active]="activeTab === 'consult'">Consulta</button>
+          <button class="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Información del familiar</button>
+          <button class="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
+        </div>  
       <div class="patient-info-section">
-        <h2>Datos Personales</h2>
-        <p><strong>Identificador:</strong> ID123456</p>
-        <p><strong>Nombre:</strong> Juan Pérez</p>
-        <p><strong>Apellido paterno:</strong> Pérez</p>
-        <p><strong>Apellido materno:</strong> López</p>
-        <p><strong>Fecha de nacimiento:</strong> 01/01/1990</p>
-        <p><strong>Género:</strong> Masculino</p>
-        <p><strong>Estado civil:</strong> Soltero</p>
-        <p><strong>Lateralidad:</strong> Diestro</p>
-        <p><strong>Escolaridad:</strong> Licenciatura</p>
-        <p><strong>Ocupación:</strong> Ingeniero</p>
-      </div>
-  
-      <div class="patient-info-section">
-        <h2>Historial del paciente</h2>
-        <p>Historial médico y descripciones de condiciones previas.</p>
-        <p><strong>Medicamentos actuales:</strong> Medicamento A, Medicamento B, ...</p>
-      </div>
-  
-      <div class="patient-info-section">
-        <h2>Consultas Recientes</h2>
-        <p><strong>Última fecha de consulta:</strong> 01/06/2024</p>
-        <p><strong>Número de consulta:</strong> 23456</p>
-        <p><strong>Diagnóstico previo:</strong> Descripción del diagnóstico previo.</p>
-      </div>
-  
-      <div class="patient-info-section">
-        <h2>Información del familiar</h2>
-        <p><strong>Nombre(s) del familiar:</strong> Ana López</p>
-        <p><strong>Apellido paterno:</strong> López</p>
-        <p><strong>Apellido materno:</strong> Gómez</p>
-      </div>
-  
-      <div class="patient-info-section">
-        <h2>Consentimiento del paciente</h2>
-        <p>El paciente ha dado su consentimiento para el tratamiento y uso de sus datos personales.</p>
+        <div class="tab-content">
+          <!-- Información del paciente -->
+          <div *ngIf="activeTab === 'infoPatient'">
+            <h2>Datos Personales</h2>
+            <!-- <p><strong>Identificador:</strong> {{patient.id}}</p>
+            <p><strong>Nombre:</strong> {{patient.name}}</p>
+            <p><strong>Apellido paterno:</strong> {{patient.lastName}}</p>
+            <p><strong>Apellido materno:</strong> {{patient.secondLastName}}</p>
+            <p><strong>Fecha de nacimiento:</strong> {{patient.birthDate}}</p>
+            <p><strong>Género:</strong> {{patient.gender}}</p>
+            <p><strong>Estado civil:</strong> {{patient.maritalStatus}}</p>
+            <p><strong>Ocupación:</strong> {{patient.occupation}}</p> -->
+
+            <p><strong>Identificador:</strong> 1</p>
+            <p><strong>Nombre:</strong> Juan</p>
+            <p><strong>Apellido paterno:</strong> Perez</p>
+            <p><strong>Apellido materno:</strong> Fulanito</p>
+            <p><strong>Fecha de nacimiento:</strong>30/02/1993</p>
+            <p><strong>Género:</strong>Masculino</p>
+            <p><strong>Estado civil:</strong>Casado</p>
+            <p><strong>Ocupación:</strong> Boxeador</p>
+          </div>
+          <!-- Contacto del paciente -->
+          <div *ngIf="activeTab === 'contactPatient'">
+            <h2>Información de contacto</h2>
+            <!-- <p><strong>Teléfono:</strong> {{patient.phone}}</p>
+            <p><strong>Correo electrónico:</strong>{{patient.email}}</p>
+            <p><strong>Dirección</strong></p>
+            <p><strong>Calle:</strong> {{patient.address.street}}</p>
+            <p><strong>Número exterior:</strong> {{patient.address.number}}</p>
+            <p><strong>Colonia:</strong> {{patient.address.neighborhood}}</p>
+            <p><strong>Código postal:</strong> {{patient.address.zipCode}}</p>
+            <p><strong>Municipio:</strong> {{patient.address.municipality}}</p>
+            <p><strong>Estado:</strong> {{patient.address.state}}</p>
+            <p><strong>Pais:</strong> {{patient.address.country}}</p> -->
+
+            <p><strong>Teléfono:</strong> 1234567890</p>
+            <p><strong>Correo electrónico:</strong>juan.perezfudem.edu</p>
+            <p><strong>Dirección</strong></p>
+            <p><strong>Calle:</strong> Calle 123</p>
+            <p><strong>Número exterior:</strong> 123</p>
+            <p><strong>Colonia:</strong> Colonia 123</p>
+            <p><strong>Código postal:</strong> 12345</p>
+            <p><strong>Municipio:</strong> Monterrey</p>
+            <p><strong>Estado:</strong> Nuevo León</p>
+            <p><strong>Pais:</strong> México</p>
+          </div>
+
+          <!-- Historial del paciente -->
+          <div *ngIf="activeTab === 'historyPatient'">
+            <h2>Historial del paciente</h2>
+            <p>Historial médico y descripciones de condiciones previas.</p>
+            
+            <div>
+              <strong>Medicamentos actuales:</strong>
+              <table class="medications-table">
+                <thead>
+                  <tr>
+                    <th>Medicamento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let medication of patient.currentMedications">
+                    <!-- <td>{{ medication }}</td> -->
+                    <td>Medicamento</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+            <!-- Consulta -->
+            <div *ngIf="activeTab === 'consult'">
+              <h2>Consultas Recientes</h2>
+              <table class="consults-table">
+                <thead>
+                  <tr>
+                    <th>Fecha de consulta</th>
+                    <th>Número de consulta</th>
+                    <th>Diagnóstico previo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let consult of patient.consultas">
+                    <!-- <td>{{ consult.date | date:'longDate' }}</td>
+                    <td>{{ consult.number }}</td>
+                    <td>{{ consult.diagnosis }}</td> -->
+                    <td>01/01/2021</td>
+                    <td>1</td>
+                    <td>Diagnóstico previo</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          <!-- Información del familiar -->
+          <div *ngIf="activeTab === 'infoFamily'">
+            <h2>Información del familiar</h2>
+            <!-- <p><strong>Nombre(s) del familiar:</strong> {{patient.relativeFirstName}}</p>
+            <p><strong>Apellido paterno:</strong> {{patient.relativeLastName}}</p>
+            <p><strong>Apellido materno:</strong> {{patient.relativeSurname}}</p>
+            <p><strong>Parentesco:</strong> {{patient.relativeRelationship}}</p>
+            <p><strong>Teléfono:</strong> {{patient.relativePhone}}</p>
+            <p><strong>Correo electrónico:</strong> {{patient.relativeEmail}}</p>
+            <p><strong>Dirección</strong>{{patient.relativeAddress}}</p>
+            <p><strong>Ciudad</strong>{{patient.relativeCity}}</p>
+            <p><strong>Estado</strong>{{patient.relativeState}}</p>
+            <p><strong>País</strong>{{patient.relativeCountry}}</p>
+            <p><strong>Notas</strong>{{patient.relativeNotes}}</p> -->
+
+            <p><strong>Nombre(s) del familiar:</strong> Juan</p>
+            <p><strong>Apellido paterno:</strong> Perez</p>
+            <p><strong>Apellido materno:</strong> Fulanito</p>
+            <p><strong>Parentesco:</strong> Padre</p>
+            <p><strong>Teléfono:</strong> 1234567890</p>
+            <p><strong>Correo electrónico:</strong> juan.perezfudem.edu</p>
+            <p><strong>Dirección</strong> Calle 123</p>
+            <p><strong>Ciudad</strong> Monterrey</p>
+            <p><strong>Estado</strong> Nuevo León</p>
+            <p><strong>País</strong> México</p>
+            <p><strong>Notas</strong> Notas del familiar</p>
+          </div>
+          <!-- Consentimiento -->
+          <div *ngIf="activeTab === 'consent'">
+            <h2>Consentimiento del paciente</h2>
+            <p>El paciente ha dado su consentimiento para el tratamiento y uso de sus datos personales.</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+</div>
   

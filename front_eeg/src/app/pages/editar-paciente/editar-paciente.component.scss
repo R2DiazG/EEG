@@ -18,6 +18,149 @@
   justify-content: right;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  .tab-menu {
+    .tab {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      background-color: #333;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+
+      &.active {
+        border-bottom-color: #333;
+        background-color: yellow;
+        color: #333;
+      }
+
+      &:hover {
+        background-color: darken(#a2a2a2, 5%);
+      }
+    }
+  }
+
+  .tab-content {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    // Further styles for tab content based on your design
+  }
+
+  .consultations-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .consultations-table thead {
+    background-color: #f2f2f2;
+  }
+  
+  .consultations-table th,
+  .consultations-table td {
+    text-align: left;
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  
+  .consultations-table th {
+    font-weight: bold;
+  }
+  
+  .consultations-table td {
+    background-color: #fff;
+  }
+  
+  .consultations-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .consultations-table input[type="date"],
+  .consultations-table input[type="text"],
+  .consultations-table textarea {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .consultations-table input[readOnly],
+  .consultations-table textarea[readOnly] {
+    background-color: #e7e7e7;
+    color: #5d5d5d;
+  }
+  
+  .consultations-table button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .consultations-table button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Estilos para botones dentro de la celda de acciones */
+  .consultations-table .form-actions {
+    text-align: right;
+  }
+  
+  .medications-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  
+    thead {
+      background-color: #f2f2f2;
+    }
+  
+    th,
+    td {
+      text-align: left;
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+  
+    input[type="text"] {
+      width: calc(100% - 10px); // Se ajusta para tener en cuenta el padding
+      padding: 5px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  
+    button {
+      background-color: #f44336; /* Red */
+      color: white;
+      padding: 6px 12px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #d32f2f; /* Darker red */
+      }
+    }
+  }
+ 
+  
+  .error{
+    color: red;
+  }
+
+  .form-actions{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
   
   .form-section {
     margin-bottom: 20px;
@@ -44,6 +187,14 @@
 
     input[type="checkbox"] {
       margin-right: 1rem;
+    }
+    textarea {
+      width: 100%;
+      padding: .625rem;
+      margin-bottom: .625rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     }
 
     button {  

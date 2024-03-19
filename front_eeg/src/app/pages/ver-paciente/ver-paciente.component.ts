@@ -9,7 +9,10 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   styleUrl: './ver-paciente.component.scss'
 })
 export class VerPacienteComponent {
+patient: any;
   constructor(private router: Router, public dialog: MatDialog) { }
+  
+  activeTab: string = 'infoPatient'; // Default active tab
 
   editPatient() { 
     this.router.navigate(['/editar-paciente']); // Navega a la ruta de editar paciente
@@ -20,7 +23,6 @@ export class VerPacienteComponent {
       width: '250px',
       data: { message: '¿Estás seguro de que quieres eliminar a este paciente?' }
     });
-
     // Después de cerrar el diálogo, revisa si el usuario confirmó la acción
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
@@ -30,4 +32,12 @@ export class VerPacienteComponent {
       }
     });
   }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
+  }
+}
+
+function setActiveTab(tab: any, string: any) {
+  throw new Error('Function not implemented.');
 }

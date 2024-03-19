@@ -2,30 +2,37 @@ import { Component } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { Router } from '@angular/router';
+import { Consulta } from '../../models/consulta';
 
 @Component({
   selector: 'app-editar-paciente',
   templateUrl: './editar-paciente.component.html',
-  styleUrl: './editar-paciente.component.scss'
+  styleUrls: ['./editar-paciente.component.scss']
 })
 export class EditarPacienteComponent {
+  isEditMode: boolean = false;
+  patient: InfoPaciente = new InfoPaciente();
+  activeTab: string = 'infoPatient'; // Default active tab
+
 confirmDelete() {
 throw new Error('Method not implemented.');
 }
 onCancel() {
 throw new Error('Method not implemented.');
 }
-addMedication() {
-throw new Error('Method not implemented.');
-}
-  patient: InfoPaciente = new InfoPaciente();
+  constructor(private router: Router) {}
 
-  constructor( private router: Router
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
+  }
     // private patientService: PatientService // You'll need a service to handle data
-  ) {}
 
   ngOnInit(): void {
     this.getPatientDetails();
+  }
+
+  toggleEditMode(): void {
+    this.isEditMode = !this.isEditMode;
   }
 
   getPatientDetails() {
@@ -34,17 +41,48 @@ throw new Error('Method not implemented.');
   }
 
   cancelEdit() { 
+    this.isEditMode = false; // Desactiva el modo de edición
+    // Opcionalmente navega de vuelta a la vista de solo lectura
     this.router.navigate(['/ver-paciente']);
   }
 
   onSubmit() {
-    // Here you would call a service to update the patient details
-    // this.patientService.updatePatientDetails(this.patient).subscribe(...);
+    if (this.isEditMode) {
+      // Implementa la lógica para actualizar los detalles del paciente
+      // Por ejemplo, a través de un servicio que haga una petición HTTP
+      console.log('Actualizando información del paciente', this.patient);
+      this.isEditMode = false; // Desactiva el modo de edición después de guardar los cambios
+    }
   }
+
+  addMedication(): void {
+    if (!this.patient.currentMedications) {
+      this.patient.currentMedications = [];
+    }
+    this.patient.currentMedications.push(''); // Añade un string vacío para un nuevo medicamento
+  }
+
   removeMedication(index: number): void {
     if (this.patient && this.patient.currentMedications) {
       this.patient.currentMedications.splice(index, 1);
     }
   }
+
+  addConsultation(): void {
+    const newConsultation: Consulta = {
+      date: new Date(), // Asigna una fecha predeterminada o deja en blanco
+      number: '', // Número de consulta inicial vacío
+      diagnosis: '' // Diagnóstico previo inicial vacío
+    };
+    if (!this.patient.consultations) {
+      this.patient.consultations = [];
+    }
+    this.patient.consultations.push(newConsultation);
+  }
+
+  removeConsultation(index: number): void {
+    this.patient.consultations?.splice(index, 1);
+  }
+  
 
 }

@@ -27,6 +27,141 @@
       max-width: none;
     }
 
+    .medications-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); // Sombra suave para la tabla
+    }
+    
+    .medications-table thead {
+      background-color: #f2f2f2;
+    }
+    
+    .medications-table th {
+      text-align: left;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    .medications-table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    /* Estilos para las filas al pasar el ratón */
+    .medications-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    /* Estilos para la última fila sin borde inferior */
+    .medications-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Estilos para la celda que contiene los botones de acción */
+    .medications-table td.actions-cell {
+      text-align: right;
+    }
+    
+    /* Estilos generales para botones dentro de la tabla */
+    .medications-table button {
+      background-color: #007bff; // Cambiado a azul
+      color: white;
+      padding: 6px 12px;
+      margin-left: 10px; // Espacio entre botones si hay más de uno
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .medications-table button:hover {
+      background-color: #0056b3; // Color de botón al pasar el ratón
+    }
+
+    .consults-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-spacing: 0; /* Remueve el espacio entre las celdas */
+    }
+    
+    .consults-table thead {
+      background-color: #f2f2f2;
+    }
+    
+    .consults-table th,
+    .consults-table td {
+      text-align: left;
+      border: 1px solid #ddd;
+      padding: 10px; /* Aumenta el padding para un mejor espaciado */
+    }
+    
+    .consults-table th {
+      font-weight: bold;
+    }
+    
+    .consults-table td {
+      background-color: #fff;
+    }
+    
+    /* Alinea el contenido de las celdas al centro si se desea */
+    .consults-table th, 
+    .consults-table td {
+      text-align: center; 
+    }
+    
+    /* Elimina el fondo gris de las filas pares si no se desea */
+    .consults-table tr:nth-child(even) {
+      background-color: #fff; /* Ajusta esto para cambiar el color de las filas pares si es necesario */
+    }
+    
+    .consults-table input[type="date"],
+    .consults-table input[type="text"],
+    .consults-table textarea {
+      width: 95%; /* Ajusta el ancho para permitir el borde */
+      padding: 6px; /* Ajusta el padding para un mejor espaciado */
+      margin: 4px 0; /* Ajusta el margen según sea necesario */
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    /* Ajustes para los estilos de las acciones, si es que las tienes en una celda separada */
+    .consults-table .form-actions {
+      text-align: right; /* Alinea los botones a la derecha */
+    }    
+    
+    .tab-menu {
+      .tab {
+        padding: 0.5rem 1rem;
+        margin-right: 0.5rem;
+        background-color: #333;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+  
+        &.active {
+          border-bottom-color: #333;
+          background-color: yellow;
+          color: #333;
+        }
+  
+        &:hover {
+          background-color: darken(#a2a2a2, 5%);
+        }
+      }
+    }
+  
+    .tab-content {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      // Further styles for tab content based on your design
+    }
+
     .header {
         display: flex;
         justify-content: space-between;

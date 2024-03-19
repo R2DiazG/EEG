@@ -23,7 +23,6 @@ export class GraficasPacienteComponent {
 
   uploadEEG() {
     this.router.navigate(['/eeg-subir-docs']);
-    console.log('Uploading EEG');
     // Implement your upload logic here
   }
 
