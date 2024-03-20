@@ -33,7 +33,7 @@ export class GraficasPacienteComponent implements OnInit {
     // Si cambias a la pestaña de EEG, cargas Highcharts
     if (tab === 'contentEEG') {
       this.loadHighcharts();
-      this.cargarDatosEEGDesdeCSV(); // Nueva llamada para cargar datos desde CSV
+      this.cargarDatosEEGDesdeJSON(); // Nueva llamada para cargar datos desde CSV
     }
   }
 
