@@ -86,19 +86,21 @@ export class GraficasPacienteComponent implements OnInit {
 
   private cargarDatosEEGDesdeJSON(): void {
     this.http.get('assets/EEGDataTransposed.json').subscribe((data: any) => {
-      const series = data; // Si 'data' ya está en el formato correcto, no es necesario procesarlo.
-      // Calculamos el offset basado en el número de series.
-      const offset = Math.max(...series.map((s: { data: any; }) => Math.max(...s.data))) - Math.min(...series.map((s: { data: any; }) => Math.min(...s.data)));
-      const offsetSeries = series.map((s: { name: any; data: any[]; }, i: number) => ({
+      const series = data;
+      // Utilizamos un valor de offset fijo más pequeño o un factor de escala para reducirlo.
+      // Por ejemplo, si los valores oscilan alrededor de 50 unidades entre cada canal, podrías usar ese valor.
+      const offset = 50; // Este valor debería ser ajustado manualmente para que se ajuste bien a tus datos.
+  
+      const offsetSeries = series.map((s: { name: string; data: number[]; }, i: number) => ({
         name: s.name,
-        data: s.data.map((d: number) => d + i * offset), // Aplicamos el offset aquí
+        data: s.data.map(d => d + i * offset), // Offset aplicado a los datos
       }));
-    
-      const options: Options = { 
+  
+      const options: Options = {
         chart: {
           renderTo: 'eeg',
           type: 'line',
-          height: 700
+          height: 600 // Altura ajustada a la cantidad de datos.
         },
         boost: {
           useGPUTranslations: true
@@ -113,15 +115,16 @@ export class GraficasPacienteComponent implements OnInit {
         },
         yAxis: {
           title: {
-            text: 'Value'
+            text: 'Amplitude'
           },
-          // Configuramos un único eje Y para todas las series
-          tickInterval: offset, // Ajustamos el intervalo de los ticks al offset calculado
+          tickInterval: offset,
           labels: {
             formatter: function () {
-              const value = this.value as number;
-              const seriesName = series[Math.floor(value / offset)]?.name;
-              return seriesName ? seriesName : '';
+              const index = Math.round((this.value as number) / offset);
+              if (index < 0 || index >= series.length) {
+                return ''; // Esto evita las etiquetas adicionales arriba y abajo
+              }
+              return series[index]?.name;
             }
           }
         },
@@ -130,12 +133,13 @@ export class GraficasPacienteComponent implements OnInit {
         },
         series: offsetSeries as Highcharts.SeriesOptionsType[]
       };
-    
-      Highcharts.chart(options); // Creamos el gráfico con las opciones definidas.
+  
+      Highcharts.chart(options);
     }, error => {
       console.error('Error fetching the JSON data: ', error);
     });
   }
+  
 
   private processEEGData(allText: string): SeriesOptions[] {
     // Implementación del procesamiento de datos aquí...
