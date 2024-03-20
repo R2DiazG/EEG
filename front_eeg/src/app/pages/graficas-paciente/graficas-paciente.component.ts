@@ -46,7 +46,7 @@ export class GraficasPacienteComponent implements OnInit {
           height: 400
         },
         title: {
-          text: 'EEG Data Visualization'
+          text: 'Power Spectrum Density (PSD) of EEG Data'
         },
         xAxis: {
           title: {
