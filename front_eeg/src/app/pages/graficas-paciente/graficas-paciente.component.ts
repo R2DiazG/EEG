@@ -102,7 +102,7 @@ export class GraficasPacienteComponent implements OnInit {
           chart: {
             renderTo: 'eeg',
             type: 'line',
-            zoomType: 'x',
+            //zoomType: 'x',
             height: 1000
           },
           boost: {
