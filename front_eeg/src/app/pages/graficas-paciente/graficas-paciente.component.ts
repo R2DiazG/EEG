@@ -86,16 +86,19 @@ export class GraficasPacienteComponent implements OnInit {
 
   private cargarDatosEEGDesdeJSON(): void {
     this.http.get('assets/EEGDataTransposed.json').subscribe((data: any) => {
-      const series = data.map((serie: any) => ({
-        name: serie.name,
-        data: serie.data,
+      const series = data; // Si 'data' ya está en el formato correcto, no es necesario procesarlo.
+      // Calculamos el offset basado en el número de series.
+      const offset = Math.max(...series.map((s: { data: any; }) => Math.max(...s.data))) - Math.min(...series.map((s: { data: any; }) => Math.min(...s.data)));
+      const offsetSeries = series.map((s: { name: any; data: any[]; }, i: number) => ({
+        name: s.name,
+        data: s.data.map((d: number) => d + i * offset), // Aplicamos el offset aquí
       }));
-  
+    
       const options: Options = { 
         chart: {
           renderTo: 'eeg',
           type: 'line',
-          height: 800 // Altura fija, ya que tendremos una sola área de gráfico
+          height: 8
         },
         boost: {
           useGPUTranslations: true
@@ -112,26 +115,28 @@ export class GraficasPacienteComponent implements OnInit {
           title: {
             text: 'Value'
           },
-          // Solo una configuración de eje Y, para todas las series
+          // Configuramos un único eje Y para todas las series
+          tickInterval: offset, // Ajustamos el intervalo de los ticks al offset calculado
+          labels: {
+            formatter: function (this: { value: number }): string { // Add type annotation for 'this' parameter
+              // Use 'this.value' to access the value property correctly
+              const seriesName = series[Math.floor(this.value / offset)]?.name;
+              return seriesName ? seriesName : '';
+            }
+          }
         },
         tooltip: {
           shared: true
         },
-        plotOptions: {
-          line: {
-            marker: {
-              enabled: false // Esto ayuda a mejorar el rendimiento con grandes conjuntos de datos
-            }
-          }
-        },
-        series: series as Highcharts.SeriesOptionsType[]
+        series: offsetSeries as Highcharts.SeriesOptionsType[]
       };
-  
-      Highcharts.chart(options);
+    
+      Highcharts.chart(options); // Creamos el gráfico con las opciones definidas.
     }, error => {
       console.error('Error fetching the JSON data: ', error);
     });
   }
+  
   
 
   private processEEGData(allText: string): SeriesOptions[] {
