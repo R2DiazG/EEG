@@ -84,25 +84,35 @@ export class GraficasPacienteComponent implements OnInit {
     });
   }
 
-  private cargarDatosEEGDesdeJSON() {
+  private cargarDatosEEGDesdeJSON(): void {
     this.http.get('assets/EEGDataTransposed.json').subscribe((data: any) => {
-      // Aquí 'data' debe ser ya un objeto JSON con la estructura esperada.
-      // Por ejemplo, podría ser un arreglo de objetos donde cada objeto
-      // representa una serie con un campo 'name' y un campo 'data'.
-      const series = data; // Si 'data' ya está en el formato correcto, no es necesario procesarlo.
-      const yAxisOptions = series.map((s: any, i: number) => ({
-        title: { text: s.name },
-        top: (i * 100 / series.length) + '%',
+      // Asumiendo que 'data' es un arreglo de objetos con 'name' y 'data'
+      const series = data.map((serie: any, index: number) => ({
+        name: serie.name,
+        data: serie.data,
+        yAxis: index // Asociamos cada serie con un eje Y diferente
+      }));
+
+      // Configuramos un eje Y para cada serie
+      const yAxisOptions = series.map((serie: any, index: number) => ({
+        title: { text: serie.name },
+        top: (index * 100 / series.length) + '%',
         height: (100 / series.length) - 2 + '%',
         offset: 0,
-        lineWidth: 2
+        lineWidth: 2,
+        labels: {
+          align: 'left',
+          x: 0,
+          y: -5
+        },
+        showLastLabel: false
       }));
-  
-      const options: Options = { 
+
+      const options: Options = {
         chart: {
-          renderTo: 'eeg', // Asegúrate de que este ID coincida con el de tu contenedor en HTML.
+          renderTo: 'eeg', // El ID del contenedor del gráfico en HTML
           type: 'line',
-          height: 400 // Puedes ajustar esto según tus necesidades.
+          height: 400 * series.length // Altura ajustable según el número de series
         },
         boost: {
           useGPUTranslations: true
@@ -119,16 +129,14 @@ export class GraficasPacienteComponent implements OnInit {
         tooltip: {
           shared: true
         },
-        series: series
+        series: series as Highcharts.SeriesOptionsType[]
       };
-  
-      Highcharts.chart(options); // Creamos el gráfico con las opciones definidas.
+
+      Highcharts.chart(options); // Creamos el gráfico con las opciones definidas
     }, error => {
       console.error('Error fetching the JSON data: ', error);
     });
   }
-  
-  
 
   private processEEGData(allText: string): SeriesOptions[] {
     // Implementación del procesamiento de datos aquí...
