@@ -84,9 +84,9 @@ export class GraficasPacienteComponent implements OnInit {
     });
   }
 
-  // Nueva funcionalidad para cargar datos EEG desde CSV
-  cargarDatosEEGDesdeCSV() {
-    fetch('assets/Prueba2.csv')
+  
+  private cargarDatosEEGDesdeCSV() {
+    fetch('Prueba2.csv')
       .then(response => response.text())
       .then(text => {
         const series = this.processEEGData(text);
@@ -97,11 +97,13 @@ export class GraficasPacienteComponent implements OnInit {
           offset: 0,
           lineWidth: 2
         }));
-        Highcharts.chart('eeg', { // Asegúrate de tener un contenedor con este id
+  
+        const options: Options = { 
           chart: {
+            renderTo: 'eeg',
             type: 'line',
             zoomType: 'x',
-            height: 400
+            height: 1000
           },
           boost: {
             useGPUTranslations: true
@@ -119,12 +121,14 @@ export class GraficasPacienteComponent implements OnInit {
             shared: true
           },
           series: series
-        });
+        };
+        Highcharts.chart(options); 
       })
       .catch(error => {
         console.error('Error fetching the CSV data: ', error);
       });
   }
+  
 
   private processEEGData(allText: string): SeriesOptions[] {
     // Implementación del procesamiento de datos aquí...
