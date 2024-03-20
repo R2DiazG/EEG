@@ -34,7 +34,7 @@ export class GraficasPacienteComponent implements OnInit {
       const options: Options = {
         chart: {
           type: 'line',
-          zoomType: 'x',
+          //zoomType: 'x',
           height: 400
         },
         title: {
@@ -55,13 +55,13 @@ export class GraficasPacienteComponent implements OnInit {
         },
         tooltip: {
           shared: true,
-          crosshairs: true,
           valueSuffix: ' µV',
           valueDecimals: 2
         },
         plotOptions: {
           line: {
             lineWidth: 1,
+            //crosshairs: true,
             marker: {
               enabled: false
             }
