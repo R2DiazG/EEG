@@ -27,15 +27,13 @@
             <p><strong>Género:</strong> {{patient.gender}}</p>
             <p><strong>Estado civil:</strong> {{patient.maritalStatus}}</p>
             <p><strong>Ocupación:</strong> {{patient.occupation}}</p> -->
-
-            <p><strong>Identificador:</strong> 1</p>
-            <p><strong>Nombre:</strong> Juan</p>
-            <p><strong>Apellido paterno:</strong> Perez</p>
-            <p><strong>Apellido materno:</strong> Fulanito</p>
-            <p><strong>Fecha de nacimiento:</strong>30/02/1993</p>
-            <p><strong>Género:</strong>Masculino</p>
-            <p><strong>Estado civil:</strong>Casado</p>
-            <p><strong>Ocupación:</strong> Boxeador</p>
+            <p><strong>Nombre:</strong> Eugene</p>
+            <p><strong>Apellido paterno:</strong> Fitzherbert</p>
+            <p><strong>Apellido materno:</strong>Charming</p>
+            <p><strong>Fecha de nacimiento:</strong> 15/08/2000</p>
+            <p><strong>Género:</strong> Masculino</p>
+            <p><strong>Estado civil:</strong> Casado</p>
+            <p><strong>Ocupación:</strong> Empresario</p>
           </div>
           <!-- Contacto del paciente -->
           <div *ngIf="activeTab === 'contactPatient'">
@@ -52,11 +50,11 @@
             <p><strong>Pais:</strong> {{patient.address.country}}</p> -->
 
             <p><strong>Teléfono:</strong> 1234567890</p>
-            <p><strong>Correo electrónico:</strong>juan.perezfudem.edu</p>
+            <p><strong>Correo electrónico:</strong>eugenef&#64;gmail.edu</p>
             <p><strong>Dirección</strong></p>
-            <p><strong>Calle:</strong> Calle 123</p>
+            <p><strong>Calle:</strong> Calle</p>
             <p><strong>Número exterior:</strong> 123</p>
-            <p><strong>Colonia:</strong> Colonia 123</p>
+            <p><strong>Colonia:</strong> Cumbres</p>
             <p><strong>Código postal:</strong> 12345</p>
             <p><strong>Municipio:</strong> Monterrey</p>
             <p><strong>Estado:</strong> Nuevo León</p>
@@ -66,14 +64,14 @@
           <!-- Historial del paciente -->
           <div *ngIf="activeTab === 'historyPatient'">
             <h2>Historial del paciente</h2>
-            <p>Historial médico y descripciones de condiciones previas.</p>
+            <p>El paciente ha reportado episodios de cefalea y mareos intermitentes en las últimas dos semanas. Actualmente toma medicación para el control de la migraña. Se ha programado el EEG después de una noche de privación de sueño para evaluar la actividad cerebral durante episodios de fatiga extrema. No hay antecedentes familiares de epilepsia. Estudios previos de imagen no muestran anomalías estructurales.</p>
             
             <div>
               <strong>Medicamentos actuales:</strong>
               <table class="medications-table">
                 <thead>
                   <tr>
-                    <th>Medicamento</th>
+                    <th>Ninguno</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -92,7 +90,7 @@
               <table class="consults-table">
                 <thead>
                   <tr>
-                    <th>Fecha de consulta</th>
+                    <th>Fecha</th>
                     <th>Número de consulta</th>
                     <th>Diagnóstico previo</th>
                   </tr>
@@ -104,7 +102,7 @@
                     <td>{{ consult.diagnosis }}</td> -->
                     <td>01/01/2021</td>
                     <td>1</td>
-                    <td>Diagnóstico previo</td>
+                    <td>El paciente ha reportado episodios de cefalea y mareos intermitentes en las últimas dos semanas. Actualmente toma medicación para el control de la migraña. Se ha programado el EEG después de una noche de privación de sueño para evaluar la actividad cerebral durante episodios de fatiga extrema. No hay antecedentes familiares de epilepsia. Estudios previos de imagen no muestran anomalías estructurales.</td>
                   </tr>
                 </tbody>
               </table>
@@ -125,17 +123,17 @@
             <p><strong>País</strong>{{patient.relativeCountry}}</p>
             <p><strong>Notas</strong>{{patient.relativeNotes}}</p> -->
 
-            <p><strong>Nombre(s) del familiar:</strong> Juan</p>
-            <p><strong>Apellido paterno:</strong> Perez</p>
-            <p><strong>Apellido materno:</strong> Fulanito</p>
+            <p><strong>Nombre(s) del familiar:</strong> Eugene</p>
+            <p><strong>Apellido paterno:</strong>  Fitzherbert</p>
+            <p><strong>Apellido materno:</strong> Rider</p>
             <p><strong>Parentesco:</strong> Padre</p>
             <p><strong>Teléfono:</strong> 1234567890</p>
-            <p><strong>Correo electrónico:</strong> juan.perezfudem.edu</p>
+            <p><strong>Correo electrónico:</strong> fitzherbert&#64;gmail.com</p>
             <p><strong>Dirección</strong> Calle 123</p>
             <p><strong>Ciudad</strong> Monterrey</p>
             <p><strong>Estado</strong> Nuevo León</p>
             <p><strong>País</strong> México</p>
-            <p><strong>Notas</strong> Notas del familiar</p>
+            <p><strong>Notas</strong></p>
           </div>
           <!-- Consentimiento -->
           <div *ngIf="activeTab === 'consent'">

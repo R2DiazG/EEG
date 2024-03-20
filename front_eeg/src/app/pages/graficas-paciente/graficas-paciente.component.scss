@@ -37,7 +37,34 @@
         }
       }
     }
-  
+  .search-box {
+  position: relative;
+  width: 100%; /* o la anchura que desees para tu barra de búsqueda */
+}
+
+input[type="search"] {
+  width: 100%;
+  padding: 10px;
+  padding-right: 40px; /* Hacer espacio para el ícono */
+}
+
+
+.space1{
+  height: .5rem;
+}
+
+.space{
+  height: 8rem;
+}
+
+.search-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  color: #aaa;
+}
+
     .search-upload-section {
       margin: 1rem 0;
   

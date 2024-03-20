@@ -36,12 +36,94 @@
         }
       }
   
+      .form-section {
+  margin-bottom: 20px;
+  width: 90%;
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: .625rem;
+    margin-bottom: .625rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  input[type="checkbox"] {
+    margin-right: 1rem;
+  }
+  .disabled-option {
+    color: #ccc;
+  }
+  select:disabled, option:disabled {
+    color: #cccccc;
+  }
+
+  textarea {
+    width: 100%;
+    padding: .625rem;
+    margin-bottom: .625rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  button {  
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;      
+    &:hover {
+      background-color: #333;
+    }
+    &:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.form-group select {
+  width: 100%; /* Full width */
+  padding: 0.5rem; /* Padding to match the date input */
+  margin-bottom: 0.625rem; /* Margin to match the date input */
+  border: 1px solid #ccc; /* Border to match the date input */
+  border-radius: 4px; /* Border radius to match the date input */
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; /* Font to match the date input */
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #80bdff; /* Focus border color */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus box shadow to match the date input */
+}
+
+
       .form-group {
         display: flex;
         flex-direction: column;
         
         label {
           margin-bottom: 0.5rem;
+        }
+
+        input[type="date"],
+        input[type="state"],
+        select {
+          padding: 0.5rem;
+          margin-bottom: .625rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        input[type="checkbox"] {
+          margin-right: 1rem;
         }
         
         input[type='text'],

@@ -11,7 +11,47 @@ import { Consulta } from '../../models/consulta';
 })
 export class EditarPacienteComponent {
   isEditMode: boolean = false;
-  patient: InfoPaciente = new InfoPaciente();
+  //patient: InfoPaciente = new InfoPaciente();
+  patient = {
+    firstName: 'Eugene',
+    lastName: 'Fitzherbert',
+    surname: 'Charming',
+    birthDate: '15/02/2000', // Asegúrate de que el formato sea YYYY-MM-DD
+    gender: 'male',
+    civilStatus: 'married',
+    laterality: 'right',
+    educationLevel: 'university',
+    occupation: 'Empresario',
+    phone: '1234567890',
+    email: 'eugene@example.com',
+    address: 'calle 123',
+    city: 'Monterrey',
+    state: 'Nuevo LEon',
+    zipCode: '12345',
+    country: 'Mexico',
+    currentMedications: ['Ninguno'], // Añade medicamentos actuales
+    consultations: [
+      {
+        date: new Date('20/02/2024'), // Asegúrate de que el formato sea YYYY-MM-DD
+        number: '1',
+        diagnosis: 'Migraña'
+      }
+    ],
+    relativeFirstName: 'Eugene',
+    relativeLastName: 'Fitzherbert',
+    relativeSurname: 'Rider',
+    relativeRelationship: 'Padre',
+    relativePhone: '1234567890',
+    relativeEmail: 'fitzherbert&#64;gmail.com',
+    relativeAddress: 'Calle 123',
+    relativeCity: 'Monterrey',
+    relativeState: 'Nuevo Leon',
+    relativeZipCode: '12345',
+    relativeCountry: 'Mexico',
+    relativeNotes: 'No hay notas adicionales',
+    medicalHistory: 'El paciente ha reportado episodios de cefalea y mareos intermitentes en las últimas dos semanas. Actualmente toma medicación para el control de la migraña. Se ha programado el EEG después de una noche de privación de sueño para evaluar la actividad cerebral durante episodios de fatiga extrema. No hay antecedentes familiares de epilepsia. Estudios previos de imagen no muestran anomalías estructurales.',
+    // Añade más campos según sea necesario
+  };
   activeTab: string = 'infoPatient'; // Default active tab
 
 confirmDelete() {

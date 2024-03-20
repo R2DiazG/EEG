@@ -51,8 +51,8 @@ export class RegistrarPacienteComponent {
       // Here you would usually send the patient data to the server.
       // For example, using an Angular service to POST to your API.
     } else {
-      // Handle the case where consent is not given.
-      console.error('Consent not given');
+    // //   // Handle the case where consent is not given.
+            console.error('Consent not given');
     }
   }
 }

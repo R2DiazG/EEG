@@ -17,11 +17,24 @@
       <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'contentEEG'">
         <h2>Contenido de EEG</h2>
-        <div id="eeg" style="width:100%; height:600px;"></div>
+        <div class="info-eeg">
+            <p><strong>Interprete:</strong> Umberto Leon</p>
+            <p><strong>Fecha:</strong> 20/02/2024</p>
+            <p><strong>Descripción:</strong> Se tomaron datos muestra para gráficar</p>
+            <p><strong>Estado general:</strong> Vigilia</p>
+            <p><strong>Estado especifico:</strong> Hiperventilación y estímulo visual</p>
+        </div>
+        <div class="space1"></div>
+        <div id="eeg" style="width:100%; height:800px;"></div>
+        <div class="space"></div>
         <div id="processed" style="width:100%; height:400px;"></div>
       </div>
-      <div *ngIf="activeTab === 'sessions'">Contenido de Sesiones</div>
-      <div *ngIf="activeTab === 'preDiagnostic'">Contenido de Pre-diagnóstico</div>
+      <div *ngIf="activeTab === 'sessions'">
+        <h2>Contenido de Sesiones</h2>
+      </div>
+      <div *ngIf="activeTab === 'preDiagnostic'">
+        <h2>Contenido de Pre-diagnóstico</h2>
+      </div>
     </div>
   </div>
 </div>

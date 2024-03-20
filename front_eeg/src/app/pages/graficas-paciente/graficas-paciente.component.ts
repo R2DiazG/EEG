@@ -42,7 +42,9 @@ export class GraficasPacienteComponent implements OnInit {
       const options: Options = {
         chart: {
           type: 'line',
-          //zoomType: 'x',
+          zooming: {
+            type: 'x' // Configuramos el nuevo tipo de zoom
+          },
           height: 400
         },
         title: {
@@ -89,7 +91,7 @@ export class GraficasPacienteComponent implements OnInit {
       const series = data;
       // Utilizamos un valor de offset fijo más pequeño o un factor de escala para reducirlo.
       // Por ejemplo, si los valores oscilan alrededor de 50 unidades entre cada canal, podrías usar ese valor.
-      const offset = 50; // Este valor debería ser ajustado manualmente para que se ajuste bien a tus datos.
+      const offset = Math.max(...series.map((s: { data: any; }) => Math.max(...s.data))) - Math.min(...series.map((s: { data: any; }) => Math.min(...s.data))); // Este valor debería ser ajustado manualmente para que se ajuste bien a tus datos.
   
       const offsetSeries = series.map((s: { name: string; data: number[]; }, i: number) => ({
         name: s.name,
@@ -99,8 +101,11 @@ export class GraficasPacienteComponent implements OnInit {
       const options: Options = {
         chart: {
           renderTo: 'eeg',
+          zooming: {
+            type: 'x' // Configuramos el nuevo tipo de zoom
+          },
           type: 'line',
-          height: 600 // Altura ajustada a la cantidad de datos.
+          height: 800 // Altura ajustada a la cantidad de datos.
         },
         boost: {
           useGPUTranslations: true
@@ -120,11 +125,12 @@ export class GraficasPacienteComponent implements OnInit {
           tickInterval: offset,
           labels: {
             formatter: function () {
-              const index = Math.round((this.value as number) / offset);
-              if (index < 0 || index >= series.length) {
-                return ''; // Esto evita las etiquetas adicionales arriba y abajo
+              const index = Math.floor((this.value as number) / offset);
+              // Verificamos si el índice está dentro del rango del array de series
+              if (index >= 0 && index < series.length) {
+                return series[index].name;
               }
-              return series[index]?.name;
+              return '';
             }
           }
         },
@@ -156,6 +162,6 @@ export class GraficasPacienteComponent implements OnInit {
   }
 
   uploadEEG() {
-    // Implementación existente...
+    this.router.navigate(['/eeg-subir-docs']);
   }
 }
