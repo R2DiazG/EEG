@@ -103,7 +103,7 @@ export class GraficasPacienteComponent implements OnInit {
             renderTo: 'eeg',
             type: 'line',
             //zoomType: 'x',
-            height: 1000
+            height: 400
           },
           boost: {
             useGPUTranslations: true
