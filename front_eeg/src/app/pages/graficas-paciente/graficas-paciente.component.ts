@@ -85,7 +85,7 @@ export class GraficasPacienteComponent implements OnInit {
   }
 
   private cargarDatosEEGDesdeJSON() {
-    this.http.get('assets/Prueba2.json').subscribe((data: any) => {
+    this.http.get('assets/EEGDataTransposed.json').subscribe((data: any) => {
       // Aquí 'data' debe ser ya un objeto JSON con la estructura esperada.
       // Por ejemplo, podría ser un arreglo de objetos donde cada objeto
       // representa una serie con un campo 'name' y un campo 'data'.
