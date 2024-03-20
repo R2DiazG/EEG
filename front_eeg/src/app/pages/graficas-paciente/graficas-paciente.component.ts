@@ -24,7 +24,7 @@ export class GraficasPacienteComponent implements OnInit {
     // Si quieres cargar los datos de Highcharts al iniciar el componente:
     if (this.activeTab === 'contentEEG') {
       this.loadHighcharts();
-      this.cargarDatosEEGDesdeCSV(); // Nueva llamada para cargar datos desde CSV
+      this.cargarDatosEEGDesdeJSON(); // Nueva llamada para cargar datos desde CSV
     }
   }
 
@@ -84,50 +84,50 @@ export class GraficasPacienteComponent implements OnInit {
     });
   }
 
+  private cargarDatosEEGDesdeJSON() {
+    this.http.get('assets/Prueba2.json').subscribe((data: any) => {
+      // Aquí 'data' debe ser ya un objeto JSON con la estructura esperada.
+      // Por ejemplo, podría ser un arreglo de objetos donde cada objeto
+      // representa una serie con un campo 'name' y un campo 'data'.
+      const series = data; // Si 'data' ya está en el formato correcto, no es necesario procesarlo.
+      const yAxisOptions = series.map((s: any, i: number) => ({
+        title: { text: s.name },
+        top: (i * 100 / series.length) + '%',
+        height: (100 / series.length) - 2 + '%',
+        offset: 0,
+        lineWidth: 2
+      }));
   
-  private cargarDatosEEGDesdeCSV() {
-    fetch('Prueba2.csv')
-      .then(response => response.text())
-      .then(text => {
-        const series = this.processEEGData(text);
-        const yAxisOptions = series.map((s, i) => ({
-          title: { text: s.name },
-          top: (i * 100 / series.length) + '%',
-          height: (100 / series.length) - 2 + '%',
-          offset: 0,
-          lineWidth: 2
-        }));
-  
-        const options: Options = { 
-          chart: {
-            renderTo: 'eeg',
-            type: 'line',
-            //zoomType: 'x',
-            height: 400
-          },
-          boost: {
-            useGPUTranslations: true
-          },
+      const options: Options = { 
+        chart: {
+          renderTo: 'eeg', // Asegúrate de que este ID coincida con el de tu contenedor en HTML.
+          type: 'line',
+          height: 400 // Puedes ajustar esto según tus necesidades.
+        },
+        boost: {
+          useGPUTranslations: true
+        },
+        title: {
+          text: 'EEG Data Visualization'
+        },
+        xAxis: {
           title: {
-            text: 'EEG Data Visualization'
-          },
-          xAxis: {
-            title: {
-              text: 'Sample Number'
-            }
-          },
-          yAxis: yAxisOptions,
-          tooltip: {
-            shared: true
-          },
-          series: series
-        };
-        Highcharts.chart(options); 
-      })
-      .catch(error => {
-        console.error('Error fetching the CSV data: ', error);
-      });
+            text: 'Sample Number'
+          }
+        },
+        yAxis: yAxisOptions,
+        tooltip: {
+          shared: true
+        },
+        series: series
+      };
+  
+      Highcharts.chart(options); // Creamos el gráfico con las opciones definidas.
+    }, error => {
+      console.error('Error fetching the JSON data: ', error);
+    });
   }
+  
   
 
   private processEEGData(allText: string): SeriesOptions[] {
