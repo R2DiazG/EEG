@@ -9,13 +9,14 @@
         <button (click)="uploadEEG()">Subir nuevo EEG</button>
       </div>
     <div class="tab-menu">
-      <button class="tab" (click)="setActiveTab('rawEEG')" [class.active]="activeTab === 'rawEEG'">Raw EEG</button>
+      <button class="tab" (click)="setActiveTab('contentEEG')" [class.active]="activeTab === 'contentEEG'">Contenido EEG</button>
       <button class="tab" (click)="setActiveTab('sessions')" [class.active]="activeTab === 'sessions'">Sesiones</button>
       <button class="tab" (click)="setActiveTab('preDiagnostic')" [class.active]="activeTab === 'preDiagnostic'">Pre-diagnóstico</button>
     </div>
     <div class="tab-content">
       <!-- Content based on the active tab -->
-      <div *ngIf="activeTab === 'rawEEG'">Contenido de Raw EEG
+      <div *ngIf="activeTab === 'contentEEG'">
+        <h2>Contenido de EEG</h2>
         <div id="eeg" style="width:100%; height:400px;"></div>
         <div id="processed" style="width:100%; height:400px;"></div>
       </div>
