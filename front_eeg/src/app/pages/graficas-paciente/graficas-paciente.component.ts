@@ -98,7 +98,7 @@ export class GraficasPacienteComponent implements OnInit {
         chart: {
           renderTo: 'eeg',
           type: 'line',
-          height: 8
+          height: 700
         },
         boost: {
           useGPUTranslations: true
@@ -118,9 +118,9 @@ export class GraficasPacienteComponent implements OnInit {
           // Configuramos un único eje Y para todas las series
           tickInterval: offset, // Ajustamos el intervalo de los ticks al offset calculado
           labels: {
-            formatter: function (this: { value: number }): string { // Add type annotation for 'this' parameter
-              // Use 'this.value' to access the value property correctly
-              const seriesName = series[Math.floor(this.value / offset)]?.name;
+            formatter: function () {
+              const value = this.value as number;
+              const seriesName = series[Math.floor(value / offset)]?.name;
               return seriesName ? seriesName : '';
             }
           }
@@ -136,8 +136,6 @@ export class GraficasPacienteComponent implements OnInit {
       console.error('Error fetching the JSON data: ', error);
     });
   }
-  
-  
 
   private processEEGData(allText: string): SeriesOptions[] {
     // Implementación del procesamiento de datos aquí...
