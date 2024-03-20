@@ -16,7 +16,7 @@ export class GraficasPacienteComponent implements OnInit {
 
   ngOnInit() {
     // Si quieres cargar los datos de Highcharts al iniciar el componente:
-    if (this.activeTab === 'rawEEG') {
+    if (this.activeTab === 'contentEEG') {
       this.loadHighcharts();
     }
   }
@@ -24,7 +24,7 @@ export class GraficasPacienteComponent implements OnInit {
   setActiveTab(tab: string): void {
     this.activeTab = tab;
     // Si cambias a la pestaña de EEG, cargas Highcharts
-    if (tab === 'rawEEG') {
+    if (tab === 'contentEEG') {
       this.loadHighcharts();
     }
   }
