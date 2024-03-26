@@ -7,6 +7,7 @@
         <!-- <input type="search" placeholder="Nombre del Paciente" (input)="searchPatient($event.target.value)"> -->
         <input type="search" placeholder="Nombre del Paciente">
         <button (click)="uploadEEG()">Subir nuevo EEG</button>
+        <button (click)="addConsultation()">Agregar consulta</button>
       </div>
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('contentEEG')" [class.active]="activeTab === 'contentEEG'">Contenido EEG</button>

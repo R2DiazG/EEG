@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
 import { Options } from 'highcharts';
+import { InfoPaciente } from '../../models/info-paciente.model';
 
 interface SeriesOptions {
   name: string;
@@ -19,6 +20,8 @@ export class GraficasPacienteComponent implements OnInit {
   activeTab: string = 'contentEEG'; // Default active tab
 
   constructor(private http: HttpClient, private router: Router) {}
+  
+  patient: InfoPaciente = new InfoPaciente();
 
   ngOnInit() {
     // Si quieres cargar los datos de Highcharts al iniciar el componente:
@@ -164,4 +167,8 @@ export class GraficasPacienteComponent implements OnInit {
   uploadEEG() {
     this.router.navigate(['/eeg-subir-docs']);
   }
+
+  addConsultation(): void {
+      this.router.navigate(['/nueva-consulta']);
+   }
 }
