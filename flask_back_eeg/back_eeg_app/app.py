@@ -33,6 +33,8 @@ def health():
     return jsonify({'status': 'up'}), 200
 
 # Rutas de la API (ejemplo para registro y autenticación)
+
+################################################################## CRUD de Usuarios ##################################################################
 @app.route('/usuarios', methods=['POST'])
 def crear_usuario():
     datos = request.get_json()
@@ -105,9 +107,47 @@ def eliminar_usuario(id_usuario):
     db.session.delete(usuario)
     db.session.commit()
     return jsonify({'mensaje': 'Usuario eliminado exitosamente'}), 200
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+################################################################### CRUD de Roles ####################################################################
+@app.route('/roles', methods=['POST'])
+def crear_rol():
+    datos = request.get_json()
+    nuevo_rol = Rol(rol=datos['rol'], descripcion=datos['descripcion'])
+    db.session.add(nuevo_rol)
+    db.session.commit()
+    return jsonify({'mensaje': 'Rol creado exitosamente'}), 201
 
+@app.route('/roles', methods=['GET'])
+def obtener_roles():
+    roles = Rol.query.all()
+    resultado = [{'id_rol': rol.id_rol, 'rol': rol.rol, 'descripcion': rol.descripcion} for rol in roles]
+    return jsonify(resultado), 200
 
+@app.route('/roles/<int:id_rol>', methods=['GET'])
+def obtener_rol(id_rol):
+    rol = Rol.query.get_or_404(id_rol)
+    rol_datos = {'id_rol': rol.id_rol, 'rol': rol.rol, 'descripcion': rol.descripcion}
+    return jsonify(rol_datos), 200
 
+@app.route('/roles/<int:id_rol>', methods=['PUT'])
+def actualizar_rol(id_rol):
+    rol = Rol.query.get_or_404(id_rol)
+    datos = request.get_json()
+    rol.rol = datos.get('rol', rol.rol)
+    rol.descripcion = datos.get('descripcion', rol.descripcion)
+    db.session.commit()
+    return jsonify({'mensaje': 'Rol actualizado exitosamente'}), 200
+
+@app.route('/roles/<int:id_rol>', methods=['DELETE'])
+def eliminar_rol(id_rol):
+    rol = Rol.query.get_or_404(id_rol)
+    db.session.delete(rol)
+    db.session.commit()
+    return jsonify({'mensaje': 'Rol eliminado exitosamente'}), 200
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+################################################################ CRUD de Géneros #####################################################################
 
 
 # Rutas adicionales para CRUD de otros modelos
