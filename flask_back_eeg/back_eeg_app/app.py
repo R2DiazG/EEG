@@ -33,26 +33,82 @@ def health():
     return jsonify({'status': 'up'}), 200
 
 # Rutas de la API (ejemplo para registro y autenticación)
-@app.route('/register', methods=['POST'])
-def register():
-    # Asumiendo que se envía un JSON con 'username' y 'password'
-    data = request.get_json()
-    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-    new_user = Usuario(username=data['username'], contraseña=hashed_password)
-    db.session.add(new_user)
+@app.route('/usuarios', methods=['POST'])
+def crear_usuario():
+    datos = request.get_json()
+    nuevo_usuario = Usuario(
+        nombre=datos['nombre'],
+        apellidos=datos['apellidos'],
+        username=datos['username'],
+        contraseña=bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8'),
+        correo=datos['correo'],
+        aprobacion=datos['aprobacion'],
+        id_rol=datos['id_rol']
+    )
+    db.session.add(nuevo_usuario)
     db.session.commit()
-    return jsonify({'message': 'User created successfully.'}), 201
+    return jsonify({'mensaje': 'Usuario creado exitosamente'}), 201
 
-@app.route('/login', methods=['POST'])
-def login():
-    # Asumiendo que se envía un JSON con 'username' y 'password'
-    data = request.get_json()
-    user = Usuario.query.filter_by(username=data['username']).first()
-    if user and bcrypt.check_password_hash(user.contraseña, data['password']):
-        token = create_access_token(identity=user.id_usuario)
-        return jsonify({'token': token}), 200
-    else:
-        return jsonify({'message': 'Invalid username or password'}), 401
+@app.route('/usuarios', methods=['GET'])
+def obtener_usuarios():
+    usuarios = Usuario.query.all()
+    resultado = []
+    for usuario in usuarios:
+        usuario_datos = {
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellidos': usuario.apellidos,
+            'username': usuario.username,
+            # No retornar la contraseña
+            'correo': usuario.correo,
+            'aprobacion': usuario.aprobacion,
+            'id_rol': usuario.id_rol
+        }
+        resultado.append(usuario_datos)
+    return jsonify(resultado), 200
+
+@app.route('/usuarios/<int:id_usuario>', methods=['GET'])
+def obtener_usuario(id_usuario):
+    usuario = Usuario.query.get_or_404(id_usuario)
+    usuario_datos = {
+        'id_usuario': usuario.id_usuario,
+        'nombre': usuario.nombre,
+        'apellidos': usuario.apellidos,
+        'username': usuario.username,
+        'correo': usuario.correo,
+        'aprobacion': usuario.aprobacion,
+        'id_rol': usuario.id_rol
+    }
+    return jsonify(usuario_datos), 200
+
+@app.route('/usuarios/<int:id_usuario>', methods=['PUT'])
+def actualizar_usuario(id_usuario):
+    usuario = Usuario.query.get_or_404(id_usuario)
+    datos = request.get_json()
+    
+    usuario.nombre = datos.get('nombre', usuario.nombre)
+    usuario.apellidos = datos.get('apellidos', usuario.apellidos)
+    usuario.username = datos.get('username', usuario.username)
+    # No actualizar la contraseña directamente sin hashing
+    if 'contraseña' in datos:
+        usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
+    usuario.correo = datos.get('correo', usuario.correo)
+    usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
+    usuario.id_rol = datos.get('id_rol', usuario.id_rol)
+
+    db.session.commit()
+    return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
+
+@app.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
+def eliminar_usuario(id_usuario):
+    usuario = Usuario.query.get_or_404(id_usuario)
+    db.session.delete(usuario)
+    db.session.commit()
+    return jsonify({'mensaje': 'Usuario eliminado exitosamente'}), 200
+
+
+
+
 
 # Rutas adicionales para CRUD de otros modelos
 
