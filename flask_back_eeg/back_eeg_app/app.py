@@ -25,7 +25,6 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 # Importar los modelos
-# Suponiendo que tu archivo models.py está en el mismo directorio y que has definido tus modelos allí.
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion
 
 # Ruta para verificar la salud de la aplicación
