@@ -1,0 +1,23 @@
+<div>
+    <form (ngSubmit)="onSubmit()" ngForm>
+      <h2>Consulta</h2>
+      <div class="form-section">
+        <div *ngFor="let consultation of patient.consultations; let i = index">
+          <div class="consultation-item">
+            <label for="consultationDate-{{i}}">Fecha de consulta:</label>
+            <input type="date" id="consultationDate-{{i}}" name="consultationDate-{{i}}" [(ngModel)]="consultation.date" required>
+
+            <label for="consultationNumber-{{i}}">Número de consulta:</label>
+            <input type="text" id="consultationNumber-{{i}}" name="consultationNumber-{{i}}" [(ngModel)]="consultation.number" required>
+
+            <label for="previousDiagnosis-{{i}}">Diagnóstico previo:</label>
+            <textarea id="previousDiagnosis-{{i}}" name="previousDiagnosis-{{i}}" [(ngModel)]="consultation.diagnosis"></textarea>
+
+            <button type="button" (click)="removeConsultation(i)">Eliminar Consulta</button>
+            <button type="button" (click)="addConsultation()">Añadir Consulta</button>
+          </div>
+        </div>
+      </div>
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
