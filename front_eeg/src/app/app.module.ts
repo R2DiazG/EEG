@@ -20,6 +20,7 @@ import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registr
 import { ReactiveFormsModule } from '@angular/forms';
 import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
+import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.compo
     GraficasPacienteComponent,
     RegistrarPsicologoComponent,
     AprobarPsicologosComponent,
-    OlvideContraComponent
+    OlvideContraComponent,
+    NuevaConsultaComponent
   ],
   imports: [
     BrowserModule,

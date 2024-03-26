@@ -13,6 +13,7 @@ import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-pa
 import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
 import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
+import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'aprobar-psicologos', component: AprobarPsicologosComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
+  { path: 'nueva-consulta', component: NuevaConsultaComponent}, 
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
