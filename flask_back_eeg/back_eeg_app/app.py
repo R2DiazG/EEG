@@ -381,7 +381,7 @@ def eliminar_paciente(id_paciente):
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
         HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
-        PacienteMedicamento.query.filter_by(id_paciente=id_paciente).delete()
+        paciente_medicamento.query.filter_by(id_paciente=id_paciente).delete()
         DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
         # Luego, encuentra todas las sesiones asociadas con el paciente para eliminar registros relacionados
