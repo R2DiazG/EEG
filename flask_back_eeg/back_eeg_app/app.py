@@ -44,9 +44,9 @@ def crear_usuario():
     rol = Rol.query.get(datos.get('id_rol'))
     if not rol:
         return jsonify({'mensaje': 'Rol no válido'}), 400
-    #hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
+    hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
     # Contraseña sin el bycrypt
-    hashed_password = datos['contraseña']
+    #hashed_password = datos['contraseña']
     nuevo_usuario = Usuario(
         nombre=datos.get('nombre'),
         apellidos=datos.get('apellidos'),
@@ -101,9 +101,9 @@ def actualizar_usuario(id_usuario):
     usuario.apellidos = datos.get('apellidos', usuario.apellidos)
     usuario.username = datos.get('username', usuario.username)
     if 'contraseña' in datos:
-        #usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
+        usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
         # Contraseña sin el bcrypt
-        usuario.contraseña = datos['contraseña']
+        #usuario.contraseña = datos['contraseña']
     usuario.correo = datos.get('correo', usuario.correo)
     usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
     db.session.commit()
