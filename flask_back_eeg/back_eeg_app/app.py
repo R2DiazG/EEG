@@ -119,39 +119,43 @@ def eliminar_usuario(id_usuario):
 @app.route('/pacientes', methods=['POST'])
 def crear_paciente():
     datos = request.get_json()
-    nuevo_paciente = Paciente(
-        id_usuario=datos['id_usuario'],
-        nombre=datos['nombre'],
-        apellido_paterno=datos['apellido_paterno'],
-        apellido_materno=datos['apellido_materno'],
-        fecha_nacimiento=datos['fecha_nacimiento'],
-        id_genero=datos['id_genero'],
-        id_estado_civil=datos['id_estado_civil'],
-        id_escolaridad=datos['id_escolaridad'],
-        id_lateralidad=datos['id_lateralidad'],
-        id_ocupacion=datos['id_ocupacion']
-    )
-    db.session.add(nuevo_paciente)
-    db.session.flush()  # Para obtener el id del paciente recién creado
-    # Añadir teléfonos, correos electrónicos y direcciones si se proporcionan
-    if 'telefonos' in datos:
-        for num in datos['telefonos']:
-            nuevo_telefono = Telefono(numero=num, id_paciente=nuevo_paciente.id_paciente)
-            db.session.add(nuevo_telefono)
-    if 'correos_electronicos' in datos:
-        for email in datos['correos_electronicos']:
-            nuevo_correo = CorreoElectronico(email=email, id_paciente=nuevo_paciente.id_paciente)
-            db.session.add(nuevo_correo)
-    if 'direcciones' in datos:
-        for direccion in datos['direcciones']:
-            nueva_direccion = Direccion(direccion=direccion, id_paciente=nuevo_paciente.id_paciente)
-            db.session.add(nueva_direccion)
-    db.session.commit()
-    return jsonify({'mensaje': 'Paciente creado exitosamente'}), 201
+    # Asumir validación de datos aquí...
+    try:
+        nuevo_paciente = Paciente(
+            id_usuario=datos['id_usuario'],
+            nombre=datos['nombre'],
+            apellido_paterno=datos['apellido_paterno'],
+            apellido_materno=datos.get('apellido_materno', ''),  # Usar get para manejar opcionales
+            fecha_nacimiento=datos['fecha_nacimiento'],
+            id_genero=datos['id_genero'],
+            id_estado_civil=datos['id_estado_civil'],
+            id_escolaridad=datos['id_escolaridad'],
+            id_lateralidad=datos['id_lateralidad'],
+            id_ocupacion=datos['id_ocupacion']
+        )
+        db.session.add(nuevo_paciente)
+        db.session.flush()  # Para obtener el id del paciente recién creado
+        # Añadir teléfonos, correos electrónicos y direcciones si se proporcionan
+        if 'telefonos' in datos:
+            for num in datos['telefonos']:
+                nuevo_telefono = Telefono(telefono=num, id_paciente=nuevo_paciente.id_paciente)
+                db.session.add(nuevo_telefono)
+        if 'correos_electronicos' in datos:
+            for email in datos['correos_electronicos']:
+                nuevo_correo = CorreoElectronico(correo_electronico=email, id_paciente=nuevo_paciente.id_paciente)
+                db.session.add(nuevo_correo)
+        if 'direcciones' in datos:
+            for direccion in datos['direcciones']:
+                nueva_direccion = Direccion(**direccion, id_paciente=nuevo_paciente.id_paciente)
+                db.session.add(nueva_direccion)
+        db.session.commit()
+        return jsonify({'mensaje': 'Paciente creado exitosamente', 'id': nuevo_paciente.id_paciente}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/pacientes', methods=['GET'])
 def obtener_pacientes():
-    # Obtener todos los pacientes con sus datos básicos
     pacientes = Paciente.query.all()
     resultado = []
     for paciente in pacientes:
@@ -160,13 +164,13 @@ def obtener_pacientes():
             'id_usuario': paciente.id_usuario,
             'nombre': paciente.nombre,
             'apellido_paterno': paciente.apellido_paterno,
-            'apellido_materno': paciente.apellido_materno or "",  # Manejar posibles None
+            'apellido_materno': paciente.apellido_materno or "",
             'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
-            'id_genero': paciente.id_genero,
-            'id_estado_civil': paciente.id_estado_civil,
-            'id_escolaridad': paciente.id_escolaridad,
-            'id_lateralidad': paciente.id_lateralidad,
-            'id_ocupacion': paciente.id_ocupacion
+            'genero': paciente.genero.descripcion if paciente.genero else None,
+            'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else None,
+            'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else None,
+            'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else None,
+            'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else None,
         }
         resultado.append(paciente_datos)
     return jsonify(resultado), 200
@@ -174,68 +178,140 @@ def obtener_pacientes():
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
 def obtener_detalles_paciente(id_paciente):
     paciente = Paciente.query.get_or_404(id_paciente)
-    # Compilando los detalles básicos del paciente
     detalles_paciente = {
         'id_paciente': paciente.id_paciente,
         'nombre': paciente.nombre,
         'apellido_paterno': paciente.apellido_paterno,
         'apellido_materno': paciente.apellido_materno or "",
         'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
-        'genero': Genero.query.get(paciente.id_genero).descripcion if paciente.id_genero else "",
-        'estado_civil': EstadoCivil.query.get(paciente.id_estado_civil).descripcion if paciente.id_estado_civil else "",
-        'escolaridad': Escolaridad.query.get(paciente.id_escolaridad).descripcion if paciente.id_escolaridad else "",
-        'lateralidad': Lateralidad.query.get(paciente.id_lateralidad).descripcion if paciente.id_lateralidad else "",
-        'ocupacion': Ocupacion.query.get(paciente.id_ocupacion).descripcion if paciente.id_ocupacion else "",
+        'genero': paciente.genero.descripcion if paciente.genero else "",
+        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
         'telefonos': [{'telefono': tel.telefono} for tel in paciente.telefonos],
         'correos_electronicos': [{'correo_electronico': correo.correo_electronico} for correo in paciente.correos_electronicos],
-        'direcciones': [
-            {
-                'calle_numero': direccion.calle_numero,
-                'colonia': direccion.colonia,
-                'ciudad': direccion.ciudad,
-                'estado': direccion.estado,
-                'pais': direccion.pais,
-                'codigo_postal': direccion.codigo_postal
-            } for direccion in paciente.direcciones],
-        'historiales_medicos': [{'descripcion': hm.descripcion} for hm in paciente.historiales_medicos],
-        'sesiones': [
-            {
-                'fecha': sesion.fecha.strftime('%Y-%m-%d'),
-                'notas': sesion.notas
-                # Considera incluir más detalles de la sesión si es necesario
-            } for sesion in paciente.sesiones],
-        'consentimientos': [{'consentimiento': consent.consentimiento, 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')} for consent in paciente.consentimientos],
-        'diagnosticos_previos': [{'descripcion': diag.descripcion} for diag in paciente.diagnosticos_previos],
-        'medicamentos': [{'nombre_comercial': med.nombre_comercial} for med in paciente.medicamentos],
-        # Para EEG,  iterar sobre las sesiones o tener una relación directa desde Paciente
-        'raw_eegs': [{'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S')} for eeg in paciente.raw_eegs],
-        'normalized_eegs': [{'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S')} for eeg in paciente.normalized_eegs]
+        'direcciones': [{
+            'calle_numero': direccion.calle_numero,
+            'colonia': direccion.colonia,
+            'ciudad': direccion.ciudad,
+            'estado': direccion.estado,
+            'pais': direccion.pais,
+            'codigo_postal': direccion.codigo_postal
+        } for direccion in paciente.direcciones],
+        # Asumiendo paginación y limitación en el número de sesiones a mostrar
+        'sesiones': obtener_sesiones_con_enlace_eeg(paciente.id_paciente)
     }
+    # Incluir resumen de diagnósticos previos, consentimientos y medicamentos
+    detalles_paciente.update({
+        'diagnosticos_previos': [{'descripcion': diag.descripcion} for diag in paciente.diagnosticos_previos],
+        'consentimientos': [{'consentimiento': consent.consentimiento, 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')} for consent in paciente.consentimientos],
+        'medicamentos': [{'nombre_comercial': med.nombre_comercial} for med in paciente.medicamentos]
+    })
     return jsonify(detalles_paciente), 200
+
+def obtener_sesiones_con_enlace_eeg(id_paciente):
+    limite = request.args.get('limit', default=10, type=int)  # Establecer un límite por defecto
+    pagina = request.args.get('page', default=1, type=int)  # Establecer la página por defecto
+    sesiones_paginadas = Sesion.query.filter_by(id_paciente=id_paciente).paginate(page=pagina, per_page=limite, error_out=False)
+    sesiones = [{
+        'id_sesion': sesion.id_sesion,
+        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+        'resumen_sesion_actual': sesion.resumen_sesion_actual,
+        'notas_psicologo': sesion.notas_psicologo,
+        'link_detalle_eeg': f"/sesiones/{sesion.id_sesion}/eegs"  # Proporcionar un enlace para obtener detalles de EEG por sesión
+    } for sesion in sesiones_paginadas.items]
+    return sesiones
+
+@app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
+def obtener_eegs_por_sesion(id_sesion):
+    # Buscar la sesión por ID para asegurarse de que existe
+    sesion = Sesion.query.get_or_404(id_sesion)
+    # Buscar los EEGs asociados con la sesión
+    raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
+    normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
+    # Preparar la respuesta con los datos de los EEGs
+    eegs_response = {
+        'raw_eegs': [{
+            'id_eeg': eeg.id_eeg,
+            'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
+            'Fp1': eeg.Fp1,
+            'F3': eeg.F3,
+            'C3': eeg.C3,
+            'P3': eeg.P3,
+            'O1': eeg.O1,
+            'F7': eeg.F7,
+            'T3': eeg.T3,
+            'T5': eeg.T5,
+            'Fz': eeg.Fz,
+            'Fp2': eeg.Fp2,
+            'F4': eeg.F4,
+            'C4': eeg.C4,
+            'P4': eeg.P4,
+            'O2': eeg.O2,
+            'F8': eeg.F8,
+            'T4': eeg.T4,
+            'T6': eeg.T6,
+            'Cz': eeg.Cz,
+            'Pz': eeg.Pz
+            # Incluye aquí más campos si son relevantes y los almacenas
+        } for eeg in raw_eegs],
+        'normalized_eegs': [{
+            'id_eeg_procesado': eeg.id_eeg_procesado,
+            'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
+            'pointStart': eeg.pointStart,
+            'pointInterval': eeg.pointInterval,
+            'Fp1_normalized': eeg.Fp1,
+            'F3_normalized': eeg.F3,
+            'C3_normalized': eeg.C3,
+            'P3_normalized': eeg.P3,
+            'O1_normalized': eeg.O1,
+            'F7_normalized': eeg.F7,
+            'T3_normalized': eeg.T3,
+            'T5_normalized': eeg.T5,
+            'Fz_normalized': eeg.Fz,
+            'Fp2_normalized': eeg.Fp2,
+            'F4_normalized': eeg.F4,
+            'C4_normalized': eeg.C4,
+            'P4_normalized': eeg.P4,
+            'O2_normalized': eeg.O2,
+            'F8_normalized': eeg.F8,
+            'T4_normalized': eeg.T4,
+            'T6_normalized': eeg.T6,
+            'Cz_normalized': eeg.Cz,
+            'Pz_normalized': eeg.Pz
+            # Añade más campos normalizados si son relevantes y los almacenas
+        } for eeg in normalized_eegs]
+    }
+    return jsonify(eegs_response), 200
 
 @app.route('/pacientes/<int:id_paciente>', methods=['PUT'])
 def actualizar_paciente(id_paciente):
     paciente = Paciente.query.get_or_404(id_paciente)
     datos = request.get_json()
-    # Actualizar datos básicos del paciente
+    try:
+        # Actualizar datos básicos del paciente
+        actualizar_datos_basicos_paciente(paciente, datos)
+        # Actualizar relaciones
+        actualizar_telefonos(paciente, datos.get('telefonos', []))
+        actualizar_correos(paciente, datos.get('correos_electronicos', []))
+        actualizar_direcciones(paciente, datos.get('direcciones', []))
+        db.session.commit()
+        return jsonify({'mensaje': 'Paciente actualizado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al actualizar el paciente: {}'.format(str(e))}), 400
+
+def actualizar_datos_basicos_paciente(paciente, datos):
     paciente.nombre = datos.get('nombre', paciente.nombre)
     paciente.apellido_paterno = datos.get('apellido_paterno', paciente.apellido_paterno)
     paciente.apellido_materno = datos.get('apellido_materno', paciente.apellido_materno)
     paciente.fecha_nacimiento = datos.get('fecha_nacimiento', paciente.fecha_nacimiento)
-    # Actualizar relaciones basadas en IDs proporcionados
     paciente.id_genero = datos.get('id_genero', paciente.id_genero)
     paciente.id_estado_civil = datos.get('id_estado_civil', paciente.id_estado_civil)
     paciente.id_escolaridad = datos.get('id_escolaridad', paciente.id_escolaridad)
     paciente.id_lateralidad = datos.get('id_lateralidad', paciente.id_lateralidad)
     paciente.id_ocupacion = datos.get('id_ocupacion', paciente.id_ocupacion)
-    # Actualizar teléfonos
-    actualizar_telefonos(paciente, datos.get('telefonos', []))
-    # Actualizar correos electrónicos
-    actualizar_correos(paciente, datos.get('correos_electronicos', []))
-    # Actualizar direcciones
-    actualizar_direcciones(paciente, datos.get('direcciones', []))
-    db.session.commit()
-    return jsonify({'mensaje': 'Paciente actualizado exitosamente'}), 200
 
 def actualizar_telefonos(paciente, telefonos_nuevos):
     if telefonos_nuevos is not None:
@@ -296,21 +372,30 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
 @app.route('/pacientes/<int:id_paciente>', methods=['DELETE'])
 def eliminar_paciente(id_paciente):
     paciente = Paciente.query.get_or_404(id_paciente)
-    # Eliminar registros relacionados para mantener la integridad referencial
-    Telefono.query.filter_by(id_paciente=id_paciente).delete()
-    CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
-    Direccion.query.filter_by(id_paciente=id_paciente).delete()
-    HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
-    PacienteMedicamento.query.filter_by(id_paciente=id_paciente).delete()
-    DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
-    Sesion.query.filter_by(id_paciente=id_paciente).delete()
-    Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
-    RawEEG.query.filter_by(id_paciente=id_paciente).delete()
-    NormalizedEEG.query.filter_by(id_paciente=id_paciente).delete()
-    # Una vez eliminados los registros relacionados, podemos proceder a eliminar el paciente
-    db.session.delete(paciente)
-    db.session.commit()
-    return jsonify({'mensaje': 'Paciente eliminado exitosamente'}), 200
+    try:
+        # Eliminar registros relacionados de manera secuencial para mantener la integridad referencial
+        # Primero, elimina entidades directamente relacionadas con el paciente
+        Telefono.query.filter_by(id_paciente=id_paciente).delete()
+        CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
+        Direccion.query.filter_by(id_paciente=id_paciente).delete()
+        HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
+        PacienteMedicamento.query.filter_by(id_paciente=id_paciente).delete()
+        DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
+        Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
+        # Luego, encuentra todas las sesiones asociadas con el paciente para eliminar registros relacionados
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        for sesion in sesiones:
+            RawEEG.query.filter_by(id_sesion=sesion.id_sesion).delete()
+            NormalizedEEG.query.filter_by(id_sesion=sesion.id_sesion).delete()  # Asumiendo que NormalizedEEG está vinculado a la sesión
+            # Elimina la sesión después de eliminar los EEGs asociados
+            db.session.delete(sesion)
+        # Finalmente, eliminar el paciente
+        db.session.delete(paciente)
+        db.session.commit()
+        return jsonify({'mensaje': 'Paciente eliminado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar el paciente: {}'.format(str(e))}), 500
 ######################################################################################################################################################
 
 # Manejador global de errores
