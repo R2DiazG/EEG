@@ -151,37 +151,67 @@ def crear_paciente():
 
 @app.route('/pacientes', methods=['GET'])
 def obtener_pacientes():
+    # Obtener todos los pacientes con sus datos básicos
     pacientes = Paciente.query.all()
     resultado = []
     for paciente in pacientes:
-        # Información básica del paciente
         paciente_datos = {
             'id_paciente': paciente.id_paciente,
             'id_usuario': paciente.id_usuario,
             'nombre': paciente.nombre,
             'apellido_paterno': paciente.apellido_paterno,
-            'apellido_materno': paciente.apellido_materno,
-            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+            'apellido_materno': paciente.apellido_materno or "",  # Manejar posibles None
+            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
             'id_genero': paciente.id_genero,
             'id_estado_civil': paciente.id_estado_civil,
             'id_escolaridad': paciente.id_escolaridad,
             'id_lateralidad': paciente.id_lateralidad,
-            'id_ocupacion': paciente.id_ocupacion,
-            # Agregar detalles relacionados
-            'telefonos': [{'id_telefono': tel.id_telefono, 'telefono': tel.telefono} for tel in paciente.telefonos],
-            'correos_electronicos': [{'id_correo': correo.id_correo, 'correo_electronico': correo.correo_electronico} for correo in paciente.correos_electronicos],
-            'direcciones': [{
-                'id_direccion': direccion.id_direccion,
+            'id_ocupacion': paciente.id_ocupacion
+        }
+        resultado.append(paciente_datos)
+    return jsonify(resultado), 200
+
+@app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
+def obtener_detalles_paciente(id_paciente):
+    paciente = Paciente.query.get_or_404(id_paciente)
+    # Compilando los detalles básicos del paciente
+    detalles_paciente = {
+        'id_paciente': paciente.id_paciente,
+        'nombre': paciente.nombre,
+        'apellido_paterno': paciente.apellido_paterno,
+        'apellido_materno': paciente.apellido_materno or "",
+        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+        'genero': Genero.query.get(paciente.id_genero).descripcion if paciente.id_genero else "",
+        'estado_civil': EstadoCivil.query.get(paciente.id_estado_civil).descripcion if paciente.id_estado_civil else "",
+        'escolaridad': Escolaridad.query.get(paciente.id_escolaridad).descripcion if paciente.id_escolaridad else "",
+        'lateralidad': Lateralidad.query.get(paciente.id_lateralidad).descripcion if paciente.id_lateralidad else "",
+        'ocupacion': Ocupacion.query.get(paciente.id_ocupacion).descripcion if paciente.id_ocupacion else "",
+        'telefonos': [{'telefono': tel.telefono} for tel in paciente.telefonos],
+        'correos_electronicos': [{'correo_electronico': correo.correo_electronico} for correo in paciente.correos_electronicos],
+        'direcciones': [
+            {
                 'calle_numero': direccion.calle_numero,
                 'colonia': direccion.colonia,
                 'ciudad': direccion.ciudad,
                 'estado': direccion.estado,
                 'pais': direccion.pais,
                 'codigo_postal': direccion.codigo_postal
-            } for direccion in paciente.direcciones]
-        }
-        resultado.append(paciente_datos)
-    return jsonify(resultado), 200
+            } for direccion in paciente.direcciones],
+        'historiales_medicos': [{'descripcion': hm.descripcion} for hm in paciente.historiales_medicos],
+        'sesiones': [
+            {
+                'fecha': sesion.fecha.strftime('%Y-%m-%d'),
+                'notas': sesion.notas
+                # Considera incluir más detalles de la sesión si es necesario
+            } for sesion in paciente.sesiones],
+        'consentimientos': [{'consentimiento': consent.consentimiento, 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')} for consent in paciente.consentimientos],
+        'diagnosticos_previos': [{'descripcion': diag.descripcion} for diag in paciente.diagnosticos_previos],
+        'medicamentos': [{'nombre_comercial': med.nombre_comercial} for med in paciente.medicamentos],
+        # Para EEG,  iterar sobre las sesiones o tener una relación directa desde Paciente
+        'raw_eegs': [{'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S')} for eeg in paciente.raw_eegs],
+        'normalized_eegs': [{'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S')} for eeg in paciente.normalized_eegs]
+    }
+    return jsonify(detalles_paciente), 200
 
 @app.route('/pacientes/<int:id_paciente>', methods=['PUT'])
 def actualizar_paciente(id_paciente):
