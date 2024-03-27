@@ -1,8 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token
-#from flask_bcrypt import Bcrypt # Importar la extensión Bcrypt para encriptar contraseñas de forma segura (hashing)
+from extensions import db, migrate, jwt, bcrypt
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime
@@ -24,10 +21,10 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar las extensiones
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-#bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
+db.init_app(app)
+migrate.init_app(app, db)
+jwt.init_app(app)
+bcrypt.init_app(app)
 
 # Importar los modelos
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, PacienteMedicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
