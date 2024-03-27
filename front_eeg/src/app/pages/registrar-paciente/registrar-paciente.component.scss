@@ -114,4 +114,58 @@
       cursor: not-allowed;
     }
   }
+
+  //radio button
+/* Oculta los botones de radio predeterminados de forma accesible */
+input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Estilo para el label que actúa como el botón de radio */
+input[type="radio"] + label {
+  position: relative;
+  padding: 10px 25px 10px 45px; /* Aumenta el padding izquierdo para hacer espacio para el círculo */
+  cursor: pointer;
+  display: inline-block;
+  line-height: 18px; /* Altura de la línea para centrar el texto verticalmente */
+  color: #666; /* Color de texto gris para estados no seleccionados */
+  margin-right: 10px; /* Espacio entre los botones de radio */
+  font-size: 14px; /* Tamaño de la fuente para los labels */
+  background-color: #f0f0f0; /* Color de fondo para el estado no seleccionado */
+  border: 2px solid #ddd; /* Borde para el estado no seleccionado */
+  border-radius: 20px; /* Bordes redondeados para los labels */
+  transition: all 0.3s ease; /* Transición suave para cambios de color y fondo */
+}
+
+/* Añade un círculo dentro del label para representar el botón no seleccionado */
+input[type="radio"] + label:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 15px; /* Coloca el círculo dentro del padding del label */
+  transform: translateY(-50%);
+  width: 20px; /* Tamaño del círculo externo */
+  height: 20px;
+  border: 2px solid #666666; /* Color de borde para el estado no seleccionado */
+  border-radius: 50%;
+  background-color: #fff; /* Fondo blanco para el círculo externo */
+  transition: all 0.3s ease;
+}
+
+/* Cambia el estilo cuando el botón de radio está seleccionado */
+input[type="radio"]:checked + label {
+  color: white; /* Texto blanco cuando está seleccionado */
+  background-color: #666666; /* Color de fondo gris cuando está seleccionado */
+  border-color: #666666; /* Color del borde gris cuando está seleccionado */
+}
+
+input[type="radio"]:checked + label:before {
+  background-color: white; /* Fondo del círculo externo gris cuando está seleccionado */
+  border-color: #666666; /* Borde del círculo externo gris cuando está seleccionado */
+}
+
+
 }

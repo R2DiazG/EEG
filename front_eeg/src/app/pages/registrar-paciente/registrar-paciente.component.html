@@ -49,48 +49,76 @@
               </div>
               
               <label for="gender">Género:</label>
-              <select id="gender" name="gender">
-                <option value="" disabled selected>Seleccione un género</option>
-                <option value="male">Masculino</option>
-                <option value="female">Femenino</option>
-              </select>
+              <div id="gender">
+                <input type="radio" id="male" name="gender" value="male">
+                <label for="male">Masculino</label>
+                
+                <input type="radio" id="female" name="gender" value="female">
+                <label for="female">Femenino</label>
+              </div>
 
               <label for="civilStatus">Estado civil:</label>
-              <select id="civilStatus" name="civilStatus">
-                <option value="" disabled selected>Seleccione estado civil</option>
-                <option value="single">Soltero/a</option>
-                <option value="married">Casado/a</option>
-                <option value="divorced">Divorciado/a</option>
-                <option value="widower">Viudo/a</option>
-              </select>
+              <div id="civilStatus">
+                <input type="radio" id="single" name="civilStatus" value="single">
+                <label for="single">Soltero/a</label>
+                
+                <input type="radio" id="married" name="civilStatus" value="married">
+                <label for="married">Casado/a</label>
+                
+                <input type="radio" id="divorced" name="civilStatus" value="divorced">
+                <label for="divorced">Divorciado/a</label>
+                
+                <input type="radio" id="widower" name="civilStatus" value="widower">
+                <label for="widower">Viudo/a</label>
+              </div>
     
               <label for="laterality">Lateralidad:</label>
-              <select id="laterality" name="laterality" required>
-                <option value="" disabled selected>Seleccione la lateralidad</option>
-                <option value="left">Zurdo</option>
-                <option value="right">Diestro</option>
-                <option value="ambidextrous">Ambidiestro</option>
-              </select>
+              <div id="laterality">
+                <input type="radio" id="left" name="laterality" value="left" required>
+                <label for="left">Zurdo</label>
+                
+                <input type="radio" id="right" name="laterality" value="right" required>
+                <label for="right">Diestro</label>
+                
+                <input type="radio" id="ambidextrous" name="laterality" value="ambidextrous" required>
+                <label for="ambidextrous">Ambidiestro</label>
+              </div>            
               
               <label for="educationLevel">Escolaridad:</label>
-              <select id="educationLevel" name="educationLevel" required>
-                <option value="" disabled selected>Seleccione la escolaridad</option>
-                <option value="elementary">Primaria</option>
-                <option value="secondary">Secundaria</option>
-                <option value="highSchool">Preparatoria</option>
-                <option value="university">Univerisdad</option>
-                <option value="mastersDegree">Maestria</option>
-                <option value="doctorate">Doctorado</option>
-              </select>
+              <div id="educationLevel">
+                <input type="radio" id="elementary" name="educationLevel" value="elementary" required>
+                <label for="elementary">Primaria</label>
+
+                <input type="radio" id="secondary" name="educationLevel" value="secondary" required>
+                <label for="secondary">Secundaria</label>
+
+                <input type="radio" id="highSchool" name="educationLevel" value="highSchool" required>
+                <label for="highSchool">Preparatoria</label>
+
+                <input type="radio" id="university" name="educationLevel" value="university" required>
+                <label for="university">Universidad</label>
+
+                <input type="radio" id="mastersDegree" name="educationLevel" value="mastersDegree" required>
+                <label for="mastersDegree">Maestría</label>
+
+                <input type="radio" id="doctorate" name="educationLevel" value="doctorate" required>
+                <label for="doctorate">Doctorado</label>
+              </div>
               
               <label for="occupation">Ocupación:</label>
               <input type="text" id="occupation" placeholder="Ocupación"  name="occupation">
 
-              <label for="occupation">Telefono:</label>
-              <input type="text" id="occupation" placeholder="Telefono"  name="occupation">
+              <label for="phone1">Teléfono:</label>
+              <div id="phoneInputs">
+                <input type="text" id="phone1" placeholder="Teléfono" name="phone[]">
+              </div>
+              <button type="button" (click)="addPhone()">Agregar otro teléfono</button>
 
               <label for="occupation">Correo electronico:</label>
-              <input type="text" id="occupation" placeholder="Correo electronico"  name="occupation">
+              <div id="emailInputs">
+                <input type="text" id="email" placeholder="Correo electronico"  name="email[]">
+              </div>
+              <button type="button" (click)="addEmail()">Agregar otro correo electronico</button>
             </div>
             <button type="save">Guardar</button>
           </form>
@@ -102,16 +130,11 @@
           <h2>Contacto del paciente</h2>
 
           <div class="form-section">          
-            <label for="phone">Teléfono celular:</label>
-            <input type="text" id="phone" name="phone" [(ngModel)]="patient.phone" required #phone="ngModel">
-            <div *ngIf="phone.invalid && phone.touched" class="error">
-              El teléfono es obligatorio.
-              <br>
-              <br>
-            </div>
-            
-            <label for="phone">Teléfono fijo:</label>
-            <input type="text" id="phone" name="phone" [(ngModel)]="patient.phone">
+            <label for="phone">Teléfono:</label>
+              <div id="phoneInputs">
+                <input type="text" id="phone1" placeholder="Teléfono" name="phone[]">
+              </div>
+              <button type="button" (click)="addPhone()">Agregar otro teléfono</button>
 
             <label for="email">Correo electrónico:</label>
             <input type="email" id="email" name="email" [(ngModel)]="patient.email" required #email="ngModel">
