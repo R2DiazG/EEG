@@ -27,7 +27,7 @@ jwt.init_app(app)
 bcrypt.init_app(app)
 
 # Importar los modelos
-from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, PacienteMedicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
+from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, paciente_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
 
 # Ruta para verificar la salud de la aplicación
 @app.route('/health', methods=['GET'])
