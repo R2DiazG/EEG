@@ -3,8 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token
 #from flask_bcrypt import Bcrypt # Importar la extensión Bcrypt para encriptar contraseñas de forma segura (hashing)
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+from datetime import datetime
 import os
+import mne
+import numpy as np
+import pandas as pd
 
 # Cargar las variables de entorno
 load_dotenv()
@@ -397,6 +402,78 @@ def eliminar_paciente(id_paciente):
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar el paciente: {}'.format(str(e))}), 500
 ######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+################################################################ Procesamiento de EEG ################################################################
+# INCOMPLETO – Falta trabajar en varias partes de este código, no va a funcionar tal como está
+@app.route('/pacientes/<int:id_paciente>/subir_eeg', methods=['POST'])
+def subir_eeg(id_paciente):
+    # Asegurar que el archivo está presente en la petición
+    if 'archivo_eeg' not in request.files:
+        return jsonify({'error': 'No se encontró el archivo'}), 400
+    archivo_eeg = request.files['archivo_eeg']
+    if archivo_eeg.filename == '':
+        return jsonify({'error': 'No se seleccionó ningún archivo'}), 400
+    # Guardar el archivo temporalmente
+    path_temporal = os.path.join('/tmp', archivo_eeg.filename)
+    archivo_eeg.save(path_temporal)
+    def renombrar_canales(ch_names):
+        nuevos_nombres = []
+        for ch in ch_names:
+            nuevo_nombre = ch.replace('-A1', '')
+            if len(nuevo_nombre) > 1 and nuevo_nombre[1].isalpha():
+                nuevo_nombre = nuevo_nombre[0] + nuevo_nombre[1].lower() + nuevo_nombre[2:]
+            nuevos_nombres.append(nuevo_nombre)
+        return nuevos_nombres
+    try:
+        # Cargar el archivo .edf
+        raw = mne.io.read_raw_edf(path_temporal, preload=True)
+        # Renombrar los canales para coincidir con los del modelo
+        nuevos_nombres = renombrar_canales(raw.ch_names)
+        raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
+        # Crear una nueva sesión
+        nueva_sesion = Sesion(
+            id_paciente=id_paciente,
+            fecha_consulta=datetime.utcnow(),
+            resumen_sesion_actual="Resumen de la sesión",
+            notas_psicologo="Notas del psicólogo"
+        )
+        db.session.add(nueva_sesion)
+        db.session.flush()
+        # Cargar los datos raw a la base de datos
+        for ch_name in nuevos_nombres:
+            ch_index = nuevos_nombres.index(ch_name)
+            ch_data = raw.get_data(picks=[ch_index])
+            nuevo_raw_eeg = RawEEG(
+                id_sesion=nueva_sesion.id_sesion,
+                fecha_hora_registro=datetime.utcnow(),
+                **{ch_name: ch_data.mean()}  # Ejemplo de cómo almacenar un valor representativo por canal
+            )
+            db.session.add(nuevo_raw_eeg)
+        db.session.commit()  # Guardar los datos raw
+        # Ahora filtramos y procesamos los datos para NormalizedEEG
+        raw.filter(1., 40., fir_design='firwin')
+        psds, freqs = mne.time_frequency.psd_welch(raw, fmin=1, fmax=40, n_fft=2048)
+        # Supongamos que solo almacenamos el PSD promedio para cada canal en NormalizedEEG
+        for ch_name in nuevos_nombres:
+            ch_index = nuevos_nombres.index(ch_name)
+            psd_data = psds[ch_index, :].mean()
+            nuevo_normalized_eeg = NormalizedEEG(
+                id_sesion=nueva_sesion.id_sesion,
+                fecha_hora_procesado=datetime.utcnow(),
+                **{ch_name: psd_data}  # Ejemplo 
+            )
+            db.session.add(nuevo_normalized_eeg)
+        db.session.commit()
+        return jsonify({'mensaje': 'Archivo EEG procesado y datos almacenados exitosamente', 'id_sesion': nueva_sesion.id_sesion}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        os.remove(path_temporal)
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+
+
 
 # Manejador global de errores
 @app.errorhandler(Exception)

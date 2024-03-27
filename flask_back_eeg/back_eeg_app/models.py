@@ -120,16 +120,6 @@ class DiagnosticoPrevio(db.Model):
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     descripcion = db.Column(db.Text)
 
-class Sesion(db.Model):
-    __tablename__ = 'sesiones'
-    id_sesion = db.Column(db.Integer, primary_key=True)
-    id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
-    fecha_consulta = db.Column(db.Date, nullable=False)
-    resumen_sesion_actual = db.Column(db.Text)
-    notas_psicologo = db.Column(db.Text)
-    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy=True)
-    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy=True)
-
 class Consentimiento(db.Model):
     __tablename__ = 'consentimientos'
     id_consentimiento = db.Column(db.Integer, primary_key=True)
@@ -166,6 +156,16 @@ class ResultadoPrediccion(db.Model):
     resultado_prediccion = db.Column(db.Text, nullable=False)
     nivel_confianza = db.Column(db.Decimal(5, 2))
     fecha_hora_prediccion = db.Column(db.DateTime, nullable=False)
+
+class Sesion(db.Model):
+    __tablename__ = 'sesiones'
+    id_sesion = db.Column(db.Integer, primary_key=True)
+    id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
+    fecha_consulta = db.Column(db.Date, nullable=False)
+    resumen_sesion_actual = db.Column(db.Text)
+    notas_psicologo = db.Column(db.Text)
+    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy=True)
+    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy=True)
 
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'
