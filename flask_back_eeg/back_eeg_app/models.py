@@ -164,13 +164,13 @@ class Sesion(db.Model):
     fecha_consulta = db.Column(db.Date, nullable=False)
     resumen_sesion_actual = db.Column(db.Text)
     notas_psicologo = db.Column(db.Text)
-    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy=True)
-    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy=True)
+    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy='dynamic')
+    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic')
 
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'
     id_eeg = db.Column(db.Integer, primary_key=True)
-    id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)  # Cambiado de id_paciente a id_sesion
+    id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)
     fecha_hora_registro = db.Column(db.DateTime, nullable=False)
     Fp1 = db.Column(db.Float)
     F3 = db.Column(db.Float)
@@ -195,7 +195,7 @@ class RawEEG(db.Model):
 class NormalizedEEG(db.Model):
     __tablename__ = 'normalized_eeg'
     id_eeg_procesado = db.Column(db.Integer, primary_key=True)
-    id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)  # Asumiendo que vinculas directamente a sesiones
+    id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)
     fecha_hora_procesado = db.Column(db.DateTime, nullable=False)
     pointStart = db.Column(db.Float)
     pointInterval = db.Column(db.Float)
