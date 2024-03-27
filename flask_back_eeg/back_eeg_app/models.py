@@ -138,7 +138,7 @@ class MetricaDesempeno(db.Model):
     __tablename__ = 'metricas_desempeno'
     id_metrica = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(255), nullable=False)
-    valor = db.Column(db.Decimal(10, 4))
+    valor = db.Column(db.Numeric(10, 4))
     fecha_hora_registro = db.Column(db.DateTime, nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'))
 
@@ -154,7 +154,7 @@ class ResultadoPrediccion(db.Model):
     id_resultado_prediccion = db.Column(db.Integer, primary_key=True)
     id_eeg_procesado = db.Column(db.Integer, db.ForeignKey('normalized_eeg.id_eeg_procesado'))
     resultado_prediccion = db.Column(db.Text, nullable=False)
-    nivel_confianza = db.Column(db.Decimal(5, 2))
+    nivel_confianza = db.Column(db.Numeric(5, 2))
     fecha_hora_prediccion = db.Column(db.DateTime, nullable=False)
 
 class Sesion(db.Model):
