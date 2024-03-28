@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from extensions import db, migrate, jwt, bcrypt
+from flask_jwt_extended import create_access_token, JWTManager
+from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime
@@ -24,8 +26,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Inicializar las extensiones
 db.init_app(app)
 migrate.init_app(app, db)
-jwt.init_app(app)
+# jwt.init_app(app)
 bcrypt.init_app(app)
+jwt = JWTManager(app)
 
 # Importar los modelos
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, paciente_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
@@ -35,6 +38,30 @@ from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, 
 def health():
     return jsonify({'status': 'up'}), 200
 
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+############################################################# Autenticación de Usuarios ##############################################################
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Falta el JSON en la solicitud"}), 400
+    username = request.json.get('username', None)
+    password = request.json.get('contraseña', None)
+    if not username:
+        return jsonify({"msg": "Falta el username"}), 400
+    if not password:
+        return jsonify({"msg": "Falta la contraseña"}), 400
+    # Verificar credenciales del usuario en la base de datos
+    user = Usuario.query.filter_by(username=username).first()
+    if user and bcrypt.check_password_hash(user.contraseña, password):
+        # Crear el token de acceso JWT
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({"msg": "Credenciales incorrectas"}), 401
+
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################## CRUD de Usuarios ##################################################################
 @app.route('/usuarios', methods=['POST'])
 def crear_usuario():
@@ -474,7 +501,6 @@ def subir_eeg(id_paciente):
         os.remove(path_temporal)
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-
 
 
 # Manejador global de errores
