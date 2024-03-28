@@ -323,52 +323,12 @@ def obtener_eegs_por_sesion(id_sesion):
         'raw_eegs': [{
             'id_eeg': eeg.id_eeg,
             'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-            'Fp1': eeg.Fp1,
-            'F3': eeg.F3,
-            'C3': eeg.C3,
-            'P3': eeg.P3,
-            'O1': eeg.O1,
-            'F7': eeg.F7,
-            'T3': eeg.T3,
-            'T5': eeg.T5,
-            'Fz': eeg.Fz,
-            'Fp2': eeg.Fp2,
-            'F4': eeg.F4,
-            'C4': eeg.C4,
-            'P4': eeg.P4,
-            'O2': eeg.O2,
-            'F8': eeg.F8,
-            'T4': eeg.T4,
-            'T6': eeg.T6,
-            'Cz': eeg.Cz,
-            'Pz': eeg.Pz
-            # Incluye aquí más campos si son relevantes y los almacenas
+            'data': eeg.data  # Aquí se retorna directamente el campo JSON
         } for eeg in raw_eegs],
         'normalized_eegs': [{
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'pointStart': eeg.pointStart,
-            'pointInterval': eeg.pointInterval,
-            'Fp1_normalized': eeg.Fp1,
-            'F3_normalized': eeg.F3,
-            'C3_normalized': eeg.C3,
-            'P3_normalized': eeg.P3,
-            'O1_normalized': eeg.O1,
-            'F7_normalized': eeg.F7,
-            'T3_normalized': eeg.T3,
-            'T5_normalized': eeg.T5,
-            'Fz_normalized': eeg.Fz,
-            'Fp2_normalized': eeg.Fp2,
-            'F4_normalized': eeg.F4,
-            'C4_normalized': eeg.C4,
-            'P4_normalized': eeg.P4,
-            'O2_normalized': eeg.O2,
-            'F8_normalized': eeg.F8,
-            'T4_normalized': eeg.T4,
-            'T6_normalized': eeg.T6,
-            'Cz_normalized': eeg.Cz,
-            'Pz_normalized': eeg.Pz
-            # Añade más campos normalizados si son relevantes y los almacenas
+            'data_normalized': eeg.data_normalized  # Igualmente para los EEG normalizados
         } for eeg in normalized_eegs]
     }
     return jsonify(eegs_response), 200
