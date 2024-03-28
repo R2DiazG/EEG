@@ -370,9 +370,12 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
 
-@app.route('/pacientes/<int:id_paciente>', methods=['DELETE'])
-def eliminar_paciente(id_paciente):
+@app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
+def eliminar_paciente(id_usuario, id_paciente):
+    # Asumiendo que el usuario ya está autenticado y su ID es accesible
     paciente = Paciente.query.get_or_404(id_paciente)
+    if paciente.id_usuario != id_usuario:
+        return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
         # Eliminar registros relacionados de manera secuencial para mantener la integridad referencial
         # Primero, elimina entidades directamente relacionadas con el paciente
