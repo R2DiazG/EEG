@@ -1,0 +1,64 @@
+.container{
+    display: flex;
+    flex-direction: row;
+  }
+  .sidebar {
+      flex: 0 0 200px;
+      height: 100vh;
+  }
+  .patient-list-container {
+      flex: 1;
+      padding: 20px;
+      margin: 1rem 17rem auto; // Centrado en la página
+      max-width: 100%; // Ancho máximo
+      width: 100%; // Asegura que se ajuste al contenedor padre
+      background-color: #fff;
+      justify-content: right;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      @media (max-width: 768px) {
+        width: auto; // Ocupa el ancho completo en pantallas pequeñas
+        margin: 10px; // Margen reducido para pantallas pequeñas
+        max-width: none;
+      }
+  
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    
+        input[type="search"] {
+          padding: 0.5rem;
+          margin-right: 1rem;
+          border: 1px solid #ccc;
+          border-radius: 0.25rem;
+          width: 30%;
+        }
+    
+        button {  
+          padding: 0.7rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;      
+          &:hover {
+            background-color: #333;
+          }
+        }
+      }
+    
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        
+        th, td {
+          border: 1px solid #ddd;
+          text-align: left;
+          padding: 8px;
+        }
+    
+        th {
+          background-color: #f2f2f2;
+        }
+      }
+    }
+    
