@@ -81,7 +81,7 @@ def solicitar_cambio_contraseña():
         token = s.dumps(usuario.correo, salt='cambio-contraseña')
         link = url_for('resetear_contraseña', token=token, _external=True)
         # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
-        msg = Message("Restablece tu contraseña", sender="noreply@gmail.com", recipients=[usuario.correo])
+        msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
         mail.send(msg)
         return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
