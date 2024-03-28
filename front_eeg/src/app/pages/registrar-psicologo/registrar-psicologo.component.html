@@ -7,13 +7,18 @@
   <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="name">Nombre completo</label>
-          <input type="text" id="name" class="form-control" formControlName="name" placeholder="Ingrese su nombre">
+          <label for="name">Nombre</label>
+          <input type="text" id="nombre" class="form-control" formControlName="nombre" placeholder="Ingrese su nombre">
+        </div>
+
+        <div class="form-group">
+          <label for="name">Apellidos</label>
+          <input type="text" id="apellidos" class="form-control" formControlName="apellidos" placeholder="Ingrese sus apellidos">
         </div>
         
         <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" class="form-control" formControlName="password" placeholder="Ponga su contraseña de portal udem">
+          <label for="contraseña">Contraseña</label>
+          <input type="contraseña" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña de portal udem">
         </div>
       
         <div class="form-group">

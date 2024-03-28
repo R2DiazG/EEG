@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, url_for
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
@@ -18,6 +19,7 @@ load_dotenv()
 
 # Inicializar la aplicación Flask
 app = Flask(__name__)
+CORS(app)
 
 # Configurar la aplicación
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
