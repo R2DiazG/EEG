@@ -66,10 +66,15 @@ class Paciente(db.Model):
     apellido_materno = db.Column(db.String(255))
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     id_genero = db.Column(db.Integer, db.ForeignKey('generos.id_genero'))
+    genero = db.relationship('Genero', backref='pacientes')
     id_estado_civil = db.Column(db.Integer, db.ForeignKey('estados_civiles.id_estado_civil'))
+    estado_civil = db.relationship('EstadoCivil', backref='pacientes')
     id_escolaridad = db.Column(db.Integer, db.ForeignKey('escolaridades.id_escolaridad'))
+    escolaridad = db.relationship('Escolaridad', backref='pacientes')
     id_lateralidad = db.Column(db.Integer, db.ForeignKey('lateralidades.id_lateralidad'))
+    lateralidad = db.relationship('Lateralidad', backref='pacientes')
     id_ocupacion = db.Column(db.Integer, db.ForeignKey('ocupaciones.id_ocupacion'))
+    ocupacion = db.relationship('Ocupacion', backref='pacientes')
 
     # Relaciones adicionales
     telefonos = db.relationship('Telefono', backref='paciente', lazy=True)
