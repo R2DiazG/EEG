@@ -206,7 +206,7 @@ def actualizar_usuario(id_usuario):
 def cambiar_aprobacion_usuario(id_usuario):
     datos = request.get_json()
     usuario = Usuario.query.get_or_404(id_usuario)
-    # Aquí asumimos que el campo 'aprobacion' se envía en el cuerpo de la solicitud, y debe ser un valor booleano.
+    # Se asume que el campo 'aprobacion' se envía en el cuerpo de la solicitud, y debe ser un valor booleano.
     if 'aprobacion' in datos and isinstance(datos['aprobacion'], bool):
         usuario.aprobacion = datos['aprobacion']
         db.session.commit()
