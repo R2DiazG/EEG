@@ -13,8 +13,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router) {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required])
+      username: new FormControl('', [Validators.required]),
+      contraseña: new FormControl('', [Validators.required])
     });
   }
 
@@ -22,9 +22,9 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const email = this.loginForm.value.email;
-      const password = this.loginForm.value.password;
-      this.authService.login(email, password).subscribe({
+      const username = this.loginForm.value.username;
+      const contraseña = this.loginForm.value.contraseña;
+      this.authService.login(username, contraseña).subscribe({
         next: (response) => {
           // Manejar la respuesta de login aquí
           console.log('Login exitoso', response);
@@ -39,6 +39,33 @@ export class LoginComponent implements OnInit {
       alert('Todos los campos son obligatorios.');
     }
   }
+
+  /*
+  if (this.loginForm.valid) {
+      const username = this.loginForm.value.username;
+      const contraseña = this.loginForm.value.contraseña;
+      this.authService.login(username, contraseña).subscribe({
+        next: (response) => {
+          // Asumiendo que 'response' tiene un campo 'aprobacion'
+          if (response.aprobacion) {
+            console.log('Login exitoso', response);
+            // Guardar el token JWT (si tu backend lo retorna) para futuras solicitudes
+            localStorage.setItem('token', response.token);
+            this.router.navigate(['/lista-pacientes']); // Ajusta esta ruta según sea necesario
+          } else {
+            // Manejar el caso cuando la aprobación es falsa
+            alert('Acceso denegado. Su cuenta aún no ha sido aprobada.');
+          }
+        },
+        error: (error) => {
+          console.error('Error en el login', error);
+          alert('Falló el inicio de sesión.');
+        }
+      });
+    } else {
+      alert('Todos los campos son obligatorios.');
+    }
+  */
   
 
   onForgotPassword() {

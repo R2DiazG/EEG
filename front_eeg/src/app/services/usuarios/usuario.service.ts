@@ -17,11 +17,14 @@ export class UsuarioService {
   }
 
   obtenerUsuarios(): Observable<any[]> {
+    const access_token = localStorage.getItem('access_token'); // Asegúrate de que la clave aquí coincida con cómo guardas el token
+    console.log(access_token)
     const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + localStorage.getItem('access_token') // Asume que guardas el token en localStorage
+      'Authorization': 'Bearer ' + access_token
     });
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(this.apiUrl, { headers });
   }
+  
 
   obtenerUsuario(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);

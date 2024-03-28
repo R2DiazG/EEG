@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../services/login/auth.service';
 
 @Component({
   selector: 'app-menu-lateral',
@@ -11,7 +12,7 @@ export class MenuLateralComponent {
   isSidebarActive: boolean = false;
   activeLink: string | undefined;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     // Suscripción a eventos del router, filtrando solo los eventos de tipo NavigationEnd
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
@@ -38,12 +39,12 @@ export class MenuLateralComponent {
   }
 
   // Método para manejar el cierre de sesión del usuario
-  logout(): void {
-    // Aquí deberías implementar la lógica de cierre de sesión
-    console.log('Logout function called');
-    // Suponiendo que tienes un servicio de autenticación inyectado como authService
-    // this.authService.logout();
-    // Navegar de vuelta al login después del logout
-    // this.router.navigate(['/login']);
-  }
+  // Método para manejar el cierre de sesión del usuario
+logout(): void {
+  this.authService.logout();
+  console.log('Usuario ha cerrado la sesión');
+  // Navegar de vuelta al login después del logout
+  this.router.navigate(['/login']);
+}
+
 }

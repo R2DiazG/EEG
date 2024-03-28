@@ -20,6 +20,13 @@ export class AuthService {
     return this.http.post<any>(this.forgotPasswordUrl, { username });
   }
 
+  logout() {
+    // Aquí deberías invalidar la sesión del lado del servidor.
+    // Por ejemplo, si estás usando tokens JWT, borra el token del almacenamiento local o de las cookies.
+    localStorage.removeItem('access_token'); // Asumiendo que el token se guarda con la clave 'access_token'
+    // Luego puedes informar al servidor para que invalide el token si es necesario
+    // return this.http.post('/api/logout', {});
+  }
 
   // Implement logout and password reset methods here...
 }
