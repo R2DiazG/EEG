@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for
 from flask_cors import CORS
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
