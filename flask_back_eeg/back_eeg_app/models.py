@@ -78,8 +78,8 @@ class Paciente(db.Model):
     historiales_medicos = db.relationship('HistorialMedico', backref='paciente', lazy=True)
     sesiones = db.relationship('Sesion', backref='paciente', lazy=True)
     consentimientos = db.relationship('Consentimiento', backref='paciente', lazy=True)
-    raw_eegs = db.relationship('RawEEG', backref='paciente', lazy=True)
-    normalized_eegs = db.relationship('NormalizedEEG', backref='paciente', lazy=True)
+    ##raw_eegs = db.relationship('RawEEG', backref='paciente', lazy=True)
+    #normalized_eegs = db.relationship('NormalizedEEG', backref='paciente', lazy=True)
     diagnosticos_previos = db.relationship('DiagnosticoPrevio', backref='paciente', lazy=True)
     # Como PacienteMedicamento es una asociación
     medicamentos = db.relationship('Medicamento', secondary=paciente_medicamento, backref=db.backref('pacientes', lazy=True))
