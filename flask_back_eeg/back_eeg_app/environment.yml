@@ -369,4 +369,3 @@ dependencies:
   - pip:
       - bcrypt==4.1.2
       - flask-bcrypt==1.0.1
-prefix: C:\Users\Dell\.conda\envs\env
