@@ -321,9 +321,9 @@ def actualizar_telefonos(paciente, telefonos_nuevos):
         for tel_data in telefonos_nuevos:
             if 'id_telefono' in tel_data and tel_data['id_telefono'] in telefonos_actuales:
                 telefono = telefonos_actuales.pop(tel_data['id_telefono'])
-                telefono.numero = tel_data['numero']
+                telefono.telefono = tel_data['numero']  # Cambio aquí
             else:
-                nuevo_telefono = Telefono(numero=tel_data['numero'], id_paciente=paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)  # Y aquí
                 db.session.add(nuevo_telefono)
         # Eliminar cualquier teléfono no incluido en la actualización
         for tel in telefonos_actuales.values():
