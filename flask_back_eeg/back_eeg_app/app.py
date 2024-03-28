@@ -3,6 +3,7 @@ from extensions import db, migrate, jwt, bcrypt
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime
+from sqlalchemy import delete
 import os
 import mne
 import numpy as np
@@ -377,13 +378,15 @@ def eliminar_paciente(id_usuario, id_paciente):
     if paciente.id_usuario != id_usuario:
         return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
+        # Dentro de tu bloque try, justo antes de empezar a eliminar otras relaciones:
+        stmt = delete(paciente_medicamento).where(paciente_medicamento.c.id_paciente == id_paciente)
+        db.session.execute(stmt)
         # Eliminar registros relacionados de manera secuencial para mantener la integridad referencial
         # Primero, elimina entidades directamente relacionadas con el paciente
         Telefono.query.filter_by(id_paciente=id_paciente).delete()
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
         HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
-        paciente_medicamento.query.filter_by(id_paciente=id_paciente).delete()
         DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
         # Luego, encuentra todas las sesiones asociadas con el paciente para eliminar registros relacionados
