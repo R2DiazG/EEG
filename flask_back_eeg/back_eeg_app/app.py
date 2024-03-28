@@ -1,9 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from extensions import db, migrate, jwt, bcrypt
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
+from werkzeug.security import check_password_hash
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy import delete
+from flask_mail import Mail, Message
 import os
 import mne
 import numpy as np
@@ -21,12 +26,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+token_secret_key = os.getenv('TOKEN_SECRET_KEY')
+
+# Inicializar URLSafeTimedSerializer con la TOKEN_SECRET_KEY
+s = URLSafeTimedSerializer(token_secret_key)
 
 # Inicializar las extensiones
 db.init_app(app)
 migrate.init_app(app, db)
-jwt.init_app(app)
 bcrypt.init_app(app)
+jwt = JWTManager(app)
+mail = Mail(app)
 
 # Importar los modelos
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, paciente_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
@@ -36,6 +52,65 @@ from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, 
 def health():
     return jsonify({'status': 'up'}), 200
 
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+############################################################# Autenticación de Usuarios ##############################################################
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Falta el JSON en la solicitud"}), 400
+    username = request.json.get('username', None)
+    password = request.json.get('contraseña', None)
+    if not username:
+        return jsonify({"msg": "Falta el username"}), 400
+    if not password:
+        return jsonify({"msg": "Falta la contraseña"}), 400
+    # Verificar credenciales del usuario en la base de datos
+    user = Usuario.query.filter_by(username=username).first()
+    if user and bcrypt.check_password_hash(user.contraseña, password):
+        # Crear el token de acceso JWT
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({"msg": "Credenciales incorrectas"}), 401
+
+@app.route('/solicitar_cambio_contraseña', methods=['POST'])
+def solicitar_cambio_contraseña():
+    datos = request.get_json()
+    username = datos.get('username', None)
+    usuario = Usuario.query.filter_by(username=username).first()
+    if usuario:
+        token = s.dumps(usuario.correo, salt='cambio-contraseña')
+        link = url_for('resetear_contraseña', token=token, _external=True)
+        # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
+        msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
+        msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
+        mail.send(msg)
+        return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
+    else:
+        return jsonify({"msg": "Usuario no encontrado."}), 404
+
+@app.route('/resetear_contraseña/<token>', methods=['POST'])
+def resetear_contraseña(token):
+    try:
+        datos = request.get_json()
+        nueva_contraseña = datos.get('nueva_contraseña', None)
+        correo = s.loads(token, salt='cambio-contraseña', max_age=3600)  # 3600 segundos = 1 hora
+        usuario = Usuario.query.filter_by(correo=correo).first()
+        if usuario:
+            hashed_password = bcrypt.generate_password_hash(nueva_contraseña).decode('utf-8')
+            usuario.contraseña = hashed_password
+            db.session.commit()
+            return jsonify({"msg": "Tu contraseña ha sido actualizada."}), 200
+        else:
+            return jsonify({"msg": "Usuario no encontrado."}), 404
+    except SignatureExpired:
+        return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
+    except BadSignature:
+        return jsonify({"msg": "Enlace inválido."}), 400
+
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################## CRUD de Usuarios ##################################################################
 @app.route('/usuarios', methods=['POST'])
 def crear_usuario():
@@ -47,15 +122,13 @@ def crear_usuario():
     if not rol:
         return jsonify({'mensaje': 'Rol no válido'}), 400
     hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-    # Contraseña sin el bycrypt
-    #hashed_password = datos['contraseña']
     nuevo_usuario = Usuario(
         nombre=datos.get('nombre'),
         apellidos=datos.get('apellidos'),
         username=datos.get('username'),
         contraseña=hashed_password,
         correo=datos.get('correo'),
-        aprobacion=datos.get('aprobacion', True),  # Valor predeterminado a True si no se proporciona
+        aprobacion=datos.get('aprobacion', False),  # Valor predeterminado a False si no se proporciona
         id_rol=datos.get('id_rol')
     )
     db.session.add(nuevo_usuario)
@@ -63,21 +136,34 @@ def crear_usuario():
     return jsonify({'mensaje': 'Usuario creado exitosamente'}), 201
 
 @app.route('/usuarios', methods=['GET'])
+@jwt_required()
 def obtener_usuarios():
+    current_user = get_jwt_identity()
+    usuario_actual = Usuario.query.filter_by(username=current_user).first()
+    if usuario_actual.id_rol != 1: 
+        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
     usuarios = Usuario.query.all()
-    resultado = [{
-        'id_usuario': usuario.id_usuario,
-        'nombre': usuario.nombre,
-        'apellidos': usuario.apellidos,
-        'username': usuario.username,
-        'correo': usuario.correo,
-        'aprobacion': usuario.aprobacion,
-        'id_rol': usuario.id_rol
-    } for usuario in usuarios]
+    resultado = [
+        {
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellidos': usuario.apellidos,
+            'username': usuario.username,
+            'correo': usuario.correo,
+            'aprobacion': usuario.aprobacion,
+            'id_rol': usuario.id_rol,
+            # No se incluye la contraseña
+        } for usuario in usuarios
+    ]
     return jsonify(resultado), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['GET'])
+@jwt_required()
 def obtener_usuario(id_usuario):
+    current_user = get_jwt_identity()
+    usuario_actual = Usuario.query.filter_by(username=current_user).first()
+    if usuario_actual.id_rol != 1:
+        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
     usuario = Usuario.query.get_or_404(id_usuario)
     usuario_datos = {
         'id_usuario': usuario.id_usuario,
@@ -86,11 +172,13 @@ def obtener_usuario(id_usuario):
         'username': usuario.username,
         'correo': usuario.correo,
         'aprobacion': usuario.aprobacion,
-        'id_rol': usuario.id_rol
+        'id_rol': usuario.id_rol,
+        # No se incluye la contraseña
     }
     return jsonify(usuario_datos), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['PUT'])
+@jwt_required()
 def actualizar_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
@@ -104,14 +192,13 @@ def actualizar_usuario(id_usuario):
     usuario.username = datos.get('username', usuario.username)
     if 'contraseña' in datos:
         usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-        # Contraseña sin el bcrypt
-        #usuario.contraseña = datos['contraseña']
     usuario.correo = datos.get('correo', usuario.correo)
     usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
     db.session.commit()
     return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
+@jwt_required()
 def eliminar_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     db.session.delete(usuario)
@@ -159,25 +246,21 @@ def crear_paciente_para_usuario(id_usuario):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-@app.route('/pacientes', methods=['GET'])
-def obtener_pacientes():
-    pacientes = Paciente.query.all()
-    resultado = []
-    for paciente in pacientes:
-        paciente_datos = {
-            'id_paciente': paciente.id_paciente,
-            'id_usuario': paciente.id_usuario,
-            'nombre': paciente.nombre,
-            'apellido_paterno': paciente.apellido_paterno,
-            'apellido_materno': paciente.apellido_materno or "",
-            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
-            'genero': paciente.genero.descripcion if paciente.genero else None,
-            'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else None,
-            'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else None,
-            'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else None,
-            'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else None,
-        }
-        resultado.append(paciente_datos)
+@app.route('/usuarios/<int:id_usuario>/pacientes', methods=['GET'])
+def obtener_pacientes_por_usuario(id_usuario):
+    pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
+    resultado = [{
+        'id_paciente': paciente.id_paciente,
+        'nombre': paciente.nombre,
+        'apellido_paterno': paciente.apellido_paterno,
+        'apellido_materno': paciente.apellido_materno or "",
+        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
+        'genero': paciente.genero.descripcion if paciente.genero else "",
+        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
+    } for paciente in pacientes]
     return jsonify(resultado), 200
 
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
@@ -290,14 +373,16 @@ def obtener_eegs_por_sesion(id_sesion):
     }
     return jsonify(eegs_response), 200
 
-@app.route('/pacientes/<int:id_paciente>', methods=['PUT'])
-def actualizar_paciente(id_paciente):
-    paciente = Paciente.query.get_or_404(id_paciente)
+@app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
+def actualizar_paciente_de_usuario(id_usuario, id_paciente):
+    # Verificar si el paciente pertenece al usuario
+    paciente = Paciente.query.filter_by(id_usuario=id_usuario, id_paciente=id_paciente).first()
+    if paciente is None:
+        return jsonify({'error': 'Paciente no encontrado o no pertenece al usuario indicado'}), 404
     datos = request.get_json()
     try:
-        # Actualizar datos básicos del paciente
         actualizar_datos_basicos_paciente(paciente, datos)
-        # Actualizar relaciones
+        # Actualizar relaciones (teléfonos, correos electrónicos, direcciones)
         actualizar_telefonos(paciente, datos.get('telefonos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
@@ -325,9 +410,9 @@ def actualizar_telefonos(paciente, telefonos_nuevos):
         for tel_data in telefonos_nuevos:
             if 'id_telefono' in tel_data and tel_data['id_telefono'] in telefonos_actuales:
                 telefono = telefonos_actuales.pop(tel_data['id_telefono'])
-                telefono.numero = tel_data['numero']
+                telefono.telefono = tel_data['numero']  # Cambio aquí
             else:
-                nuevo_telefono = Telefono(numero=tel_data['numero'], id_paciente=paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)  # Y aquí
                 db.session.add(nuevo_telefono)
         # Eliminar cualquier teléfono no incluido en la actualización
         for tel in telefonos_actuales.values():
@@ -374,17 +459,22 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
 
-@app.route('/pacientes/<int:id_paciente>', methods=['DELETE'])
-def eliminar_paciente(id_paciente):
+@app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
+def eliminar_paciente(id_usuario, id_paciente):
+    # Asumiendo que el usuario ya está autenticado y su ID es accesible
     paciente = Paciente.query.get_or_404(id_paciente)
+    if paciente.id_usuario != id_usuario:
+        return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
+        # Dentro de tu bloque try, justo antes de empezar a eliminar otras relaciones:
+        stmt = delete(paciente_medicamento).where(paciente_medicamento.c.id_paciente == id_paciente)
+        db.session.execute(stmt)
         # Eliminar registros relacionados de manera secuencial para mantener la integridad referencial
         # Primero, elimina entidades directamente relacionadas con el paciente
         Telefono.query.filter_by(id_paciente=id_paciente).delete()
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
         HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
-        paciente_medicamento.query.filter_by(id_paciente=id_paciente).delete()
         DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
         # Luego, encuentra todas las sesiones asociadas con el paciente para eliminar registros relacionados
@@ -472,7 +562,6 @@ def subir_eeg(id_paciente):
         os.remove(path_temporal)
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-
 
 
 # Manejador global de errores
