@@ -1,0 +1,33 @@
+<div class="container">
+    <app-menu-lateral></app-menu-lateral>
+    <div class="patient-list-container">
+        <div class="header">
+          <h1>Psicólogos</h1>
+          <input type="search" placeholder="Nombre del psicologo">
+        </div>
+      
+        <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Nombre de usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Aprobación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Utiliza 'let user of users' para iterar sobre la lista de usuarios -->
+              <tr *ngFor="let user of users">
+                <td>{{ user.nombre }}</td>
+                <td>{{ user.apellidos }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.correo }}</td>
+                <td>{{ user.id_rol }}</td>
+                <td>{{ user.aprobacion }}</td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
