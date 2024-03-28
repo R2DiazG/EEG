@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from extensions import db, migrate, jwt, bcrypt
-from flask_jwt_extended import create_access_token, JWTManager
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required 
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
@@ -26,7 +26,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Inicializar las extensiones
 db.init_app(app)
 migrate.init_app(app, db)
-# jwt.init_app(app)
 bcrypt.init_app(app)
 jwt = JWTManager(app)
 
@@ -89,6 +88,7 @@ def crear_usuario():
     return jsonify({'mensaje': 'Usuario creado exitosamente'}), 201
 
 @app.route('/usuarios', methods=['GET'])
+@jwt_required()
 def obtener_usuarios():
     usuarios = Usuario.query.all()
     resultado = [{
@@ -103,6 +103,7 @@ def obtener_usuarios():
     return jsonify(resultado), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['GET'])
+@jwt_required()
 def obtener_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     usuario_datos = {
@@ -117,6 +118,7 @@ def obtener_usuario(id_usuario):
     return jsonify(usuario_datos), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['PUT'])
+@jwt_required()
 def actualizar_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
@@ -138,6 +140,7 @@ def actualizar_usuario(id_usuario):
     return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
+@jwt_required()
 def eliminar_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     db.session.delete(usuario)
