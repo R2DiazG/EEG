@@ -67,8 +67,12 @@ def login():
         return jsonify({"msg": "Falta la contraseña"}), 400
     # Verificar credenciales del usuario en la base de datos
     user = Usuario.query.filter_by(username=username).first()
+    # Verificar si el usuario existe y la contraseña es correcta
     if user and bcrypt.check_password_hash(user.contraseña, password):
-        # Crear el token de acceso JWT
+        # Adicionalmente, verificar si el usuario está aprobado
+        if not user.aprobacion:
+            return jsonify({"msg": "Usuario no aprobado. Por favor, espera a que un administrador apruebe tu cuenta."}), 403
+        # Crear el token de acceso JWT para usuarios aprobados
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token), 200
     else:
@@ -196,6 +200,19 @@ def actualizar_usuario(id_usuario):
     usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
     db.session.commit()
     return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
+
+@app.route('/usuarios/<int:id_usuario>/aprobacion', methods=['PUT'])
+@jwt_required()
+def cambiar_aprobacion_usuario(id_usuario):
+    datos = request.get_json()
+    usuario = Usuario.query.get_or_404(id_usuario)
+    # Aquí asumimos que el campo 'aprobacion' se envía en el cuerpo de la solicitud, y debe ser un valor booleano.
+    if 'aprobacion' in datos and isinstance(datos['aprobacion'], bool):
+        usuario.aprobacion = datos['aprobacion']
+        db.session.commit()
+        return jsonify({'mensaje': 'Estado de aprobación actualizado exitosamente'}), 200
+    else:
+        return jsonify({'error': 'Falta el campo de aprobación o el valor no es válido'}), 400
 
 @app.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
 @jwt_required()
