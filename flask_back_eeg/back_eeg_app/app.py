@@ -1,11 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for
 from extensions import db, migrate, jwt, bcrypt
-from flask_jwt_extended import create_access_token, JWTManager, jwt_required 
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import delete
+from flask_mail import Mail, Message
 import os
 import mne
 import numpy as np
@@ -22,12 +24,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+token_secret_key = os.getenv('TOKEN_SECRET_KEY')
+
+# Inicializar URLSafeTimedSerializer con la TOKEN_SECRET_KEY
+s = URLSafeTimedSerializer(token_secret_key)
 
 # Inicializar las extensiones
 db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 jwt = JWTManager(app)
+mail = Mail(app)
 
 # Importar los modelos
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, paciente_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
@@ -59,6 +72,41 @@ def login():
     else:
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
+@app.route('/solicitar_cambio_contraseña', methods=['POST'])
+def solicitar_cambio_contraseña():
+    datos = request.get_json()
+    username = datos.get('username', None)
+    usuario = Usuario.query.filter_by(username=username).first()
+    if usuario:
+        token = s.dumps(usuario.correo, salt='cambio-contraseña')
+        link = url_for('resetear_contraseña', token=token, _external=True)
+        # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
+        msg = Message("Restablece tu contraseña", sender="noreply@gmail.com", recipients=[usuario.correo])
+        msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
+        mail.send(msg)
+        return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
+    else:
+        return jsonify({"msg": "Usuario no encontrado."}), 404
+
+@app.route('/resetear_contraseña/<token>', methods=['POST'])
+def resetear_contraseña(token):
+    try:
+        datos = request.get_json()
+        nueva_contraseña = datos.get('nueva_contraseña', None)
+        correo = s.loads(token, salt='cambio-contraseña', max_age=3600)  # 3600 segundos = 1 hora
+        usuario = Usuario.query.filter_by(correo=correo).first()
+        if usuario:
+            hashed_password = bcrypt.generate_password_hash(nueva_contraseña).decode('utf-8')
+            usuario.contraseña = hashed_password
+            db.session.commit()
+            return jsonify({"msg": "Tu contraseña ha sido actualizada."}), 200
+        else:
+            return jsonify({"msg": "Usuario no encontrado."}), 404
+    except SignatureExpired:
+        return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
+    except BadSignature:
+        return jsonify({"msg": "Enlace inválido."}), 400
+
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################## CRUD de Usuarios ##################################################################
@@ -72,15 +120,13 @@ def crear_usuario():
     if not rol:
         return jsonify({'mensaje': 'Rol no válido'}), 400
     hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-    # Contraseña sin el bycrypt
-    #hashed_password = datos['contraseña']
     nuevo_usuario = Usuario(
         nombre=datos.get('nombre'),
         apellidos=datos.get('apellidos'),
         username=datos.get('username'),
         contraseña=hashed_password,
         correo=datos.get('correo'),
-        aprobacion=datos.get('aprobacion', True),  # Valor predeterminado a True si no se proporciona
+        aprobacion=datos.get('aprobacion', False),  # Valor predeterminado a False si no se proporciona
         id_rol=datos.get('id_rol')
     )
     db.session.add(nuevo_usuario)
@@ -90,21 +136,32 @@ def crear_usuario():
 @app.route('/usuarios', methods=['GET'])
 @jwt_required()
 def obtener_usuarios():
+    current_user = get_jwt_identity()
+    usuario_actual = Usuario.query.filter_by(username=current_user).first()
+    if usuario_actual.id_rol != 1: 
+        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
     usuarios = Usuario.query.all()
-    resultado = [{
-        'id_usuario': usuario.id_usuario,
-        'nombre': usuario.nombre,
-        'apellidos': usuario.apellidos,
-        'username': usuario.username,
-        'correo': usuario.correo,
-        'aprobacion': usuario.aprobacion,
-        'id_rol': usuario.id_rol
-    } for usuario in usuarios]
+    resultado = [
+        {
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellidos': usuario.apellidos,
+            'username': usuario.username,
+            'correo': usuario.correo,
+            'aprobacion': usuario.aprobacion,
+            'id_rol': usuario.id_rol,
+            # No se incluye la contraseña
+        } for usuario in usuarios
+    ]
     return jsonify(resultado), 200
 
 @app.route('/usuarios/<int:id_usuario>', methods=['GET'])
 @jwt_required()
 def obtener_usuario(id_usuario):
+    current_user = get_jwt_identity()
+    usuario_actual = Usuario.query.filter_by(username=current_user).first()
+    if usuario_actual.id_rol != 1:
+        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
     usuario = Usuario.query.get_or_404(id_usuario)
     usuario_datos = {
         'id_usuario': usuario.id_usuario,
@@ -113,7 +170,8 @@ def obtener_usuario(id_usuario):
         'username': usuario.username,
         'correo': usuario.correo,
         'aprobacion': usuario.aprobacion,
-        'id_rol': usuario.id_rol
+        'id_rol': usuario.id_rol,
+        # No se incluye la contraseña
     }
     return jsonify(usuario_datos), 200
 
@@ -132,8 +190,6 @@ def actualizar_usuario(id_usuario):
     usuario.username = datos.get('username', usuario.username)
     if 'contraseña' in datos:
         usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-        # Contraseña sin el bcrypt
-        #usuario.contraseña = datos['contraseña']
     usuario.correo = datos.get('correo', usuario.correo)
     usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
     db.session.commit()
