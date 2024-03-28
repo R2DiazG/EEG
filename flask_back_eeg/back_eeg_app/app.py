@@ -284,14 +284,16 @@ def obtener_eegs_por_sesion(id_sesion):
     }
     return jsonify(eegs_response), 200
 
-@app.route('/pacientes/<int:id_paciente>', methods=['PUT'])
-def actualizar_paciente(id_paciente):
-    paciente = Paciente.query.get_or_404(id_paciente)
+@app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
+def actualizar_paciente_de_usuario(id_usuario, id_paciente):
+    # Verificar si el paciente pertenece al usuario
+    paciente = Paciente.query.filter_by(id_usuario=id_usuario, id_paciente=id_paciente).first()
+    if paciente is None:
+        return jsonify({'error': 'Paciente no encontrado o no pertenece al usuario indicado'}), 404
     datos = request.get_json()
     try:
-        # Actualizar datos básicos del paciente
         actualizar_datos_basicos_paciente(paciente, datos)
-        # Actualizar relaciones
+        # Actualizar relaciones (teléfonos, correos electrónicos, direcciones)
         actualizar_telefonos(paciente, datos.get('telefonos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
