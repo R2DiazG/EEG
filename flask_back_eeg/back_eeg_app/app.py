@@ -118,16 +118,17 @@ def eliminar_usuario(id_usuario):
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ CRUD de Pacientes ###################################################################
-@app.route('/pacientes', methods=['POST'])
-def crear_paciente():
+@app.route('/usuarios/<int:id_usuario>/pacientes', methods=['POST'])
+def crear_paciente_para_usuario(id_usuario):
+    # Verificar que el usuario existe
+    usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
-    # Asumir validación de datos aquí...
     try:
         nuevo_paciente = Paciente(
-            id_usuario=datos['id_usuario'],
+            id_usuario=id_usuario,  # Usamos el id_usuario de la ruta
             nombre=datos['nombre'],
             apellido_paterno=datos['apellido_paterno'],
-            apellido_materno=datos.get('apellido_materno', ''),  # Usar get para manejar opcionales
+            apellido_materno=datos.get('apellido_materno', ''),
             fecha_nacimiento=datos['fecha_nacimiento'],
             id_genero=datos['id_genero'],
             id_estado_civil=datos['id_estado_civil'],
