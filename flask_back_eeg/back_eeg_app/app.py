@@ -157,25 +157,21 @@ def crear_paciente_para_usuario(id_usuario):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-@app.route('/pacientes', methods=['GET'])
-def obtener_pacientes():
-    pacientes = Paciente.query.all()
-    resultado = []
-    for paciente in pacientes:
-        paciente_datos = {
-            'id_paciente': paciente.id_paciente,
-            'id_usuario': paciente.id_usuario,
-            'nombre': paciente.nombre,
-            'apellido_paterno': paciente.apellido_paterno,
-            'apellido_materno': paciente.apellido_materno or "",
-            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
-            'genero': paciente.genero.descripcion if paciente.genero else None,
-            'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else None,
-            'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else None,
-            'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else None,
-            'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else None,
-        }
-        resultado.append(paciente_datos)
+@app.route('/usuarios/<int:id_usuario>/pacientes', methods=['GET'])
+def obtener_pacientes_por_usuario(id_usuario):
+    pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
+    resultado = [{
+        'id_paciente': paciente.id_paciente,
+        'nombre': paciente.nombre,
+        'apellido_paterno': paciente.apellido_paterno,
+        'apellido_materno': paciente.apellido_materno or "",
+        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
+        'genero': paciente.genero.descripcion if paciente.genero else "",
+        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
+    } for paciente in pacientes]
     return jsonify(resultado), 200
 
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
