@@ -1,39 +1,58 @@
 <div class="container">
-<app-menu-lateral></app-menu-lateral>
-<div class="patient-list-container">
-    <div class="header">
-      <h1>Pacientes</h1>
-      <input type="search" placeholder="Nombre del paciente">
-      <button (click)="registerPatient()">+ Registrar nuevo paciente</button>
+  <app-menu-lateral></app-menu-lateral>
+  <div class="patient-list-container">
+      <div class="header">
+        <h1>Paciente</h1>
+        <input type="search" placeholder="Nombre del psicologo">
+      </div>
+
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Nombre Column -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef> Nombre </th>
+          <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+        </ng-container>
+    
+        <!-- Apellidos Column -->
+        <ng-container matColumnDef="apellidos">
+          <th mat-header-cell *matHeaderCellDef> Apellidos </th>
+          <td mat-cell *matCellDef="let element"> {{element.apellidos}} </td>
+        </ng-container>
+    
+        <!-- Username Column -->
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef> Nombre de usuario </th>
+          <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+        </ng-container>
+    
+        <!-- Correo Column -->
+        <ng-container matColumnDef="correo">
+          <th mat-header-cell *matHeaderCellDef> Correo </th>
+          <td mat-cell *matCellDef="let element"> {{element.correo}} </td>
+        </ng-container>
+    
+        <!-- Rol Column -->
+        <ng-container matColumnDef="id_rol">
+          <th mat-header-cell *matHeaderCellDef> Rol </th>
+          <td mat-cell *matCellDef="let element"> {{getRoleName(element.id_rol)}} </td>
+        </ng-container>
+    
+        <!-- Aprobacion Column -->
+        <ng-container matColumnDef="aprobacion">
+          <th mat-header-cell *matHeaderCellDef> Aprobación </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-slide-toggle  
+            [ngClass]="{'toggle-active': element.aprobacion}"  
+            [(ngModel)]="element.aprobacion"  
+            (change)="toggleAprobacion(element)">
+          </mat-slide-toggle>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <br>
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </div>
-  
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Edad</th>
-          <th>Número de consultas</th>
-          <th>Diagnostico</th>
-          <th>Ver más</th>
-        </tr>
-      </thead>
-      <tbody>
-        <td>Eugene</td>
-        <td>Fitzherbert Charming</td>
-        <td>23</td>
-        <td>1</td>
-        <td>El paciente ha reportado episodios de cefalea y mareos intermitentes en las últimas dos semanas. Actualmente toma medicación para el control de la migraña. Se ha programado el EEG después de una noche de privación de sueño para evaluar la actividad cerebral durante episodios de fatiga extrema. No hay antecedentes familiares de epilepsia. Estudios previos de imagen no muestran anomalías estructurales.</td>
-        <td><button (click)="viewDetails()">Ver más</button></td>
-        <!-- <tr *ngFor="let patient of patients">
-          <td>{{ patient?.nombre }}</td>
-          <td>{{ patient.apellido }}</td>
-          <td>{{ patient.edad }}</td>
-          <td>{{ patient.numeroConsultas }}</td>
-          <td>{{ patient.diagnostico }}</td>
-          <td><button (click)="viewDetails(patient)">Ver más</button></td>
-        </tr> -->
-      </tbody>
-    </table>
   </div>
-</div>
