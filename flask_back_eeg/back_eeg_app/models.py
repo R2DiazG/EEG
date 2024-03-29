@@ -178,6 +178,6 @@ class NormalizedEEG(db.Model):
     id_eeg_procesado = db.Column(db.Integer, primary_key=True)
     id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)
     fecha_hora_procesado = db.Column(db.DateTime, nullable=False)
-    pointStart = db.Column(db.JSON)
-    pointInterval = db.Column(db.JSON)
+    pointStart = db.Column(db.Integer)
+    pointInterval = db.Column(db.Integer)
     data_normalized = db.Column(db.JSON)
