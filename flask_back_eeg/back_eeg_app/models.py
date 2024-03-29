@@ -162,9 +162,9 @@ class Sesion(db.Model):
     fecha_consulta = db.Column(db.Date, nullable=False)
     resumen_sesion_actual = db.Column(db.Text)
     notas_psicologo = db.Column(db.Text)
-    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy='dynamic')
-    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic')
-    medicamentos = db.relationship('Medicamento', secondary=sesion_medicamento, backref=db.backref('sesiones', lazy=True))
+    raw_eegs = db.relationship('RawEEG', backref='sesion', lazy='dynamic', cascade='all, delete-orphan')
+    normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic', cascade='all, delete-orphan')
+    medicamentos = db.relationship('Medicamento', secondary=sesion_medicamento, backref=db.backref('sesiones', lazy='dynamic'))
 
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'
