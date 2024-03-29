@@ -42,8 +42,8 @@ export class UsuarioService {
   }
   
   cambiarAprobacionUsuario(idUsuario: number, aprobacion: boolean): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // URL específica para cambiar aprobación
-    const headers = this.getHeaders(); // Reutiliza el método existente para obtener los encabezados
+    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // Asegúrate de que apiUrl esté definido correctamente
+    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
     const body = { aprobacion }; // Cuerpo de la solicitud con la nueva aprobación
 
     // Realiza la solicitud PUT

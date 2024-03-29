@@ -60,7 +60,7 @@ export class ListaPsicologosComponent implements OnInit {
     user.aprobacion = !user.aprobacion;
   
     // Llama al servicio para actualizar el estado de aprobación en el backend
-    this.usuarioService.cambiarAprobacionUsuario(user.id_usuario, user.aprobacion).subscribe({
+    this.usuarioService.cambiarAprobacionUsuario(user.id_usuario, !user.aprobacion).subscribe({
       next: (response) => {
         // Actualización exitosa
         console.log('Aprobación actualizada correctamente', response);
