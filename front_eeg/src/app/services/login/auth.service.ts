@@ -12,9 +12,25 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(username: string, password: string) {
-    return this.http.post<any>(this.loginUrl, { username, contraseña: password });
+  login(username: string, password: string): Observable<any> {
+    return new Observable(observer => {
+      this.http.post<any>(this.loginUrl, { username, contraseña: password }).subscribe({
+        next: (response) => {
+          if (response && response.access_token) {
+            localStorage.setItem('access_token', response.access_token);
+            observer.next(response); // Propaga la respuesta a cualquier suscriptor
+            observer.complete();
+          } else {
+            observer.error('No se recibió el token');
+          }
+        },
+        error: (err) => {
+          observer.error(err);
+        }
+      });
+    });
   }
+  
 
   forgotPassword(username: string) {
     return this.http.post<any>(this.forgotPasswordUrl, { username });

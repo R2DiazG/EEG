@@ -1,33 +1,83 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 @Component({
   selector: 'app-lista-psicologos',
   templateUrl: './lista-psicologos.component.html',
-  styleUrls: ['./lista-psicologos.component.scss']
+  styleUrls: ['./lista-psicologos.component.scss'],
 })
 export class ListaPsicologosComponent implements OnInit {
-  users: any[] = []; // Cambiado de patients a users para coincidir con tu caso de uso
+  displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion'];
+  dataSource = new MatTableDataSource<any>([]);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
-    private usuarioService: UsuarioService, // Inyectar el servicio de usuarios
-    private router: Router
-  ) { }
+    private usuarioService: UsuarioService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
+  ngAfterViewInit() {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }  
+
   loadUsers() {
+    console.log('Token from localStorage:', localStorage.getItem('access_token'));
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (data) => {
-        this.users = data; // Asigna la respuesta a la propiedad users
+        this.dataSource.data = data;
       },
       error: (error) => {
         console.error('Error al recuperar usuarios:', error);
       }
     });
+  }
+
+  toggleAprobacion(user: any): void {
+    // Guarda el estado original de aprobación en caso de que necesitemos revertirlo
+    const originalAprobacion = user.aprobacion;
+  
+    // Cambia el estado de aprobación en el front end primero para reactividad de la UI
+    user.aprobacion = !user.aprobacion;
+  
+    // Llama al servicio para actualizar el estado en el backend
+    this.usuarioService.actualizarUsuario(user.id_usuario, { aprobacion: user.aprobacion }).subscribe({
+      next: (response) => {
+        // Actualización exitosa
+        console.log('Aprobación actualizada correctamente', response);
+        // No es necesario actualizar user.aprobacion ya que se hizo antes de la suscripción
+      },
+      error: (error) => {
+        // En caso de error, revierte al estado original
+        user.aprobacion = originalAprobacion;
+        console.error('Error al actualizar la aprobación', error);
+        // Informar al usuario del fallo mediante una notificación/alerta
+      }
+    });
+  }
+  
+  getRoleName(idRol: number): string {
+    switch (idRol) {
+      case 1:
+        return 'Admin';
+      case 2:
+        return 'Psicólogo';
+      default:
+        return 'Desconocido';
+    }
   }
 
   registerPatient() {

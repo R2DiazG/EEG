@@ -1,3 +1,5 @@
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
 .container{
     display: flex;
     flex-direction: row;
@@ -60,5 +62,22 @@
           background-color: #f2f2f2;
         }
       }
+
+      .toggle-active {
+        --color-checked: #5AAF45; /* Color verde cuando está activo */
+        --color-unchecked: #bbb; /* Color gris cuando está desactivado */
+      }
+      
+      /* Estilos para cambiar el color de fondo del mat-slide-toggle cuando está activo */
+      .toggle-active .mat-slide-toggle-thumb {
+        background-color: var(--color-checked) !important;
+      }
+      
+      /* Estilos para cambiar el color de la barra cuando está activo */
+      .toggle-active .mat-slide-toggle-bar {
+        background-color: var(--color-unchecked) !important;
+      }
+         
+
     }
     

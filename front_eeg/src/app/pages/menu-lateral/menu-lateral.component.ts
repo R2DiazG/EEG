@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../services/login/auth.service';
+import { access } from 'fs';
 
 @Component({
   selector: 'app-menu-lateral',

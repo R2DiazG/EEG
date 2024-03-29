@@ -1,40 +1,56 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from '../login/auth.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
-
   private apiUrl = 'http://127.0.0.1:5000/usuarios';
 
   constructor(private http: HttpClient) { }
 
+  private getHeaders(): HttpHeaders {
+    const access_token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    if (access_token) {
+      headers = headers.set('Authorization', `Bearer ${access_token}`);
+    }
+    return headers;
+  }
+
   crearUsuario(usuario: any): Observable<any> {
-    return this.http.post(this.apiUrl, usuario);
+    return this.http.post(this.apiUrl, usuario, { headers: this.getHeaders() });
   }
 
   obtenerUsuarios(): Observable<any[]> {
-    const access_token = localStorage.getItem('access_token'); // Asegúrate de que la clave aquí coincida con cómo guardas el token
-    console.log(access_token)
+    // Asegúrate de que 'Authorization' se agrega correctamente a los encabezados.
+    const access_token = localStorage.getItem('access_token');
+    if (!access_token) {
+      console.error('Error: Token de autenticación no encontrado.');
+      // Aquí podrías manejar el caso de que el token no exista,
+      // como redirigir al usuario a la página de inicio de sesión.
+    }
     const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + access_token
+      'Authorization': `Bearer ${access_token}`
     });
     return this.http.get<any[]>(this.apiUrl, { headers });
   }
   
 
   obtenerUsuario(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
   actualizarUsuario(id: number, usuario: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, usuario);
+    return this.http.put(`${this.apiUrl}/${id}`, usuario, { headers: this.getHeaders() });
   }
 
   eliminarUsuario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

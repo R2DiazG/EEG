@@ -11,7 +11,6 @@ import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.compo
 import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
-import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
 import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicologos.component';
@@ -28,7 +27,6 @@ const routes: Routes = [
   { path: 'ver-paciente', component: VerPacienteComponent },
   { path: 'graficas-paciente', component: GraficasPacienteComponent },
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
-  { path: 'aprobar-psicologos', component: AprobarPsicologosComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'nueva-consulta', component: NuevaConsultaComponent}, 
   { path: 'lista-psicologos', component: ListaPsicologosComponent },
