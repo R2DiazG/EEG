@@ -41,6 +41,14 @@ export class UsuarioService {
     return this.http.get<any[]>(this.apiUrl, { headers });
   }
   
+  cambiarAprobacionUsuario(idUsuario: number, aprobacion: boolean): Observable<any> {
+    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // URL específica para cambiar aprobación
+    const headers = this.getHeaders(); // Reutiliza el método existente para obtener los encabezados
+    const body = { aprobacion }; // Cuerpo de la solicitud con la nueva aprobación
+
+    // Realiza la solicitud PUT
+    return this.http.put(url, body, { headers });
+  }
 
   obtenerUsuario(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });

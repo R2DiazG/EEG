@@ -35,15 +35,21 @@ export class ListaPsicologosComponent implements OnInit {
   }  
 
   loadUsers() {
-    console.log('Token from localStorage:', localStorage.getItem('access_token'));
-    this.usuarioService.obtenerUsuarios().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
-      },
-      error: (error) => {
-        console.error('Error al recuperar usuarios:', error);
-      }
-    });
+    // Comprueba si window está definido, lo que indica que estamos en el navegador
+    if (typeof window !== 'undefined') {
+      console.log('Token from localStorage:', localStorage.getItem('access_token'));
+      this.usuarioService.obtenerUsuarios().subscribe({
+        next: (data) => {
+          this.dataSource.data = data;
+        },
+        error: (error) => {
+          console.error('Error al recuperar usuarios:', error);
+        }
+      });
+    } else {
+      // Maneja el caso cuando no estás en un entorno de navegador, si es necesario
+      console.log('localStorage no está disponible en este entorno.');
+    }
   }
 
   toggleAprobacion(user: any): void {
@@ -53,12 +59,11 @@ export class ListaPsicologosComponent implements OnInit {
     // Cambia el estado de aprobación en el front end primero para reactividad de la UI
     user.aprobacion = !user.aprobacion;
   
-    // Llama al servicio para actualizar el estado en el backend
-    this.usuarioService.actualizarUsuario(user.id_usuario, { aprobacion: user.aprobacion }).subscribe({
+    // Llama al servicio para actualizar el estado de aprobación en el backend
+    this.usuarioService.cambiarAprobacionUsuario(user.id_usuario, user.aprobacion).subscribe({
       next: (response) => {
         // Actualización exitosa
         console.log('Aprobación actualizada correctamente', response);
-        // No es necesario actualizar user.aprobacion ya que se hizo antes de la suscripción
       },
       error: (error) => {
         // En caso de error, revierte al estado original
