@@ -356,6 +356,29 @@ def obtener_fechas_sesiones_por_paciente(id_paciente):
     # Devolver las fechas de las sesiones en formato JSON
     return jsonify(fechas_sesiones), 200
 
+@app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
+def obtener_medicamentos_por_paciente(id_paciente):
+    # Asegurarse de que el paciente existe
+    paciente = Paciente.query.get_or_404(id_paciente)
+    # Obtener todas las sesiones del paciente
+    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+    # Lista para almacenar los medicamentos junto con la fecha de la sesión y notas del psicólogo
+    medicamentos_detalle = []
+    # Recorrer todas las sesiones para recolectar los medicamentos y las notas del psicólogo
+    for sesion in sesiones:
+        fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
+        notas_psicologo = sesion.notas_psicologo
+        for medicamento in sesion.medicamentos:
+            medicamentos_detalle.append({
+                'id_medicamento': medicamento.id_medicamento,
+                'nombre_comercial': medicamento.nombre_comercial,
+                'principio_activo': medicamento.principio_activo,
+                'presentacion': medicamento.presentacion,
+                'fecha_sesion': fecha_sesion,  # Incluir la fecha de la sesión
+                'notas_psicologo': notas_psicologo  # Incluir las notas del psicólogo
+            })
+    return jsonify(medicamentos_detalle), 200
+
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
 def actualizar_paciente_de_usuario(id_usuario, id_paciente):
     # Verificar si el paciente pertenece al usuario
