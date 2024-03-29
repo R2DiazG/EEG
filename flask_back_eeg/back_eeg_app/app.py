@@ -472,8 +472,8 @@ def eliminar_paciente(id_usuario, id_paciente):
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ Procesamiento de EEG ################################################################
 # INCOMPLETO – Falta trabajar en varias partes de este código, no va a funcionar tal como está
-@app.route('/pacientes/<int:id_paciente>/subir_eeg', methods=['POST'])
-def subir_eeg(id_paciente):
+@app.route('/sesiones/<int:id_sesion>/subir_eeg', methods=['POST'])
+def subir_eeg(id_sesion):
     # Asegurar que el archivo está presente en la petición
     if 'archivo_eeg' not in request.files:
         return jsonify({'error': 'No se encontró el archivo'}), 400
@@ -499,7 +499,7 @@ def subir_eeg(id_paciente):
         raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
         # Crear una nueva sesión
         nueva_sesion = Sesion(
-            id_paciente=id_paciente,
+            id_sesion=id_sesion,
             fecha_consulta=datetime.utcnow(),
             resumen_sesion_actual="Resumen de la sesión",
             notas_psicologo="Notas del psicólogo"
