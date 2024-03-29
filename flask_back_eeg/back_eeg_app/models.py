@@ -178,7 +178,7 @@ class RawEEG(db.Model):
     id_eeg = db.Column(db.Integer, primary_key=True)
     id_sesion = db.Column(db.Integer, db.ForeignKey('sesiones.id_sesion'), nullable=False)
     fecha_hora_registro = db.Column(db.DateTime, nullable=False)
-    data = db.Column(JSON)
+    data = db.Column(db.JSON)
 
 class NormalizedEEG(db.Model):
     __tablename__ = 'normalized_eeg'
@@ -187,4 +187,4 @@ class NormalizedEEG(db.Model):
     fecha_hora_procesado = db.Column(db.DateTime, nullable=False)
     pointStart = db.Column(db.JSON)
     pointInterval = db.Column(db.JSON)
-    data_normalized = db.Column(JSON)
+    data_normalized = db.Column(db.JSON)

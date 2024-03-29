@@ -3,6 +3,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ChangeDetectorRef } from '@angular/core';
+import { UsuarioService } from '../../services/usuarios/usuario.service';
 
 @Component({
   selector: 'app-lista-pacientes',
@@ -10,73 +12,84 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   styleUrl: './lista-pacientes.component.scss'
 })
 export class ListaPacientesComponent {
-  //displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion'];
-  // dataSource = new MatTableDataSource<any>([]);
+  displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion'];
+  dataSource = new MatTableDataSource<any>([]);
 
-  // @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor( private router: Router,) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+  ) {}
 
-  // ngOnInit(): void {
-  //   this.loadUsers();
-  // }
+  ngOnInit(): void {
+    this.loadUsers();
+  }
 
-  // ngAfterViewInit() {
-  //   if (this.paginator) {
-  //     this.dataSource.paginator = this.paginator;
-  //   }
-  // }  
+  ngAfterViewInit() {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }  
 
-  // loadUsers() {
-  //   this.usuarioService.obtenerUsuarios().subscribe({
-  //     next: (data) => {
-  //       this.dataSource.data = data;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al recuperar usuarios:', error);
-  //     }
-  //   });
-  // }
+  loadUsers() {
+    // Comprueba si window está definido, lo que indica que estamos en el navegador
+    if (typeof window !== 'undefined') {
+      console.log('Token from localStorage:', localStorage.getItem('access_token'));
+      this.usuarioService.obtenerUsuarios().subscribe({
+        next: (data) => {
+          this.dataSource.data = data;
+        },
+        error: (error) => {
+          console.error('Error al recuperar usuarios:', error);
+        }
+      });
+    } else {
+      // Maneja el caso cuando no estás en un entorno de navegador, si es necesario
+      console.log('localStorage no está disponible en este entorno.');
+    }
+  }
 
-  // toggleAprobacion(user: any): void {
-  //   // Almacena el estado original en caso de que necesitemos revertir
-  //   const originalAprobacion = user.aprobacion;
+  toggleAprobacion(user: any): void {
+    // Guarda el estado original de aprobación en caso de que necesitemos revertirlo
+    const originalAprobacion = user.aprobacion;
   
-  //   // Actualiza localmente la aprobación
-  //   user.aprobacion = !user.aprobacion;
+    // Cambia el estado de aprobación en el front end primero para reactividad de la UI
+    user.aprobacion = !user.aprobacion;
   
-  //   // Actualiza el usuario en el backend
-  //   this.usuarioService.actualizarUsuario(user.id_usuario, { aprobacion: user.aprobacion })
-  //     .subscribe({
-  //       next: (response) => {
-  //         // Aquí podrías manejar la respuesta del backend si es necesario
-  //         console.log('Estado de aprobación actualizado', response);
-  //       },
-  //       error: (error) => {
-  //         // Revertir el cambio en caso de error
-  //         user.aprobacion = originalAprobacion;
-  //         console.error('Error al actualizar el estado de aprobación', error);
-  //       }
-  //     });
-  // }  
-
-  // getRoleName(idRol: number): string {
-  //   switch (idRol) {
-  //     case 1:
-  //       return 'Admin';
-  //     case 2:
-  //       return 'Psicólogo';
-  //     default:
-  //       return 'Desconocido';
-  //   }
-  // }
+    // Llama al servicio para actualizar el estado de aprobación en el backend
+    this.usuarioService.cambiarAprobacionUsuario(user.id_usuario, !user.aprobacion).subscribe({
+      next: (response) => {
+        // Actualización exitosa
+        console.log('Aprobación actualizada correctamente', response);
+      },
+      error: (error) => {
+        // En caso de error, revierte al estado original
+        user.aprobacion = originalAprobacion;
+        console.error('Error al actualizar la aprobación', error);
+        // Informar al usuario del fallo mediante una notificación/alerta
+      }
+    });
+  }
+  
+  getRoleName(idRol: number): string {
+    switch (idRol) {
+      case 1:
+        return 'Admin';
+      case 2:
+        return 'Psicólogo';
+      default:
+        return 'Desconocido';
+    }
+  }
 
   registerPatient() {
     this.router.navigate(['/registrar-paciente']); // Navega a la ruta de registrar paciente
   }
 
-  viewDetails() { // Asegúrate de pasar el usuario a la función
+  viewDetails(user: any) { // Asegúrate de pasar el usuario a la función
     // Aquí podrías pasar el ID del usuario o cualquier otra información relevante
-    this.router.navigate(['/ver-paciente']); // Suponiendo que cada usuario tiene una propiedad 'id'
+    this.router.navigate(['/ver-paciente', user.id]); // Suponiendo que cada usuario tiene una propiedad 'id'
   }
 }
