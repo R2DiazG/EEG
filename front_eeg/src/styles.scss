@@ -20,3 +20,21 @@
             color: white;
             }
     }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.toggle-active {
+    --color-checked: #5AAF45 !important; /* Color verde cuando está activo */
+    --color-unchecked: #bbb !important; /* Color gris cuando está desactivado */
+  }
+  
+  /* Estilos para cambiar el color de fondo del mat-slide-toggle cuando está activo */
+  .toggle-active .mat-slide-toggle-thumb {
+    background-color: var(--color-checked) !important;
+  }
+  
+  /* Estilos para cambiar el color de la barra cuando está activo */
+  .toggle-active .mat-slide-toggle-bar {
+    background-color: var(--color-unchecked) !important;
+  }
+  

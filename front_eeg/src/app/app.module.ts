@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -18,10 +17,14 @@ import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.componen
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
 import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicologos.component';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,6 @@ import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicolo
     VerPacienteComponent,
     GraficasPacienteComponent,
     RegistrarPsicologoComponent,
-    AprobarPsicologosComponent,
     OlvideContraComponent,
     NuevaConsultaComponent,
     ListaPsicologosComponent
@@ -48,9 +50,13 @@ import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicolo
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatSlideToggleModule,
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent]
 })

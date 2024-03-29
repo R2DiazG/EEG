@@ -37,7 +37,8 @@ export class RegistrarPsicologoComponent {
         ...this.registrationForm.value,
         username: username,
         aprobacion: false,
-        id_rol: 2
+        id_rol: 2,
+        correo: email
       };
   
       console.log('Enviando formData:', formData);
