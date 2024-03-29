@@ -2,9 +2,9 @@ from extensions import db
 from datetime import datetime
 from sqlalchemy.dialects.mysql import JSON
 
-# Definición de la tabla de asociación
-paciente_medicamento = db.Table('paciente_medicamento',
-    db.Column('id_paciente', db.Integer, db.ForeignKey('pacientes.id_paciente'), primary_key=True),
+# Definición de la tabla de asociación Sesiones-Medicamentos
+sesion_medicamento = db.Table('sesiones_medicamentos',
+    db.Column('id_sesion', db.Integer, db.ForeignKey('sesiones.id_sesion'), primary_key=True),
     db.Column('id_medicamento', db.Integer, db.ForeignKey('medicamentos.id_medicamento'), primary_key=True)
 )
 
@@ -57,7 +57,6 @@ class Ocupacion(db.Model):
     id_ocupacion = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(255), nullable=False)
 
-# Modelo para Pacientes
 class Paciente(db.Model):
     __tablename__ = 'pacientes'
     id_paciente = db.Column(db.Integer, primary_key=True)
@@ -76,19 +75,12 @@ class Paciente(db.Model):
     lateralidad = db.relationship('Lateralidad', backref='pacientes')
     id_ocupacion = db.Column(db.Integer, db.ForeignKey('ocupaciones.id_ocupacion'))
     ocupacion = db.relationship('Ocupacion', backref='pacientes')
-
     # Relaciones adicionales
-    telefonos = db.relationship('Telefono', backref='paciente', lazy=True)
-    correos_electronicos = db.relationship('CorreoElectronico', backref='paciente', lazy=True)
-    direcciones = db.relationship('Direccion', backref='paciente', lazy=True)
-    historiales_medicos = db.relationship('HistorialMedico', backref='paciente', lazy=True)
-    sesiones = db.relationship('Sesion', backref='paciente', lazy=True)
-    consentimientos = db.relationship('Consentimiento', backref='paciente', lazy=True)
-    ##raw_eegs = db.relationship('RawEEG', backref='paciente', lazy=True)
-    #normalized_eegs = db.relationship('NormalizedEEG', backref='paciente', lazy=True)
-    diagnosticos_previos = db.relationship('DiagnosticoPrevio', backref='paciente', lazy=True)
-    # Como PacienteMedicamento es una asociación
-    medicamentos = db.relationship('Medicamento', secondary=paciente_medicamento, backref=db.backref('pacientes', lazy=True))
+    telefonos = db.relationship('Telefono', backref='paciente', lazy='dynamic')
+    correos_electronicos = db.relationship('CorreoElectronico', backref='paciente', lazy='dynamic')
+    direcciones = db.relationship('Direccion', backref='paciente', lazy='dynamic')
+    sesiones = db.relationship('Sesion', backref='paciente', lazy='dynamic')
+    consentimientos = db.relationship('Consentimiento', backref='paciente', lazy='dynamic')
 
 # Modelo para Teléfonos
 class Telefono(db.Model):
@@ -172,6 +164,7 @@ class Sesion(db.Model):
     notas_psicologo = db.Column(db.Text)
     raw_eegs = db.relationship('RawEEG', backref='sesion', lazy='dynamic')
     normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic')
+    medicamentos = db.relationship('Medicamento', secondary=sesion_medicamento, backref=db.backref('sesiones', lazy=True))
 
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'

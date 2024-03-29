@@ -147,7 +147,7 @@ def obtener_usuarios():
     usuario_actual = Usuario.query.filter_by(username=current_user).first()
     if usuario_actual.id_rol != 1: 
         return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
-    usuarios = Usuario.query.all()
+    usuarios = Usuario.query.filter(Usuario.id_usuario != usuario_actual.id_usuario).all()
     resultado = [
         {
             'id_usuario': usuario.id_usuario,
@@ -305,29 +305,12 @@ def obtener_detalles_paciente(id_paciente):
             'pais': direccion.pais,
             'codigo_postal': direccion.codigo_postal
         } for direccion in paciente.direcciones],
-        # Asumiendo paginación y limitación en el número de sesiones a mostrar
-        'sesiones': obtener_sesiones_con_enlace_eeg(paciente.id_paciente)
+        'consentimientos': [{
+            'consentimiento': consent.consentimiento, 
+            'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
+        } for consent in paciente.consentimientos]
     }
-    # Incluir resumen de diagnósticos previos, consentimientos y medicamentos
-    detalles_paciente.update({
-        'diagnosticos_previos': [{'descripcion': diag.descripcion} for diag in paciente.diagnosticos_previos],
-        'consentimientos': [{'consentimiento': consent.consentimiento, 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')} for consent in paciente.consentimientos],
-        'medicamentos': [{'nombre_comercial': med.nombre_comercial} for med in paciente.medicamentos]
-    })
     return jsonify(detalles_paciente), 200
-
-def obtener_sesiones_con_enlace_eeg(id_paciente):
-    limite = request.args.get('limit', default=10, type=int)  # Establecer un límite por defecto
-    pagina = request.args.get('page', default=1, type=int)  # Establecer la página por defecto
-    sesiones_paginadas = Sesion.query.filter_by(id_paciente=id_paciente).paginate(page=pagina, per_page=limite, error_out=False)
-    sesiones = [{
-        'id_sesion': sesion.id_sesion,
-        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
-        'resumen_sesion_actual': sesion.resumen_sesion_actual,
-        'notas_psicologo': sesion.notas_psicologo,
-        'link_detalle_eeg': f"/sesiones/{sesion.id_sesion}/eegs"  # Proporcionar un enlace para obtener detalles de EEG por sesión
-    } for sesion in sesiones_paginadas.items]
-    return sesiones
 
 @app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
 def obtener_eegs_por_sesion(id_sesion):
@@ -336,20 +319,42 @@ def obtener_eegs_por_sesion(id_sesion):
     # Buscar los EEGs asociados con la sesión
     raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
     normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
-    # Preparar la respuesta con los datos de los EEGs
+    # Buscar los medicamentos asociados con la sesión
+    medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
     eegs_response = {
+        'detalle_sesion': {
+            'id_sesion': sesion.id_sesion,
+            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+            'resumen_sesion_actual': sesion.resumen_sesion_actual,
+            'notas_psicologo': sesion.notas_psicologo,
+        },
         'raw_eegs': [{
             'id_eeg': eeg.id_eeg,
             'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-            'data': json.dumps(eeg.data)  # Aquí se retorna directamente el campo JSON
+            'data': eeg.data
         } for eeg in raw_eegs],
         'normalized_eegs': [{
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_normalized': json.dumps(eeg.data_normalized)  # Igualmente para los EEG normalizados
-        } for eeg in normalized_eegs]
+            'data_normalized': eeg.data_normalized
+        } for eeg in normalized_eegs],
+        'medicamentos': medicamentos
     }
     return jsonify(eegs_response), 200
+
+@app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
+def obtener_fechas_sesiones_por_paciente(id_paciente):
+    # Asegurarse de que el paciente existe
+    paciente = Paciente.query.get_or_404(id_paciente)
+    # Obtener todas las fechas de sesiones para el paciente especificado
+    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
+    # Extraer solo las fechas de las sesiones para el dropdown list
+    fechas_sesiones = [{
+        'id_sesion': sesion.id_sesion,
+        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+    } for sesion in sesiones]
+    # Devolver las fechas de las sesiones en formato JSON
+    return jsonify(fechas_sesiones), 200
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
 def actualizar_paciente_de_usuario(id_usuario, id_paciente):
