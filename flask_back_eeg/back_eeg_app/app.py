@@ -341,12 +341,12 @@ def obtener_eegs_por_sesion(id_sesion):
         'raw_eegs': [{
             'id_eeg': eeg.id_eeg,
             'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-            'data': json.dumps(eeg.data)  # Aquí se retorna directamente el campo JSON
+            'data': eeg.data  # Aquí se retorna directamente el campo JSON
         } for eeg in raw_eegs],
         'normalized_eegs': [{
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_normalized': json.dumps(eeg.data_normalized)  # Igualmente para los EEG normalizados
+            'data_normalized': eeg.data_normalized  # Igualmente para los EEG normalizados
         } for eeg in normalized_eegs]
     }
     return jsonify(eegs_response), 200
