@@ -170,5 +170,5 @@ export class GraficasPacienteComponent implements OnInit {
 
   addConsultation(): void {
       this.router.navigate(['/nueva-consulta']);
-   }
+  }
 }

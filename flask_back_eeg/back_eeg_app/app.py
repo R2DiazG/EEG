@@ -80,7 +80,7 @@ def login():
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
 @app.route('/solicitar_cambio_contrasena', methods=['POST'])
-def solicitar_cambio_contraseña():
+def solicitar_cambio_contrasena():
     try:
         datos = request.get_json()
         if not datos:
