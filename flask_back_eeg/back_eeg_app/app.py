@@ -607,6 +607,7 @@ def crear_nueva_sesion():
         if archivo_eeg.filename == '':
             return jsonify({'error': 'No se seleccionó ningún archivo'}), 400
         datos = request.form
+        id_paciente = datos.get('id_paciente')
         estado_general = datos.get('estado_general')
         estado_especifico = datos.getlist('estado_especifico')  # Asumiendo que es posible seleccionar más de uno
         resumen_sesion_actual = datos.get('resumen_sesion_actual')
@@ -616,6 +617,7 @@ def crear_nueva_sesion():
         archivo_eeg.save(path_temporal)
         # Crea una instancia de Sesion con los datos recibidos
         nueva_sesion = Sesion(
+            id_paciente=id_paciente,
             fecha_consulta=datetime.now(timezone.utc),
             estado_general=estado_general,
             estado_especifico=','.join(estado_especifico),
