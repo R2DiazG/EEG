@@ -12,25 +12,47 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
+  // login(username: string, password: string): Observable<any> {
+  //   return new Observable(observer => {
+  //     this.http.post<any>(this.loginUrl, { username, contraseña: password }).subscribe({
+  //       next: (response) => {
+  //         if (response && response.access_token) {
+  //           localStorage.setItem('access_token', response.access_token);
+  //           observer.next(response); // Propaga la respuesta a cualquier suscriptor
+  //           observer.complete();
+  //         }
+  //         if(response.user){
+  //           localStorage.setItem('currentUser', JSON.stringify(response.user));
+  //         } else {
+  //           observer.error('No se recibió el token');
+  //         }
+  //       },
+  //       error: (err) => {
+  //         observer.error(err);
+  //       }
+  //     });
+  //   });
+  // }
+
   login(username: string, password: string): Observable<any> {
     return new Observable(observer => {
       this.http.post<any>(this.loginUrl, { username, contraseña: password }).subscribe({
         next: (response) => {
-          if (response && response.access_token) {
+          if (response && response.access_token && response.user) {
             localStorage.setItem('access_token', response.access_token);
-            observer.next(response); // Propaga la respuesta a cualquier suscriptor
+            // Asegúrate de que la respuesta del servidor incluya el objeto "user" con el id_usuario
+            localStorage.setItem('currentUser', JSON.stringify(response.user));
+            observer.next(response);
             observer.complete();
           } else {
-            observer.error('No se recibió el token');
+            observer.error('Faltan datos de la respuesta del servidor.');
           }
         },
-        error: (err) => {
-          observer.error(err);
-        }
+        error: err => observer.error(err)
       });
     });
   }
-  
+ 
 
   forgotPassword(username: string) {
     return this.http.post<any>(this.forgotPasswordUrl, { username });
