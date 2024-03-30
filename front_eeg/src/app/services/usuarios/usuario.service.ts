@@ -50,15 +50,26 @@ export class UsuarioService {
     return this.http.put(url, body, { headers });
   }
 
-  obtenerUsuario(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  obtenerUsuario(idUsuario: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${idUsuario}`, { headers: this.getHeaders() });
   }
 
-  actualizarUsuario(id: number, usuario: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, usuario, { headers: this.getHeaders() });
+  actualizarUsuario(idUsuario: number, usuario: any): Observable<any> {
+    const url = `${this.apiUrl}/${idUsuario}`; // Asegúrate de que apiUrl esté definido correctamente
+    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
+
+    // Realiza la solicitud PUT
+    return this.http.put(url, usuario, { headers });
+    //return this.http.put(`${this.apiUrl}/${idUsuario}`, usuario, { headers: this.getHeaders() });
   }
 
-  eliminarUsuario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  eliminarUsuario(idUsuario: number): Observable<any> {
+    const url = `${this.apiUrl}/${idUsuario}`;
+    const headers = this.getHeaders();
+
+    // Realiza la solicitud DELETE
+    return this.http.delete(url, { headers });
+    //return this.http.delete(`${this.apiUrl}/${idUsuario}`, { headers: this.getHeaders() });
   }
+
 }

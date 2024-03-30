@@ -3,39 +3,75 @@
     <div class="patient-list-container">
         <div class="header">
           <h1>Psicólogos</h1>
-          <input type="search" placeholder="Nombre del psicologo">
+          <div class="search-container">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            <input type="search" placeholder="Nombre del psicólogo" [formControl]="searchControl" class="search-input">
+          </div>                          
         </div>
-
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
           <!-- Nombre Column -->
           <ng-container matColumnDef="nombre">
             <th mat-header-cell *matHeaderCellDef> Nombre </th>
-            <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="!isEditMode(element); else editNombre">
+                {{element.nombre}} 
+              </div>
+              <ng-template #editNombre>
+                <input [(ngModel)]="element.nombre">
+              </ng-template>
+            </td>
           </ng-container>
       
           <!-- Apellidos Column -->
           <ng-container matColumnDef="apellidos">
             <th mat-header-cell *matHeaderCellDef> Apellidos </th>
-            <td mat-cell *matCellDef="let element"> {{element.apellidos}} </td>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="!isEditMode(element); else editApellidos">
+                {{element.apellidos}} 
+              </div>
+              <ng-template #editApellidos>
+                <input [(ngModel)]="element.apellidos">
+              </ng-template>
+            </td>
           </ng-container>
       
           <!-- Username Column -->
           <ng-container matColumnDef="username">
             <th mat-header-cell *matHeaderCellDef> Nombre de usuario </th>
-            <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+            <td mat-cell *matCellDef="let element"> 
+              <div *ngIf="!isEditMode(element); else editUsername">
+                {{element.username}} 
+              </div>
+              <ng-template #editUsername>
+                <input [(ngModel)]="element.username">
+              </ng-template>
+            </td>
           </ng-container>
       
           <!-- Correo Column -->
           <ng-container matColumnDef="correo">
             <th mat-header-cell *matHeaderCellDef> Correo </th>
-            <td mat-cell *matCellDef="let element"> {{element.correo}} </td>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="!isEditMode(element); else editCorreo">
+                {{element.correo}} 
+              </div>
+              <ng-template #editCorreo>
+                <input [(ngModel)]="element.correo">
+              </ng-template>
+            </td>
           </ng-container>
       
           <!-- Rol Column -->
           <ng-container matColumnDef="id_rol">
             <th mat-header-cell *matHeaderCellDef> Rol </th>
-            <td mat-cell *matCellDef="let element"> {{getRoleName(element.id_rol)}} </td>
+            <td mat-cell *matCellDef="let element">
+              <div *ngIf="!editModeMap[element.id_usuario]">{{ getRoleName(element.id_rol) }}</div>
+              <select *ngIf="editModeMap[element.id_usuario]" [(ngModel)]="element.id_rol">
+                <option *ngFor="let role of rolesList" [value]="role.id">{{ role.name }}</option>
+              </select>
+            </td>
           </ng-container>
+
       
           <!-- Aprobacion Column -->
           <ng-container matColumnDef="aprobacion">
@@ -48,7 +84,33 @@
             </mat-slide-toggle>
             </td>
           </ng-container>
-      
+
+          <!-- Eliminar Column -->
+          <ng-container matColumnDef="eliminar">
+            <th mat-header-cell *matHeaderCellDef>Eliminar</th>
+            <td mat-cell *matCellDef="let element">
+              <button (click)="onDeleteUser(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted}">
+                <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
+                <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
+                <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
+                <span class="text">{{ element.isDeleted ? 'Deleted' : (element.isConfirm ? 'Are you sure?' : 'Delete') }}</span>
+              </button>              
+            </td>
+          </ng-container>
+
+          <!-- Acciones Column -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let element">
+              <button class="editButton" *ngIf="!editModeMap[element.id_usuario]" (click)="enableEditMode(element)">
+                <i class="fas fa-pencil" aria-hidden="true"></i> 
+                <span class="text">Editar</span>
+              </button>
+              <button class="saveButton" *ngIf="editModeMap[element.id_usuario]" (click)="saveUser(element)">Guardar</button>
+              <button class="cancelEditButton" *ngIf="editModeMap[element.id_usuario]" (click)="cancelEditMode(element)">Cancelar</button>
+            </td>
+          </ng-container>
+        
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
