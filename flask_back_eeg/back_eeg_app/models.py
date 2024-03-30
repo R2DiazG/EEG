@@ -160,6 +160,8 @@ class Sesion(db.Model):
     id_sesion = db.Column(db.Integer, primary_key=True)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     fecha_consulta = db.Column(db.Date, nullable=False)
+    estado_general = db.Column(db.String(255))
+    estado_especifico = db.Column(db.String(255)) 
     resumen_sesion_actual = db.Column(db.Text)
     notas_psicologo = db.Column(db.Text)
     raw_eegs = db.relationship('RawEEG', backref='sesion', lazy='dynamic', cascade='all, delete-orphan')
