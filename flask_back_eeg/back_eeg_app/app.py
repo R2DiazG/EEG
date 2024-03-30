@@ -126,16 +126,15 @@ def resetear_contraseña(token):
 def obtener_usuario_actual():
     # Obtener la identidad del token JWT
     identidad_usuario = get_jwt_identity()
-
     # Buscar al usuario por su identidad (por ejemplo, su username)
     usuario_actual = Usuario.query.filter_by(username=identidad_usuario).first()
-
     if usuario_actual:
         # Retornar el nombre y apellidos del usuario
         return jsonify({
             'id_usuario': usuario_actual.id_usuario,
             'nombre': usuario_actual.nombre,
-            'apellidos': usuario_actual.apellidos
+            'apellidos': usuario_actual.apellidos,
+            'id_rol': usuario_actual.id_rol
         }), 200
     else:
         return jsonify({'mensaje': 'Usuario no encontrado'}), 404
