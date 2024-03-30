@@ -660,7 +660,8 @@ def crear_nueva_sesion():
             # Filtrado pasa-banda para conservar solo las frecuencias de interés
             raw.filter(1., 40., fir_design='firwin')
             # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
-            raw.notch_filter(np.arange(50, 251, 50), fir_design='firwin')
+            nyquist_freq = raw.info['sfreq'] / 2 # Sino hardocdeamos a 128 Hz
+            raw.notch_filter(np.arange(50, nyquist_freq, 50), fir_design='firwin')
             logging.info('Filtrado Notch y pasa-banda aplicados')
             # ICA para identificar y remover componentes de artefactos
             ica = ICA(n_components=20, random_state=97, max_iter=800)
