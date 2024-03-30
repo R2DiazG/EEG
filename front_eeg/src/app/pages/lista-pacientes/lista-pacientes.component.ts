@@ -16,7 +16,7 @@ import { FormControl } from '@angular/forms';
 })
 export class ListaPacientesComponent {
   displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion','eliminar','acciones'];
-  //displayedColumns: string[] = ['nombre', 'apellido_paterno', 'username', 'correo', 'id_rol', 'aprobacion','eliminar','acciones'];
+  //displayedColumns: string[] = ['nombre', 'apellido_paterno', 'apellido_paterno', 'edad', 'numero_de_sesiones', 'notas_ultima_sesion', 'eliminar','acciones'];
   dataSource = new MatTableDataSource<any>([]);
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
