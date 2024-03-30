@@ -6,7 +6,13 @@
         <div class="search-container">
           <i class="fas fa-search search-icon" aria-hidden="true"></i>
           <input type="search" placeholder="Nombre del psicólogo" [formControl]="searchControl" class="search-input">
-        </div>                          
+        </div>
+        <div>
+          <button class="registerButton" (click)="registerPatient()">
+            <i class="fas fa-plus" aria-hidden="true"></i> 
+            <span class="text">Registrar nuevo paciente</span>
+          </button>
+        </div>                       
       </div>
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <!-- Nombre Column -->

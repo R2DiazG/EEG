@@ -109,6 +109,14 @@ body {
   }
 }
 
+.registerButton {
+  background-color: $bg;
+  color: white;
+  &:hover {
+    background-color: darken($black, 10%) !important;
+  }
+}
+
 .icon {
   font-size: 1.5rem;
 }
