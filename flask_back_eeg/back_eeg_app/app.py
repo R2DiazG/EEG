@@ -237,7 +237,6 @@ def crear_medicamento():
     nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
     db.session.add(nuevo_medicamento)
     db.session.commit()
-    return jsonify({'mensaje': 'Medicamento creado exitosamente', 'id': nuevo_medicamento.id_medicamento}), 201
 
 @app.route('/medicamentos', methods=['GET'])
 @jwt_required()
@@ -328,18 +327,27 @@ def crear_paciente_para_usuario(id_usuario):
 @jwt_required()
 def obtener_pacientes_por_usuario(id_usuario):
     pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
-    resultado = [{
-        'id_paciente': paciente.id_paciente,
-        'nombre': paciente.nombre,
-        'apellido_paterno': paciente.apellido_paterno,
-        'apellido_materno': paciente.apellido_materno or "",
-        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
-        'genero': paciente.genero.descripcion if paciente.genero else "",
-        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
-        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
-        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
-        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
-    } for paciente in pacientes]
+    resultado = []
+    for paciente in pacientes:
+        # Calculando la edad del paciente
+        today = datetime.today()
+        edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
+        # Obteniendo el número de sesiones
+        numero_de_sesiones = len(paciente.sesiones.all())
+        resultado.append({
+            'id_paciente': paciente.id_paciente,
+            'nombre': paciente.nombre,
+            'apellido_paterno': paciente.apellido_paterno,
+            'apellido_materno': paciente.apellido_materno or "",
+            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+            'edad': edad,
+            'numero_de_sesiones': numero_de_sesiones, # Número de sesiones añadido aquí
+            'genero': paciente.genero.descripcion if paciente.genero else "",
+            'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+            'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+            'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+            'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
+        })
     return jsonify(resultado), 200
 
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
