@@ -4,6 +4,7 @@ from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from werkzeug.exceptions import BadRequest
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
@@ -13,6 +14,7 @@ from mne.preprocessing import ICA
 import os
 import mne
 import json
+import logging
 import numpy as np
 import pandas as pd
 
@@ -600,21 +602,26 @@ def eliminar_paciente(id_usuario, id_paciente):
 @app.route('/sesiones/nueva', methods=['POST'])
 @jwt_required()
 def crear_nueva_sesion():
+    logging.info('Iniciando la creación de una nueva sesión')
     try:
         if 'archivo_eeg' not in request.files:
-            return jsonify({'error': 'No se encontró el archivo'}), 400
+            raise BadRequest('No se encontró el archivo')
         archivo_eeg = request.files['archivo_eeg']
         if archivo_eeg.filename == '':
-            return jsonify({'error': 'No se seleccionó ningún archivo'}), 400
+            raise BadRequest('No se seleccionó ningún archivo')
         datos = request.form
         id_paciente = datos.get('id_paciente')
+        if not id_paciente:
+            raise BadRequest('ID del paciente no proporcionado')
         estado_general = datos.get('estado_general')
         estado_especifico = datos.getlist('estado_especifico')  # Asumiendo que es posible seleccionar más de uno
         resumen_sesion_actual = datos.get('resumen_sesion_actual')
         medicamentos_ids = datos.getlist('medicamentos_ids')  # Asume que recibes IDs de medicamentos como una lista
+        logging.info('Datos recibidos correctamente')
         # Guardar temporalmente y procesar archivo EEG
         path_temporal = os.path.join('/tmp', archivo_eeg.filename)
         archivo_eeg.save(path_temporal)
+        logging.info('Archivo EEG guardado temporalmente')
         # Crea una instancia de Sesion con los datos recibidos
         nueva_sesion = Sesion(
             id_paciente=id_paciente,
@@ -626,11 +633,13 @@ def crear_nueva_sesion():
         )
         db.session.add(nueva_sesion)
         db.session.flush()  # Para obtener el ID de la nueva sesión antes de commit
+        logging.info('Nueva sesión creada y añadida a la base de datos')
         # Asocia medicamentos a la sesión
         for med_id in medicamentos_ids:
             medicamento = Medicamento.query.get(int(med_id))
             if medicamento:
                 nueva_sesion.medicamentos.append(medicamento)
+        logging.info('Medicamentos asociados a la sesión')
         def renombrar_canales(ch_names):
             nuevos_nombres = []
             for ch in ch_names:
@@ -643,38 +652,51 @@ def crear_nueva_sesion():
             # Leer el archivo .edf
             raw = mne.io.read_raw_edf(path_temporal, preload=True)
             os.remove(path_temporal)  # Eliminar archivo temporal
+            logging.info('Archivo .edf leído y eliminado temporalmente')
             # Renombrar canales
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
-            
+            logging.info('Canales renombrados')
             # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
             raw.notch_filter(np.arange(50, 251, 50), fir_design='firwin')
             # Filtrado pasa-banda para conservar solo las frecuencias de interés
             raw.filter(1., 40., fir_design='firwin')
+            logging.info('Filtrado Notch y pasa-banda aplicados')
             # ICA para identificar y remover componentes de artefactos
             ica = ICA(n_components=20, random_state=97, max_iter=800)
             ica.fit(raw)
             ica.apply(raw)  # Asumiendo que ya identificaste los componentes a excluir antes de esta línea
+            logging.info('ICA aplicado')
             # Convertir datos EEG a JSON para almacenar en RawEEG
             datos_eeg_json = json.dumps(raw.get_data().tolist())
             nuevo_raw_eeg = RawEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_registro=datetime.utcnow(), data=datos_eeg_json)
             db.session.add(nuevo_raw_eeg)
+            logging.info('Datos EEG convertidos a JSON y almacenados en RawEEG')
             # En este punto, los datos ya están filtrados y limpios, por lo que procedemos a guardarlos para NormalizedEEG
             datos_procesados_json = json.dumps(raw.get_data().tolist())  # Datos después de ICA y filtrado Notch
             nuevo_normalized_eeg = NormalizedEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_procesado=datetime.utcnow(), data_normalized=datos_procesados_json)
             db.session.add(nuevo_normalized_eeg)
+            logging.info('Datos procesados almacenados en NormalizedEEG')
         except Exception as e:
             # Manejo de errores específicos del procesamiento EEG
-            print(f"Error durante el procesamiento del EEG: {e}")
+            logging.error(f"Error durante el procesamiento del EEG: {e}")
+            raise
         db.session.commit()
+        logging.info('Sesión y datos de EEG procesados y almacenados exitosamente')
         return jsonify({'mensaje': 'Sesión y datos de EEG procesados y almacenados exitosamente', 'id_sesion': nueva_sesion.id_sesion}), 200
+    except BadRequest as e:
+        db.session.rollback()
+        logging.error('Error al procesar la solicitud: ' + str(e))
+        return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 500
+        logging.error('Error inesperado: ' + str(e))
+        return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
     finally:
         # Asegurarse de eliminar el archivo temporal
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
+            logging.info('Archivo temporal eliminado')
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 
