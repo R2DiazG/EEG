@@ -90,6 +90,7 @@ def solicitar_cambio_contraseña():
         # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
         msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
+        msg.charset = 'utf-8'
         mail.send(msg)
         return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
     else:
