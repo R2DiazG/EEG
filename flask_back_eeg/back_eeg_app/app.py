@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete
 from flask_mail import Mail, Message
+from mne.preprocessing import ICA
 import os
 import mne
 import json
@@ -572,27 +573,27 @@ def eliminar_paciente(id_usuario, id_paciente):
     if paciente.id_usuario != id_usuario:
         return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
-        # Antes de eliminar las sesiones, desvincula los medicamentos asociados.
         sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
         for sesion in sesiones:
             sesion.medicamentos = []
-        db.session.commit()  # Es necesario hacer commit para que la desvinculación surta efecto.
-        # Ahora se pueden eliminar las sesiones. La eliminación en cascada de RawEEG y NormalizedEEG se manejará automáticamente.
-        Sesion.query.filter_by(id_paciente=id_paciente).delete()
-        # Continúa con la eliminación de otros registros relacionados con el paciente
+            # Asegurarte de eliminar o desvincular cualquier otro dato dependiente aquí
+        # En vez de llamar a delete() directamente en la consulta, hazlo a través de un bucle para controlar mejor el proceso
+        for sesion in sesiones:
+            db.session.delete(sesion)
+        # Ahora puedes continuar con la eliminación de otros registros relacionados
         Telefono.query.filter_by(id_paciente=id_paciente).delete()
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
         HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
         DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
-        # Finalmente, eliminar el paciente
         db.session.delete(paciente)
         db.session.commit()
         return jsonify({'mensaje': 'Paciente eliminado exitosamente'}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': 'Error al eliminar el paciente: {}'.format(str(e))}), 500
+        return jsonify({'error': 'Error al eliminar el paciente: ' + str(e)}), 500
+
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ Procesamiento de EEG ################################################################
@@ -611,32 +612,66 @@ def crear_nueva_sesion():
         estado_especifico = datos.getlist('estado_especifico')  # Asumiendo que es posible seleccionar más de uno
         resumen_sesion_actual = datos.get('resumen_sesion_actual')
         medicamentos_ids = datos.getlist('medicamentos_ids')  # Asume que recibes IDs de medicamentos como una lista
-        # Procesamiento preliminar del archivo EEG
+        # Guardar temporalmente y procesar archivo EEG
         path_temporal = os.path.join('/tmp', archivo_eeg.filename)
         archivo_eeg.save(path_temporal)
-        raw = mne.io.read_raw_edf(path_temporal, preload=True)
         # Crea una instancia de Sesion con los datos recibidos
         nueva_sesion = Sesion(
             fecha_consulta=datetime.now(timezone.utc),
             estado_general=estado_general,
-            estado_especifico=','.join(estado_especifico),  # Guarda como string separado por comas si hay múltiples
+            estado_especifico=','.join(estado_especifico),
             resumen_sesion_actual=resumen_sesion_actual,
-            notas_psicologo=''  # Si tienes un campo para esto en tu formulario, cámbialo acordemente
+            notas_psicologo=''  # Si tienes un campo para esto en tu formulario, cámbialo acorde
         )
         db.session.add(nueva_sesion)
-        db.session.flush()  # Obtiene el ID de la nueva sesión
+        db.session.flush()  # Para obtener el ID de la nueva sesión antes de commit
         # Asocia medicamentos a la sesión
         for med_id in medicamentos_ids:
-            medicamento = Medicamento.query.get(int(med_id))  # Asegúrate de convertir a int los IDs
+            medicamento = Medicamento.query.get(int(med_id))
             if medicamento:
                 nueva_sesion.medicamentos.append(medicamento)
-                
+        def renombrar_canales(ch_names):
+            nuevos_nombres = []
+            for ch in ch_names:
+                nuevo_nombre = ch.replace('-A1', '')
+                if len(nuevo_nombre) > 1 and nuevo_nombre[1].isalpha():
+                    nuevo_nombre = nuevo_nombre[0] + nuevo_nombre[1].lower() + nuevo_nombre[2:]
+                nuevos_nombres.append(nuevo_nombre)
+            return nuevos_nombres
+        try:
+            # Leer el archivo .edf
+            raw = mne.io.read_raw_edf(path_temporal, preload=True)
+            os.remove(path_temporal)  # Eliminar archivo temporal
+            # Renombrar canales
+            nuevos_nombres = renombrar_canales(raw.ch_names)
+            raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
+            
+            # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
+            raw.notch_filter(np.arange(50, 251, 50), fir_design='firwin')
+            # Filtrado pasa-banda para conservar solo las frecuencias de interés
+            raw.filter(1., 40., fir_design='firwin')
+            # ICA para identificar y remover componentes de artefactos
+            ica = ICA(n_components=20, random_state=97, max_iter=800)
+            ica.fit(raw)
+            ica.apply(raw)  # Asumiendo que ya identificaste los componentes a excluir antes de esta línea
+            # Convertir datos EEG a JSON para almacenar en RawEEG
+            datos_eeg_json = json.dumps(raw.get_data().tolist())
+            nuevo_raw_eeg = RawEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_registro=datetime.utcnow(), data=datos_eeg_json)
+            db.session.add(nuevo_raw_eeg)
+            # En este punto, los datos ya están filtrados y limpios, por lo que procedemos a guardarlos para NormalizedEEG
+            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Datos después de ICA y filtrado Notch
+            nuevo_normalized_eeg = NormalizedEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_procesado=datetime.utcnow(), data_normalized=datos_procesados_json)
+            db.session.add(nuevo_normalized_eeg)
+        except Exception as e:
+            # Manejo de errores específicos del procesamiento EEG
+            print(f"Error durante el procesamiento del EEG: {e}")
         db.session.commit()
-        return jsonify({'mensaje': 'Sesión y datos de EEG almacenados exitosamente', 'id_sesion': nueva_sesion.id_sesion}), 200
+        return jsonify({'mensaje': 'Sesión y datos de EEG procesados y almacenados exitosamente', 'id_sesion': nueva_sesion.id_sesion}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 500
     finally:
+        # Asegurarse de eliminar el archivo temporal
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
 ######################################################################################################################################################
