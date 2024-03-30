@@ -329,11 +329,14 @@ def obtener_pacientes_por_usuario(id_usuario):
     pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
     resultado = []
     for paciente in pacientes:
-        # Calculando la edad del paciente
+        # Calculamos la edad del paciente
         today = datetime.today()
         edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
-        # Obteniendo el número de sesiones
-        numero_de_sesiones = len(paciente.sesiones.all())
+        # Obtenemos el número de sesiones
+        sesiones = paciente.sesiones.order_by(Sesion.fecha_consulta.desc()).all() # Ordenamos las sesiones por fecha en orden descendente
+        numero_de_sesiones = len(sesiones)
+        # Obtenemos las notas del psicólogo de la última sesión, si existe
+        notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
         resultado.append({
             'id_paciente': paciente.id_paciente,
             'nombre': paciente.nombre,
@@ -341,7 +344,8 @@ def obtener_pacientes_por_usuario(id_usuario):
             'apellido_materno': paciente.apellido_materno or "",
             'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
             'edad': edad,
-            'numero_de_sesiones': numero_de_sesiones, # Número de sesiones añadido aquí
+            'numero_de_sesiones': numero_de_sesiones,
+            'notas_ultima_sesion': notas_ultima_sesion,
             'genero': paciente.genero.descripcion if paciente.genero else "",
             'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
             'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
