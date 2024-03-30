@@ -46,7 +46,7 @@ jwt = JWTManager(app)
 mail = Mail(app)
 
 # Importar los modelos
-from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, paciente_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG
+from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, sesion_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG, Medicamento
 
 # Ruta para verificar la salud de la aplicación
 @app.route('/health', methods=['GET'])
@@ -147,7 +147,7 @@ def obtener_usuarios():
     usuario_actual = Usuario.query.filter_by(username=current_user).first()
     if usuario_actual.id_rol != 1: 
         return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
-    usuarios = Usuario.query.all()
+    usuarios = Usuario.query.filter(Usuario.id_usuario != usuario_actual.id_usuario).all()
     resultado = [
         {
             'id_usuario': usuario.id_usuario,
@@ -224,8 +224,68 @@ def eliminar_usuario(id_usuario):
     return jsonify({'mensaje': 'Usuario eliminado exitosamente'}), 200
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
+################################################################ CRUD de Medicamentos ################################################################
+@app.route('/medicamentos', methods=['POST'])
+@jwt_required()
+def crear_medicamento():
+    datos = request.get_json()
+    nombre_comercial = datos.get('nombre_comercial')
+    principio_activo = datos.get('principio_activo')
+    presentacion = datos.get('presentacion')
+    if not nombre_comercial or not principio_activo or not presentacion:
+        return jsonify({'mensaje': 'Faltan datos necesarios para crear el medicamento'}), 400
+    nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
+    db.session.add(nuevo_medicamento)
+    db.session.commit()
+    return jsonify({'mensaje': 'Medicamento creado exitosamente', 'id': nuevo_medicamento.id_medicamento}), 201
+
+@app.route('/medicamentos', methods=['GET'])
+@jwt_required()
+def obtener_medicamentos():
+    medicamentos = Medicamento.query.all()
+    resultado = [{
+        'id_medicamento': medicamento.id_medicamento,
+        'nombre_comercial': medicamento.nombre_comercial,
+        'principio_activo': medicamento.principio_activo,
+        'presentacion': medicamento.presentacion
+    } for medicamento in medicamentos]
+    return jsonify(resultado), 200
+
+@app.route('/medicamentos/<int:id_medicamento>', methods=['GET'])
+@jwt_required()
+def obtener_medicamento_por_id(id_medicamento):
+    medicamento = Medicamento.query.get_or_404(id_medicamento)
+    return jsonify({
+        'id_medicamento': medicamento.id_medicamento,
+        'nombre_comercial': medicamento.nombre_comercial,
+        'principio_activo': medicamento.principio_activo,
+        'presentacion': medicamento.presentacion
+    }), 200
+
+@app.route('/medicamentos/<int:id_medicamento>', methods=['PUT'])
+@jwt_required()
+def actualizar_medicamento(id_medicamento):
+    medicamento = Medicamento.query.get_or_404(id_medicamento)
+    datos = request.get_json()
+    medicamento.nombre_comercial = datos.get('nombre_comercial', medicamento.nombre_comercial)
+    medicamento.principio_activo = datos.get('principio_activo', medicamento.principio_activo)
+    medicamento.presentacion = datos.get('presentacion', medicamento.presentacion)
+    db.session.commit()
+    return jsonify({'mensaje': 'Medicamento actualizado exitosamente'}), 200
+
+@app.route('/medicamentos/<int:id_medicamento>', methods=['DELETE'])
+@jwt_required()
+def eliminar_medicamento(id_medicamento):
+    medicamento = Medicamento.query.get_or_404(id_medicamento)
+    db.session.delete(medicamento)
+    db.session.commit()
+    return jsonify({'mensaje': 'Medicamento eliminado exitosamente'}), 200
+
+######################################################################################################################################################
+#––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ CRUD de Pacientes ###################################################################
 @app.route('/usuarios/<int:id_usuario>/pacientes', methods=['POST'])
+@jwt_required()
 def crear_paciente_para_usuario(id_usuario):
     # Verificar que el usuario existe
     usuario = Usuario.query.get_or_404(id_usuario)
@@ -265,6 +325,7 @@ def crear_paciente_para_usuario(id_usuario):
         return jsonify({'error': str(e)}), 400
 
 @app.route('/usuarios/<int:id_usuario>/pacientes', methods=['GET'])
+@jwt_required()
 def obtener_pacientes_por_usuario(id_usuario):
     pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
     resultado = [{
@@ -282,6 +343,7 @@ def obtener_pacientes_por_usuario(id_usuario):
     return jsonify(resultado), 200
 
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
+@jwt_required()
 def obtener_detalles_paciente(id_paciente):
     paciente = Paciente.query.get_or_404(id_paciente)
     detalles_paciente = {
@@ -305,53 +367,82 @@ def obtener_detalles_paciente(id_paciente):
             'pais': direccion.pais,
             'codigo_postal': direccion.codigo_postal
         } for direccion in paciente.direcciones],
-        # Asumiendo paginación y limitación en el número de sesiones a mostrar
-        'sesiones': obtener_sesiones_con_enlace_eeg(paciente.id_paciente)
+        'consentimientos': [{
+            'consentimiento': consent.consentimiento, 
+            'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
+        } for consent in paciente.consentimientos],
     }
-    # Incluir resumen de diagnósticos previos, consentimientos y medicamentos
-    detalles_paciente.update({
-        'diagnosticos_previos': [{'descripcion': diag.descripcion} for diag in paciente.diagnosticos_previos],
-        'consentimientos': [{'consentimiento': consent.consentimiento, 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')} for consent in paciente.consentimientos],
-        'medicamentos': [{'nombre_comercial': med.nombre_comercial} for med in paciente.medicamentos]
-    })
     return jsonify(detalles_paciente), 200
 
-def obtener_sesiones_con_enlace_eeg(id_paciente):
-    limite = request.args.get('limit', default=10, type=int)  # Establecer un límite por defecto
-    pagina = request.args.get('page', default=1, type=int)  # Establecer la página por defecto
-    sesiones_paginadas = Sesion.query.filter_by(id_paciente=id_paciente).paginate(page=pagina, per_page=limite, error_out=False)
-    sesiones = [{
-        'id_sesion': sesion.id_sesion,
-        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
-        'resumen_sesion_actual': sesion.resumen_sesion_actual,
-        'notas_psicologo': sesion.notas_psicologo,
-        'link_detalle_eeg': f"/sesiones/{sesion.id_sesion}/eegs"  # Proporcionar un enlace para obtener detalles de EEG por sesión
-    } for sesion in sesiones_paginadas.items]
-    return sesiones
-
 @app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
+@jwt_required()
 def obtener_eegs_por_sesion(id_sesion):
     # Buscar la sesión por ID para asegurarse de que existe
     sesion = Sesion.query.get_or_404(id_sesion)
     # Buscar los EEGs asociados con la sesión
     raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
     normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
-    # Preparar la respuesta con los datos de los EEGs
+    # Buscar los medicamentos asociados con la sesión
+    medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
     eegs_response = {
+        'detalle_sesion': {
+            'id_sesion': sesion.id_sesion,
+            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+        },
         'raw_eegs': [{
             'id_eeg': eeg.id_eeg,
             'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-            'data': eeg.data  # Aquí se retorna directamente el campo JSON
+            'data': eeg.data
         } for eeg in raw_eegs],
         'normalized_eegs': [{
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_normalized': eeg.data_normalized  # Igualmente para los EEG normalizados
+            'data_normalized': eeg.data_normalized
         } for eeg in normalized_eegs]
     }
     return jsonify(eegs_response), 200
 
+@app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
+@jwt_required()
+def obtener_fechas_sesiones_por_paciente(id_paciente):
+    # Asegurarse de que el paciente existe
+    paciente = Paciente.query.get_or_404(id_paciente)
+    # Obtener todas las fechas de sesiones para el paciente especificado
+    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
+    # Extraer solo las fechas de las sesiones para el dropdown list
+    fechas_sesiones = [{
+        'id_sesion': sesion.id_sesion,
+        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+    } for sesion in sesiones]
+    # Devolver las fechas de las sesiones en formato JSON
+    return jsonify(fechas_sesiones), 200
+
+@app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
+@jwt_required()
+def obtener_medicamentos_por_paciente(id_paciente):
+    # Asegurarse de que el paciente existe
+    paciente = Paciente.query.get_or_404(id_paciente)
+    # Obtener todas las sesiones del paciente
+    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+    # Lista para almacenar los medicamentos junto con la fecha de la sesión y notas del psicólogo
+    medicamentos_detalle = []
+    # Recorrer todas las sesiones para recolectar los medicamentos y las notas del psicólogo
+    for sesion in sesiones:
+        fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
+        notas_psicologo = sesion.notas_psicologo
+        for medicamento in sesion.medicamentos:
+            medicamentos_detalle.append({
+                'id_medicamento': medicamento.id_medicamento,
+                'nombre_comercial': medicamento.nombre_comercial,
+                'principio_activo': medicamento.principio_activo,
+                'presentacion': medicamento.presentacion,
+                'fecha_sesion': fecha_sesion,  # Incluir la fecha de la sesión
+                'notas_psicologo': notas_psicologo  # Incluir las notas del psicólogo
+            })
+    return jsonify(medicamentos_detalle), 200
+
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
+@jwt_required()
 def actualizar_paciente_de_usuario(id_usuario, id_paciente):
     # Verificar si el paciente pertenece al usuario
     paciente = Paciente.query.filter_by(id_usuario=id_usuario, id_paciente=id_paciente).first()
@@ -438,30 +529,26 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
             db.session.delete(direccion)
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
+@jwt_required()
 def eliminar_paciente(id_usuario, id_paciente):
-    # Asumiendo que el usuario ya está autenticado y su ID es accesible
     paciente = Paciente.query.get_or_404(id_paciente)
     if paciente.id_usuario != id_usuario:
         return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
-        # Dentro de tu bloque try, justo antes de empezar a eliminar otras relaciones:
-        stmt = delete(paciente_medicamento).where(paciente_medicamento.c.id_paciente == id_paciente)
-        db.session.execute(stmt)
-        # Eliminar registros relacionados de manera secuencial para mantener la integridad referencial
-        # Primero, elimina entidades directamente relacionadas con el paciente
+        # Antes de eliminar las sesiones, desvincula los medicamentos asociados.
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        for sesion in sesiones:
+            sesion.medicamentos = []
+        db.session.commit()  # Es necesario hacer commit para que la desvinculación surta efecto.
+        # Ahora se pueden eliminar las sesiones. La eliminación en cascada de RawEEG y NormalizedEEG se manejará automáticamente.
+        Sesion.query.filter_by(id_paciente=id_paciente).delete()
+        # Continúa con la eliminación de otros registros relacionados con el paciente
         Telefono.query.filter_by(id_paciente=id_paciente).delete()
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
         HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
         DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
-        # Luego, encuentra todas las sesiones asociadas con el paciente para eliminar registros relacionados
-        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
-        for sesion in sesiones:
-            RawEEG.query.filter_by(id_sesion=sesion.id_sesion).delete()
-            NormalizedEEG.query.filter_by(id_sesion=sesion.id_sesion).delete()  # Asumiendo que NormalizedEEG está vinculado a la sesión
-            # Elimina la sesión después de eliminar los EEGs asociados
-            db.session.delete(sesion)
         # Finalmente, eliminar el paciente
         db.session.delete(paciente)
         db.session.commit()
@@ -474,6 +561,7 @@ def eliminar_paciente(id_usuario, id_paciente):
 ################################################################ Procesamiento de EEG ################################################################
 # INCOMPLETO – Falta trabajar en varias partes de este código, no va a funcionar tal como está
 @app.route('/sesiones/<int:id_sesion>/subir_eeg', methods=['POST'])
+@jwt_required()
 def subir_eeg(id_sesion):
     # Asegurar que el archivo está presente en la petición
     if 'archivo_eeg' not in request.files:
