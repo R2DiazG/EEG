@@ -3,11 +3,11 @@
 <div class="graphs-container">
     <h1>Visualizador de Electroencefalograma</h1>
     <app-info-paciente></app-info-paciente>
+    <button (click)="uploadEEG()">Subir nuevo EEG</button>
+    <button (click)="addConsultation()">Agregar sesion</button>
     <div class="search-upload-section">
         <!-- <input type="search" placeholder="Nombre del Paciente" (input)="searchPatient($event.target.value)"> -->
-        <input type="search" placeholder="Nombre del Paciente">
-        <button (click)="uploadEEG()">Subir nuevo EEG</button>
-        <button (click)="addConsultation()">Agregar consulta</button>
+        <input type="search" placeholder="Buscar sesion">
       </div>
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('contentEEG')" [class.active]="activeTab === 'contentEEG'">Contenido EEG</button>
