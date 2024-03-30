@@ -11,7 +11,7 @@
       </div>
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('contentEEG')" [class.active]="activeTab === 'contentEEG'">Contenido EEG</button>
-      <button class="tab" (click)="setActiveTab('sessions')" [class.active]="activeTab === 'sessions'">Sesiones</button>
+      <button class="tab" (click)="setActiveTab('meds')" [class.active]="activeTab === 'meds'">Medicamentos</button>
       <button class="tab" (click)="setActiveTab('preDiagnostic')" [class.active]="activeTab === 'preDiagnostic'">Pre-diagnóstico</button>
     </div>
     <div class="tab-content">
@@ -30,8 +30,9 @@
         <div class="space"></div>
         <div id="processed" style="width:100%; height:400px;"></div>
       </div>
-      <div *ngIf="activeTab === 'sessions'">
-        <h2>Contenido de Sesiones</h2>
+      <div *ngIf="activeTab === 'meds'">
+        <h2>Medicamentos</h2>
+        <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
       </div>
       <div *ngIf="activeTab === 'preDiagnostic'">
         <h2>Contenido de Pre-diagnóstico</h2>
