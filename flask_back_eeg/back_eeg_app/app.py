@@ -657,10 +657,10 @@ def crear_nueva_sesion():
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
             logging.info('Canales renombrados')
-            # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
-            raw.notch_filter(np.arange(50, 251, 50), fir_design='firwin')
             # Filtrado pasa-banda para conservar solo las frecuencias de interés
             raw.filter(1., 40., fir_design='firwin')
+            # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
+            raw.notch_filter(np.arange(50, 251, 50), fir_design='firwin')
             logging.info('Filtrado Notch y pasa-banda aplicados')
             # ICA para identificar y remover componentes de artefactos
             ica = ICA(n_components=20, random_state=97, max_iter=800)
