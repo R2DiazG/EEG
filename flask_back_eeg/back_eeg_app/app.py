@@ -79,7 +79,7 @@ def login():
     else:
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-@app.route('/solicitar_cambio_contraseña', methods=['POST'])
+@app.route('/solicitar_cambio_contrasena', methods=['POST'])
 def solicitar_cambio_contraseña():
     try:
         datos = request.get_json()
@@ -91,7 +91,7 @@ def solicitar_cambio_contraseña():
         usuario = Usuario.query.filter_by(username=username).first()
         if not usuario:
             return jsonify({"msg": "Usuario no encontrado."}), 404
-        token = s.dumps(usuario.correo, salt='cambio-contraseña')
+        token = s.dumps(usuario.correo, salt='cambio-contrasena')
         link = url_for('resetear_contraseña', token=token, _external=True)
         msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
@@ -101,15 +101,15 @@ def solicitar_cambio_contraseña():
     except Exception as e:
         return jsonify({"msg": "Ocurrió el error: " + str(e)}), 500
 
-@app.route('/resetear_contraseña/<token>', methods=['POST'])
+@app.route('/resetear_contrasena/<token>', methods=['POST'])
 def resetear_contraseña(token):
     try:
         datos = request.get_json()
-        nueva_contraseña = datos.get('nueva_contraseña', None)
-        correo = s.loads(token, salt='cambio-contraseña', max_age=3600)  # 3600 segundos = 1 hora
+        nueva_contrasena = datos.get('nueva_contrasena', None)
+        correo = s.loads(token, salt='cambio-contrasena', max_age=3600)  # 3600 segundos = 1 hora
         usuario = Usuario.query.filter_by(correo=correo).first()
         if usuario:
-            hashed_password = bcrypt.generate_password_hash(nueva_contraseña).decode('utf-8')
+            hashed_password = bcrypt.generate_password_hash(nueva_contrasena).decode('utf-8')
             usuario.contraseña = hashed_password
             db.session.commit()
             return jsonify({"msg": "Tu contraseña ha sido actualizada."}), 200
