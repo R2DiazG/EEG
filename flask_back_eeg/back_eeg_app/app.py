@@ -79,31 +79,37 @@ def login():
     else:
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-@app.route('/solicitar_cambio_contraseña', methods=['POST'])
-def solicitar_cambio_contraseña():
-    datos = request.get_json()
-    username = datos.get('username', None)
-    usuario = Usuario.query.filter_by(username=username).first()
-    if usuario:
-        token = s.dumps(usuario.correo, salt='cambio-contraseña')
+@app.route('/solicitar_cambio_contrasena', methods=['POST'])
+def solicitar_cambio_contrasena():
+    try:
+        datos = request.get_json()
+        if not datos:
+            return jsonify({"msg": "Ningun dato adjuntado."}), 400
+        username = datos.get('username', None)
+        if not username:
+            return jsonify({"msg": "Ningun usuario adjuntado"}), 40
+        usuario = Usuario.query.filter_by(username=username).first()
+        if not usuario:
+            return jsonify({"msg": "Usuario no encontrado."}), 404
+        token = s.dumps(usuario.correo, salt='cambio-contrasena')
         link = url_for('resetear_contraseña', token=token, _external=True)
-        # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
         msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
+        msg.charset = 'utf-8'
         mail.send(msg)
         return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
-    else:
-        return jsonify({"msg": "Usuario no encontrado."}), 404
+    except Exception as e:
+        return jsonify({"msg": "Ocurrió el error: " + str(e)}), 500
 
-@app.route('/resetear_contraseña/<token>', methods=['POST'])
+@app.route('/resetear_contrasena/<token>', methods=['POST'])
 def resetear_contraseña(token):
     try:
         datos = request.get_json()
-        nueva_contraseña = datos.get('nueva_contraseña', None)
-        correo = s.loads(token, salt='cambio-contraseña', max_age=3600)  # 3600 segundos = 1 hora
+        nueva_contrasena = datos.get('nueva_contrasena', None)
+        correo = s.loads(token, salt='cambio-contrasena', max_age=3600)  # 3600 segundos = 1 hora
         usuario = Usuario.query.filter_by(correo=correo).first()
         if usuario:
-            hashed_password = bcrypt.generate_password_hash(nueva_contraseña).decode('utf-8')
+            hashed_password = bcrypt.generate_password_hash(nueva_contrasena).decode('utf-8')
             usuario.contraseña = hashed_password
             db.session.commit()
             return jsonify({"msg": "Tu contraseña ha sido actualizada."}), 200
@@ -113,6 +119,24 @@ def resetear_contraseña(token):
         return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
     except BadSignature:
         return jsonify({"msg": "Enlace inválido."}), 400
+    
+@app.route('/usuario/actual', methods=['GET'])
+@jwt_required()
+def obtener_usuario_actual():
+    # Obtener la identidad del token JWT
+    identidad_usuario = get_jwt_identity()
+
+    # Buscar al usuario por su identidad (por ejemplo, su username)
+    usuario_actual = Usuario.query.filter_by(username=identidad_usuario).first()
+
+    if usuario_actual:
+        # Retornar el nombre y apellidos del usuario
+        return jsonify({
+            'nombre': usuario_actual.nombre,
+            'apellidos': usuario_actual.apellidos
+        }), 200
+    else:
+        return jsonify({'mensaje': 'Usuario no encontrado'}), 404
 
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
@@ -237,7 +261,6 @@ def crear_medicamento():
     nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
     db.session.add(nuevo_medicamento)
     db.session.commit()
-    return jsonify({'mensaje': 'Medicamento creado exitosamente', 'id': nuevo_medicamento.id_medicamento}), 201
 
 @app.route('/medicamentos', methods=['GET'])
 @jwt_required()
@@ -328,18 +351,31 @@ def crear_paciente_para_usuario(id_usuario):
 @jwt_required()
 def obtener_pacientes_por_usuario(id_usuario):
     pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
-    resultado = [{
-        'id_paciente': paciente.id_paciente,
-        'nombre': paciente.nombre,
-        'apellido_paterno': paciente.apellido_paterno,
-        'apellido_materno': paciente.apellido_materno or "",
-        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d') if paciente.fecha_nacimiento else "",
-        'genero': paciente.genero.descripcion if paciente.genero else "",
-        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
-        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
-        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
-        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
-    } for paciente in pacientes]
+    resultado = []
+    for paciente in pacientes:
+        # Calculamos la edad del paciente
+        today = datetime.today()
+        edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
+        # Obtenemos el número de sesiones
+        sesiones = paciente.sesiones.order_by(Sesion.fecha_consulta.desc()).all() # Ordenamos las sesiones por fecha en orden descendente
+        numero_de_sesiones = len(sesiones)
+        # Obtenemos las notas del psicólogo de la última sesión, si existe
+        notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
+        resultado.append({
+            'id_paciente': paciente.id_paciente,
+            'nombre': paciente.nombre,
+            'apellido_paterno': paciente.apellido_paterno,
+            'apellido_materno': paciente.apellido_materno or "",
+            'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+            'edad': edad,
+            'numero_de_sesiones': numero_de_sesiones,
+            'notas_ultima_sesion': notas_ultima_sesion,
+            'genero': paciente.genero.descripcion if paciente.genero else "",
+            'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+            'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+            'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+            'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
+        })
     return jsonify(resultado), 200
 
 @app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
