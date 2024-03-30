@@ -17,6 +17,76 @@ interface SeriesOptions {
   styleUrls: ['./graficas-paciente.component.scss']
 })
 export class GraficasPacienteComponent implements OnInit {
+  private idSesion: number;
+  private options: Highcharts.Options;
+  constructor(private sesionesService: SesionesService) {}
+  ngOnInit(): void {
+    this.idSesion = ActivatedRoute.snapshot.params['idSesion'];
+    this.sesionesService.getDatosSesion(this.idSesion).subscribe((data: any) => {
+      const series = data.series;
+      const offset = this.calcularOffset(series);
+      const offsetSeries = this.aplicarOffset(series, offset);
+      this.options = {
+        chart: {
+          renderTo: 'eeg',
+          zooming: {
+            type: 'x'
+          },
+          type: 'line',
+          height: 800
+        },
+        boost: {
+          useGPUTranslations: true
+        },
+        title: {
+          text: 'Visualización de datos EEG'
+        },
+        xAxis: {
+          title: {
+            text: 'Número de muestra'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Amplitud'
+          },
+          tickInterval: offset,
+          labels: {
+            formatter: function () {
+              const index = Math.floor((this.value as number) / offset);
+              if (index >= 0 && index < series.length) {
+                return series[index].name;
+              }
+              return '';
+            }
+          }
+        },
+        tooltip: {
+          shared: true
+        },
+        series: offsetSeries as Highcharts.SeriesOptionsType[]
+      };
+      Highcharts.chart(this.options);
+    });
+  }
+  private calcularOffset(series: any[]): number {
+    let max = Math.max(...series.map((s: { data: any; }) => Math.max(...s.data)));
+    let min = Math.min(...series.map((s: { data: any; }) => Math.min(...s.data)));
+    return max - min;
+  }
+  private aplicarOffset(series: any[], offset: number): any[] {
+    return series.map((s: { name: string; data: number[]; }, i: number) => ({
+      name: s.name,
+      data: s.data.map(d => d + i * offset)
+    }));
+  }
+
+
+
+
+
+
+/*
   activeTab: string = 'contentEEG'; // Default active tab
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -171,4 +241,5 @@ export class GraficasPacienteComponent implements OnInit {
   addConsultation(): void {
       this.router.navigate(['/nueva-consulta']);
   }
+*/
 }

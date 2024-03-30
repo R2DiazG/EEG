@@ -10,6 +10,11 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete
 from flask_mail import Mail, Message
+from mne.io import RawArray
+from mne.io import read_raw_edf
+from mne.filter import filter_data
+from mne.time_frequency import psd_welch
+from mne.channels import create_info
 from mne.preprocessing import ICA
 import os
 import mne
@@ -17,6 +22,7 @@ import json
 import logging
 import numpy as np
 import pandas as pd
+
 
 # Cargar las variables de entorno
 load_dotenv()
@@ -678,7 +684,15 @@ def crear_nueva_sesion():
             db.session.add(nuevo_raw_eeg)
             logging.info('Datos EEG convertidos a JSON y almacenados en RawEEG')
             # En este punto, los datos ya están filtrados y limpios, por lo que procedemos a guardarlos para NormalizedEEG
-            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Datos después de ICA y filtrado Notch
+            # Calcular PSD
+            psds_db, freqs = calcular_psd(raw)
+            # Preparar datos para Highcharts
+            data_psd_highcharts = preparar_datos_highcharts(psds_db, freqs, raw.ch_names)
+            # Convertir datos EEG a JSON
+            datos_procesados_json = json.dumps({
+                'data': raw.get_data().tolist(),
+                'psd': data_psd_highcharts
+            })  # Datos después de Pasa-Banda, Filtrado Notch, ICA, y PSD.
             nuevo_normalized_eeg = NormalizedEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_procesado=datetime.utcnow(), data_normalized=datos_procesados_json)
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')
@@ -702,6 +716,26 @@ def crear_nueva_sesion():
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
+
+def calcular_psd(raw):
+    # Calcular la PSD usando Welch
+    spectrum = psd_welch(raw, n_fft=2048, fmin=1, fmax=40)
+    psds, freqs = spectrum.get_data(return_freqs=True)
+    psds_db = 10 * np.log10(psds)
+    return psds_db, freqs
+
+def preparar_datos_highcharts(psds_db, freqs, ch_names):
+    # Preparar datos para Highcharts
+    data_for_highcharts = [
+        {
+            'name': ch_name,
+            'data': psds_db[i].tolist(),
+            'pointStart': freqs[0],
+            'pointInterval': np.diff(freqs).mean()
+        }
+        for i, ch_name in enumerate(ch_names)
+    ]
+    return data_for_highcharts
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 
