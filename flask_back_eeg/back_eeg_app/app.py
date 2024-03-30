@@ -426,7 +426,11 @@ def obtener_eegs_por_sesion(id_sesion):
     eegs_response = {
         'detalle_sesion': {
             'id_sesion': sesion.id_sesion,
-            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+            'estado_general': sesion.estado_general,
+            'estado_especifico': sesion.estado_especifico,
+            'resumen_sesion_actual': sesion.resumen_sesion_actual,
+            'notas_psicologo': sesion.notas_psicologo
         },
         'raw_eegs': [{
             'id_eeg': eeg.id_eeg,
