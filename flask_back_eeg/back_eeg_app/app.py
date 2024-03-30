@@ -446,7 +446,8 @@ def obtener_eegs_por_sesion(id_sesion):
         'normalized_eegs': [{
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_normalized': eeg.data_normalized
+            'data_normalized': eeg.data_normalized,
+            'data_psd': eeg.data_psd
         } for eeg in normalized_eegs]
     }
     return jsonify(eegs_response), 200
@@ -667,6 +668,14 @@ def crear_nueva_sesion():
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
             logging.info('Canales renombrados')
+            datos_eeg_crudos_json = json.dumps(raw.get_data().tolist())
+            nuevo_raw_eeg = RawEEG(
+                id_sesion=nueva_sesion.id_sesion, 
+                fecha_hora_registro=datetime.now(timezone.utc), 
+                data=datos_eeg_crudos_json
+            )
+            db.session.add(nuevo_raw_eeg)
+            logging.info('Datos EEG crudos convertidos a JSON y almacenados en RawEEG')
             # Filtrado pasa-banda para conservar solo las frecuencias de interés
             raw.filter(1., 40., fir_design='firwin')
             # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
@@ -678,22 +687,30 @@ def crear_nueva_sesion():
             ica.fit(raw)
             ica.apply(raw)  # Asumiendo que ya identificaste los componentes a excluir antes de esta línea
             logging.info('ICA aplicado')
-            # Convertir datos EEG a JSON para almacenar en RawEEG
-            datos_eeg_json = json.dumps(raw.get_data().tolist())
-            nuevo_raw_eeg = RawEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_registro=datetime.utcnow(), data=datos_eeg_json)
-            db.session.add(nuevo_raw_eeg)
-            logging.info('Datos EEG convertidos a JSON y almacenados en RawEEG')
+            # Calcular la PSD para los datos raw procesados usando compute_psd
+            psds, freqs = mne.time_frequency.psd_welch(raw, fmin=1, fmax=40, n_fft=2048)
+            # Convertir PSDs a decibeles (dB) para una mejor visualización
+            psds_db = 10 * np.log10(psds)
+            # Preparar los datos para almacenar o enviar al frontend
+            data_for_frontend = [
+                {
+                    'name': ch_name,
+                    'data': psds_db[i].tolist(),
+                    'pointStart': freqs[0],
+                    'pointInterval': np.diff(freqs).mean()
+                }
+                for i, ch_name in enumerate(raw.ch_names)
+            ]
             # En este punto, los datos ya están filtrados y limpios, por lo que procedemos a guardarlos para NormalizedEEG
-            # Calcular PSD
-            psds_db, freqs = calcular_psd(raw)
-            # Preparar datos para Highcharts
-            data_psd_highcharts = preparar_datos_highcharts(psds_db, freqs, raw.ch_names)
-            # Convertir datos EEG a JSON
-            datos_procesados_json = json.dumps({
-                'data': raw.get_data().tolist(),
-                'psd': data_psd_highcharts
-            })  # Datos después de Pasa-Banda, Filtrado Notch, ICA, y PSD.
-            nuevo_normalized_eeg = NormalizedEEG(id_sesion=nueva_sesion.id_sesion, fecha_hora_procesado=datetime.utcnow(), data_normalized=datos_procesados_json)
+            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Datos después de ICA, filtrado Notch, Pasa-banda, etc.
+            datos_psd_json = json.dumps(data_for_frontend)  # Datos PSD en formato JSON
+            # Cuando creamos la instancia de NormalizedEEG, incluyimos 'data_psd'.
+            nuevo_normalized_eeg = NormalizedEEG(
+                id_sesion=nueva_sesion.id_sesion,
+                fecha_hora_procesado=datetime.now(timezone.utc),
+                data_normalized=datos_procesados_json,
+                data_psd=datos_psd_json  # Aquí se asignan los datos PSD serializados.
+            )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')
         except Exception as e:
@@ -716,26 +733,6 @@ def crear_nueva_sesion():
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
-
-def calcular_psd(raw):
-    # Calcular la PSD usando Welch
-    spectrum = psd_welch(raw, n_fft=2048, fmin=1, fmax=40)
-    psds, freqs = spectrum.get_data(return_freqs=True)
-    psds_db = 10 * np.log10(psds)
-    return psds_db, freqs
-
-def preparar_datos_highcharts(psds_db, freqs, ch_names):
-    # Preparar datos para Highcharts
-    data_for_highcharts = [
-        {
-            'name': ch_name,
-            'data': psds_db[i].tolist(),
-            'pointStart': freqs[0],
-            'pointInterval': np.diff(freqs).mean()
-        }
-        for i, ch_name in enumerate(ch_names)
-    ]
-    return data_for_highcharts
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 
