@@ -93,7 +93,7 @@
                 <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
-                <span class="text">{{ element.isDeleted ? 'Deleted' : (element.isConfirm ? 'Are you sure?' : 'Delete') }}</span>
+                <span class="text">{{ element.isDeleted ? 'Deleted' : (element.isConfirm ? '¿Estas seguro?' : 'Delete') }}</span>
               </button>              
             </td>
           </ng-container>
