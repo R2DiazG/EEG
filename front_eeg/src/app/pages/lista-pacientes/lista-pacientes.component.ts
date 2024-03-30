@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PacienteService } from '../../services/pacientes/paciente.service';
-import { UsuarioService } from '../../services/usuarios/usuario.service';
+import { AuthService } from '../../services/login/auth.service';
 
 @Component({
   selector: 'app-lista-pacientes',
@@ -17,6 +17,7 @@ export class ListaPacientesComponent implements OnInit {
   dataSource = new MatTableDataSource<any>([]);
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
+  private idUsuarioActual: number | null = null; // Inicializa idUsuarioActual en null
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -24,47 +25,39 @@ export class ListaPacientesComponent implements OnInit {
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+    private authService: AuthService // Inyecta el AuthService aquí
   ) { }
 
-  getCurrentUserId(): number | null {
-    const userJson = localStorage.getItem('currentUser');
-    if (userJson && userJson !== "undefined") {
-      try {
-        const user = JSON.parse(userJson);
-        return user.id_usuario; // Ensure this is the correct property for the user ID
-      } catch (e) {
-        console.error('Error parsing user JSON:', e);
-      }
-    }
-    return null;
-  }
-  
-
   ngOnInit(): void {
-    const idUsuarioActual = this.getCurrentUserId();
-    if (idUsuarioActual === null) {
-      // Handle the case when the user ID is not found
-      console.error('ID de usuario no disponible. El usuario puede que no haya iniciado sesión.');
-      this.router.navigate(['/login']).then(() => {
-        console.log('Usuario no autenticado. Redirigiendo a la página de inicio de sesión.');
-      });
-      return; // Exit the ngOnInit if no user ID is found
-    }
-    
-    this.loadUsers();
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
+        if (user && user.id_usuario) {
+          this.idUsuarioActual = user.id_usuario;
+          // Llama a loadUsers solo si idUsuarioActual es un número
+          if (this.idUsuarioActual !== null) {
+            this.loadUsers(this.idUsuarioActual);
+          }
+        } else {
+          console.error('ID de usuario no disponible. Redirigiendo a la página de inicio de sesión.');
+          this.router.navigate(['/login']);
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener el usuario actual:', error);
+        this.router.navigate(['/login']);
+      }
+    });
+
     this.searchControl.valueChanges.subscribe((value) => {
       this.applyFilter(value || '');
     });
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
-
-  loadUsers() {
-    const idUsuarioActual = this.getCurrentUserId();
-    if (idUsuarioActual !== null) {
-      this.pacienteService.obtenerPacientesPorUsuario(idUsuarioActual).subscribe({
+  loadUsers(idUsuario: number) {
+    // Asegúrate de que idUsuario es un número antes de continuar
+    if (typeof idUsuario === 'number') {
+      // Realiza la solicitud con el idUsuario válido
+      this.pacienteService.obtenerPacientesPorUsuario(idUsuario).subscribe({
         next: (data) => {
           this.dataSource.data = data;
           this.cdr.detectChanges();
@@ -74,14 +67,13 @@ export class ListaPacientesComponent implements OnInit {
         }
       });
     } else {
-      console.error('ID de usuario no disponible. El usuario puede que no haya iniciado sesión.');
-      // Redirect the user to the login page or show a message
-      this.router.navigate(['/login']).then(() => {
-        // You can display a message or do something once the user is redirected.
-        console.log('Usuario no autenticado. Redirigiendo a la página de inicio de sesión.');
-      });
+      console.error('loadUsers fue llamado sin un idUsuario válido.');
     }
-  }   
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
 
   applyFilter(value: string) {
     this.dataSource.filter = value.trim().toLowerCase();
@@ -90,28 +82,35 @@ export class ListaPacientesComponent implements OnInit {
     }
   }
 
-  onDeletePatient(user: any, patient: any) {
-    if (patient.isConfirm) {
-      this.pacienteService.eliminarPaciente(user.id_usuario, patient.id_paciente).subscribe({
-        next: (resp) => {
-          console.log('Paciente eliminado:', resp);
-          this.loadUsers(); // Recargar los pacientes
-        },
-        error: (error) => {
-          console.error('Error al eliminar paciente:', error);
-          patient.isConfirm = false; // Restablecer el estado
-          this.cdr.detectChanges(); // Actualizar la vista
-        }
-      });
-    } else {
-      patient.isConfirm = true;
-      this.cdr.detectChanges(); // Actualizar la vista para mostrar "¿Estás seguro?"
-      setTimeout(() => {
-        patient.isConfirm = false;
-        this.cdr.detectChanges(); // Volver al estado original después de 3 segundos
-      }, 3000);
+  onDeletePatient(patient: any) {
+    if (this.idUsuarioActual === null) {
+        console.error('Error: ID de usuario no disponible.');
+        return; // Salir temprano si idUsuarioActual es null
     }
-  }
+
+    if (patient.isConfirm) {
+        // Usar aserción de tipo para afirmar que this.idUsuarioActual no es null
+        this.pacienteService.eliminarPaciente(this.idUsuarioActual!, patient.id_paciente).subscribe({
+            next: (resp) => {
+                console.log('Paciente eliminado:', resp);
+                // Ahora es seguro llamar a loadUsers, asumiendo que this.idUsuarioActual no es null
+                this.loadUsers(this.idUsuarioActual!); // Usar aserción de tipo aquí también
+            },
+            error: (error) => {
+                console.error('Error al eliminar paciente:', error);
+                patient.isConfirm = false;
+                this.cdr.detectChanges();
+            }
+        });
+    } else {
+        patient.isConfirm = true;
+        this.cdr.detectChanges();
+        setTimeout(() => {
+            patient.isConfirm = false;
+            this.cdr.detectChanges();
+        }, 3000);
+    }
+}
 
   registerPatient() {
     this.router.navigate(['/registrar-paciente']);

@@ -12,6 +12,8 @@ import { access } from 'fs';
 export class MenuLateralComponent {
   isSidebarActive: boolean = false;
   activeLink: string | undefined;
+  userInfo: { nombre: string, apellidos: string, id_rol: number } | undefined;
+
 
   constructor(private router: Router, private authService: AuthService) {
     // Suscripción a eventos del router, filtrando solo los eventos de tipo NavigationEnd
@@ -22,6 +24,24 @@ export class MenuLateralComponent {
       this.activeLink = event.urlAfterRedirects;
     });
   }
+
+
+  ngOnInit(): void {
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
+        // Asegúrate de que tu backend esté enviando 'id_rol' en la respuesta
+        this.userInfo = { 
+          nombre: user.nombre, 
+          apellidos: user.apellidos, 
+          id_rol: user.id_rol 
+        };
+      },
+      error: (error) => {
+        console.error('Error al obtener información del usuario:', error);
+      }
+    });
+  }
+
 
   // Método para comprobar si un enlace está activo
   isActive(url: string): boolean {

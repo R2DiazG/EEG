@@ -3,18 +3,18 @@
     <img src="assets/img/image 4.png">
   </div>
   <div class="user-info">
-    <p>Umberto León Dominguez</p>
+    <!-- Utiliza el operador de navegación segura (?) para acceder a las propiedades del objeto userInfo -->
+    <p>{{ userInfo?.nombre }} {{ userInfo?.apellidos }}</p>
   </div>
+  
   <nav class="nav-menu">
     <a routerLink="/lista-pacientes" routerLinkActive="active" class="nav-link">Pacientes</a>
     <a routerLink="/ver-paciente" routerLinkActive="active" class="nav-link">Ver paciente</a>
     <a routerLink="/graficas-paciente" routerLinkActive="active" class="nav-link">Sesiones del paciente</a>
-    <a routerLink="/lista-psicologos" routerLinkActive="active" class="nav-link">Psicólogos</a>
+    <!-- Utiliza *ngIf para condicionar la visualización de este enlace basado en el id_rol del usuario -->
+    <a *ngIf="userInfo?.id_rol === 1" routerLink="/lista-psicologos" routerLinkActive="active" class="nav-link">Psicólogos</a>
     <a (click)="logout()" class="nav-link">Cerrar sesión</a>
-    <!-- se tiene que borrar el sesion/local storage para borrar el token y hacer logout -->
   </nav>
 </div>
 
 <button (click)="toggleSidebar()" class="sidebar-toggle">Menu</button>
-
-
