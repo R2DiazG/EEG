@@ -113,6 +113,24 @@ def resetear_contraseña(token):
         return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
     except BadSignature:
         return jsonify({"msg": "Enlace inválido."}), 400
+    
+@app.route('/usuario/actual', methods=['GET'])
+@jwt_required()
+def obtener_usuario_actual():
+    # Obtener la identidad del token JWT
+    identidad_usuario = get_jwt_identity()
+
+    # Buscar al usuario por su identidad (por ejemplo, su username)
+    usuario_actual = Usuario.query.filter_by(username=identidad_usuario).first()
+
+    if usuario_actual:
+        # Retornar el nombre y apellidos del usuario
+        return jsonify({
+            'nombre': usuario_actual.nombre,
+            'apellidos': usuario_actual.apellidos
+        }), 200
+    else:
+        return jsonify({'mensaje': 'Usuario no encontrado'}), 404
 
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
