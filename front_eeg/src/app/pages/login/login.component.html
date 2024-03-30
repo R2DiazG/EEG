@@ -5,7 +5,6 @@
   </div>
   <div class="login-container">
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      
       <div class="form-group">
         <label for="username">Usuario</label>
         <input type="username" id="username" class="form-control" formControlName="username" placeholder="Ingrese su nombre de usuario">
@@ -18,7 +17,7 @@
       <div class="form-group">
         <label for="contraseña">Contraseña</label>
         <!-- Asegúrate de que el 'type' y 'formControlName' sean consistentes -->
-        <input type="contraseña" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ingrese su contraseña">
+        <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ingrese su contraseña">
         <!-- Utiliza 'get' para acceder de forma segura a los controles del formulario -->
         <div *ngIf="loginForm.get('contraseña')?.invalid && loginForm.get('contraseña')?.touched" class="alert alert-danger">
           La contraseña es obligatoria.
