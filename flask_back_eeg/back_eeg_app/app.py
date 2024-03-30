@@ -81,20 +81,25 @@ def login():
 
 @app.route('/solicitar_cambio_contraseña', methods=['POST'])
 def solicitar_cambio_contraseña():
-    datos = request.get_json()
-    username = datos.get('username', None)
-    usuario = Usuario.query.filter_by(username=username).first()
-    if usuario:
+    try:
+        datos = request.get_json()
+        if not datos:
+            return jsonify({"msg": "Ningun dato adjuntado."}), 400
+        username = datos.get('username', None)
+        if not username:
+            return jsonify({"msg": "Ningun usuario adjuntado"}), 40
+        usuario = Usuario.query.filter_by(username=username).first()
+        if not usuario:
+            return jsonify({"msg": "Usuario no encontrado."}), 404
         token = s.dumps(usuario.correo, salt='cambio-contraseña')
         link = url_for('resetear_contraseña', token=token, _external=True)
-        # Enviar correo electrónico con Flask-Mail pip install Flask-Mail
         msg = Message("Restablece tu contraseña", recipients=[usuario.correo])
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
         msg.charset = 'utf-8'
         mail.send(msg)
         return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
-    else:
-        return jsonify({"msg": "Usuario no encontrado."}), 404
+    except Exception as e:
+        return jsonify({"msg": "Ocurrió el error: " + str(e)}), 500
 
 @app.route('/resetear_contraseña/<token>', methods=['POST'])
 def resetear_contraseña(token):
