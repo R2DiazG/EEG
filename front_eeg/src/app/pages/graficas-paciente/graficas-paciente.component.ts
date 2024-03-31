@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Options } from 'highcharts';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
-import { EegService } from './services/eeg.service';
+import { EegService } from '../../services/sesiones/eeg.service';
 
 interface SeriesOptions {
   name: string;
@@ -40,6 +40,14 @@ export class GraficasPacienteComponent implements OnInit {
         console.error('ID de sesión no proporcionado');
       }
     });
+  }
+
+  addSession(): void {
+    this.router.navigate(['/nueva-sesion']);
+  }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
   }
 
   cargarDatosNormalizedEEG(): void {
