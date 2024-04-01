@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, url_for
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
@@ -648,6 +648,7 @@ def obtener_eegs_por_sesion(id_sesion):
 @app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
 @jwt_required()
 @cross_origin()
+@cross_origin(origins=['http://127.0.0.1:5000']) 
 def obtener_fechas_sesiones_por_paciente(id_paciente):
     """
     Endpoint to retrieve all session dates for a specific patient.
