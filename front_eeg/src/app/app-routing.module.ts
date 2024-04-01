@@ -24,7 +24,7 @@ const routes: Routes = [
   { path: 'confirm-dialog', component: ConfirmDialogComponent },
   { path: 'menu-lateral', component: MenuLateralComponent },
   { path: 'info-paciente/:id_paciente', component: InfoPacienteComponent },
-  { path: 'graficas-paciente', component: GraficasPacienteComponent },
+  { path: 'graficas-paciente/:id_sesion', component: GraficasPacienteComponent },
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
