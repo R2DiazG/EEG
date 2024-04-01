@@ -21,7 +21,6 @@ import logging
 import numpy as np
 import pandas as pd
 
-
 # Cargar las variables de entorno
 load_dotenv()
 
@@ -575,6 +574,32 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         # Eliminar cualquier dirección no incluida en la actualización
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
+
+@app.route('/pacientes/<int:id_paciente>/consentimiento', methods=['PUT'])
+def actualizar_consentimiento(id_paciente):
+    paciente = Paciente.query.get(id_paciente)
+    if not paciente:
+        os.abort(404, description="Paciente no encontrado")
+    datos = request.get_json()
+    consentimiento_recibido = datos.get('consentimiento', None)
+    if consentimiento_recibido is None:
+        os.abort(400, description="Datos de consentimiento no proporcionados")
+    # Buscar un consentimiento existente
+    consentimiento = Consentimiento.query.filter_by(id_paciente=id_paciente).first()
+    if consentimiento:
+        # Actualizar el consentimiento existente
+        consentimiento.consentimiento = consentimiento_recibido
+        consentimiento.fecha_registro = datetime.now(timezone.utc)
+    else:
+        # Crear un nuevo registro de consentimiento si no existe
+        consentimiento_nuevo = Consentimiento(
+            id_paciente=id_paciente,
+            consentimiento=consentimiento_recibido,
+            fecha_registro=datetime.now(timezone.utc)
+        )
+        db.session.add(consentimiento_nuevo)
+    db.session.commit()
+    return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
 @jwt_required()
