@@ -2,20 +2,20 @@ from extensions import db
 from datetime import datetime
 from sqlalchemy.dialects.mysql import JSON
 
-# Definición de la tabla de asociación Sesiones-Medicamentos
+# Definition of the many-to-many relationship table between Sesion and Medicamento
 sesion_medicamento = db.Table('sesiones_medicamentos',
     db.Column('id_sesion', db.Integer, db.ForeignKey('sesiones.id_sesion'), primary_key=True),
     db.Column('id_medicamento', db.Integer, db.ForeignKey('medicamentos.id_medicamento'), primary_key=True)
 )
 
-# Modelo para Roles
+# Model for Roles
 class Rol(db.Model):
     __tablename__ = 'roles'
     id_rol = db.Column(db.Integer, primary_key=True)
     rol = db.Column(db.String(255), unique=True, nullable=False)
     descripcion = db.Column(db.Text)
 
-# Modelo para Usuarios
+# Model for Users
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     id_usuario = db.Column(db.Integer, primary_key=True)
@@ -27,36 +27,37 @@ class Usuario(db.Model):
     aprobacion = db.Column(db.Boolean, nullable=False)
     id_rol = db.Column(db.Integer, db.ForeignKey('roles.id_rol'))
 
-# Modelo para Géneros
+# Model for Genders
 class Genero(db.Model):
     __tablename__ = 'generos'
     id_genero = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(50), nullable=False)
 
-# Modelo para Estados Civiles
+# Model for Civil Status
 class EstadoCivil(db.Model):
     __tablename__ = 'estados_civiles'
     id_estado_civil = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(50), nullable=False)
 
-# Modelo para Escolaridades
+# Model for Schooling
 class Escolaridad(db.Model):
     __tablename__ = 'escolaridades'
     id_escolaridad = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(255), nullable=False)
 
-# Modelo para Lateralidades
+# Model for Laterality
 class Lateralidad(db.Model):
     __tablename__ = 'lateralidades'
     id_lateralidad = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(255), nullable=False)
 
-# Modelo para Ocupaciones
+# Model for Occupations
 class Ocupacion(db.Model):
     __tablename__ = 'ocupaciones'
     id_ocupacion = db.Column(db.Integer, primary_key=True)
     descripcion = db.Column(db.String(255), nullable=False)
 
+# Model for Patients
 class Paciente(db.Model):
     __tablename__ = 'pacientes'
     id_paciente = db.Column(db.Integer, primary_key=True)
@@ -75,28 +76,28 @@ class Paciente(db.Model):
     lateralidad = db.relationship('Lateralidad', backref='pacientes')
     id_ocupacion = db.Column(db.Integer, db.ForeignKey('ocupaciones.id_ocupacion'))
     ocupacion = db.relationship('Ocupacion', backref='pacientes')
-    # Relaciones adicionales
+    # Relational attributes
     telefonos = db.relationship('Telefono', backref='paciente', lazy='dynamic')
     correos_electronicos = db.relationship('CorreoElectronico', backref='paciente', lazy='dynamic')
     direcciones = db.relationship('Direccion', backref='paciente', lazy='dynamic')
     sesiones = db.relationship('Sesion', backref='paciente', lazy='dynamic')
     consentimientos = db.relationship('Consentimiento', backref='paciente', lazy='dynamic')
 
-# Modelo para Teléfonos
+# Model for Phones
 class Telefono(db.Model):
     __tablename__ = 'telefonos'
     id_telefono = db.Column(db.Integer, primary_key=True)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'))
     telefono = db.Column(db.String(255), nullable=False)
 
-# Modelo para Correos Electrónicos
+# Model for Emails
 class CorreoElectronico(db.Model):
     __tablename__ = 'correos_electronicos'
     id_correo = db.Column(db.Integer, primary_key=True)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'))
     correo_electronico = db.Column(db.String(255), unique=True, nullable=False)
 
-# Modelo para Direcciones
+# Model for Addresses
 class Direccion(db.Model):
     __tablename__ = 'direcciones'
     id_direccion = db.Column(db.Integer, primary_key=True)
@@ -108,16 +109,19 @@ class Direccion(db.Model):
     pais = db.Column(db.String(255))
     codigo_postal = db.Column(db.String(20))
 
+# Model for Medical History
 class HistorialMedico(db.Model):
     id_historial_medico = db.Column(db.Integer, primary_key=True)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     historial_medico = db.Column(db.Text)
 
+# Model for Previous Diagnosis
 class DiagnosticoPrevio(db.Model):
     id_diagnostico_previo = db.Column(db.Integer, primary_key=True)
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     descripcion = db.Column(db.Text)
 
+# Model for Consent
 class Consentimiento(db.Model):
     __tablename__ = 'consentimientos'
     id_consentimiento = db.Column(db.Integer, primary_key=True)
@@ -125,6 +129,7 @@ class Consentimiento(db.Model):
     consentimiento = db.Column(db.Boolean, nullable=False)
     fecha_registro = db.Column(db.DateTime, nullable=False)
 
+# Model for Medicines
 class Medicamento(db.Model):
     __tablename__ = 'medicamentos'
     id_medicamento = db.Column(db.Integer, primary_key=True)
@@ -132,6 +137,7 @@ class Medicamento(db.Model):
     principio_activo = db.Column(db.String(255))
     presentacion = db.Column(db.String(255))
 
+# Model for Comments
 class MetricaDesempeno(db.Model):
     __tablename__ = 'metricas_desempeno'
     id_metrica = db.Column(db.Integer, primary_key=True)
@@ -140,6 +146,7 @@ class MetricaDesempeno(db.Model):
     fecha_hora_registro = db.Column(db.DateTime, nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'))
 
+# Model for logs
 class LogActividadUsuario(db.Model):
     __tablename__ = 'logs_actividad_usuarios'
     id_log = db.Column(db.Integer, primary_key=True)
@@ -147,6 +154,7 @@ class LogActividadUsuario(db.Model):
     accion = db.Column(db.Text, nullable=False)
     fecha_hora_accion = db.Column(db.DateTime, nullable=False)
 
+# Model for Predictions
 class ResultadoPrediccion(db.Model):
     __tablename__ = 'resultados_prediccion'
     id_resultado_prediccion = db.Column(db.Integer, primary_key=True)
@@ -155,6 +163,7 @@ class ResultadoPrediccion(db.Model):
     nivel_confianza = db.Column(db.Numeric(5, 2))
     fecha_hora_prediccion = db.Column(db.DateTime, nullable=False)
 
+# Model for Sessions
 class Sesion(db.Model):
     __tablename__ = 'sesiones'
     id_sesion = db.Column(db.Integer, primary_key=True)
@@ -168,6 +177,7 @@ class Sesion(db.Model):
     normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic', cascade='all, delete-orphan')
     medicamentos = db.relationship('Medicamento', secondary=sesion_medicamento, backref=db.backref('sesiones', lazy='dynamic'))
 
+# Model for Raw EEG
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'
     id_eeg = db.Column(db.Integer, primary_key=True)
@@ -175,6 +185,7 @@ class RawEEG(db.Model):
     fecha_hora_registro = db.Column(db.DateTime, nullable=False)
     data = db.Column(db.JSON)
 
+# Model for Normalized EEG
 class NormalizedEEG(db.Model):
     __tablename__ = 'normalized_eeg'
     id_eeg_procesado = db.Column(db.Integer, primary_key=True)

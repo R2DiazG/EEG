@@ -21,14 +21,14 @@ import logging
 import numpy as np
 import pandas as pd
 
-# Cargar las variables de entorno
+# Load environment variables from .env file
 load_dotenv()
 
-# Inicializar la aplicación Flask
+# Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
 
-# Configurar la aplicación
+# Configure the application
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
@@ -41,52 +41,68 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 token_secret_key = os.getenv('TOKEN_SECRET_KEY')
 
-# Inicializar URLSafeTimedSerializer con la TOKEN_SECRET_KEY
+# Initialize the logger
 s = URLSafeTimedSerializer(token_secret_key)
 
-# Inicializar las extensiones
+# Initialize the extensions
 db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 jwt = JWTManager(app)
 mail = Mail(app)
 
-# Importar los modelos
+# Import the models
 from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, sesion_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG, Medicamento
 
-# Ruta para verificar la salud de la aplicación
+# Route to check if the server is up   
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'up'}), 200
 
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-############################################################# Autenticación de Usuarios ##############################################################
+################################################################ User Authentication #################################################################
 @app.route('/login', methods=['POST'])
 def login():
-    if not request.is_json:
-        return jsonify({"msg": "Falta el JSON en la solicitud"}), 400
-    username = request.json.get('username', None)
-    password = request.json.get('contraseña', None)
-    if not username:
-        return jsonify({"msg": "Falta el username"}), 400
-    if not password:
-        return jsonify({"msg": "Falta la contraseña"}), 400
-    # Verificar credenciales del usuario en la base de datos
-    user = Usuario.query.filter_by(username=username).first()
-    # Verificar si el usuario existe y la contraseña es correcta
-    if user and bcrypt.check_password_hash(user.contraseña, password):
-        # Adicionalmente, verificar si el usuario está aprobado
-        if not user.aprobacion:
-            return jsonify({"msg": "Usuario no aprobado. Por favor, espera a que un administrador apruebe tu cuenta."}), 403
-        # Crear el token de acceso JWT para usuarios aprobados
-        access_token = create_access_token(identity=username)
-        return jsonify(access_token=access_token), 200
-    else:
-        return jsonify({"msg": "Credenciales incorrectas"}), 401
+    """
+    Endpoint for user login.
+    Expects a JSON with 'username' and 'password'.
+    If the credentials are correct and the user is approved, a JWT access token is returned.
+    """
+    try:
+        if not request.is_json:
+            return jsonify({"msg": "Falta el JSON en la solicitud"}), 400
+        username = request.json.get('username', None)
+        password = request.json.get('contraseña', None)
+        if not username:
+            return jsonify({"msg": "Falta el username"}), 400
+        if not password:
+            return jsonify({"msg": "Falta la contraseña"}), 400
+        # Verify if the user exists
+        user = Usuario.query.filter_by(username=username).first()
+        # Verify the password
+        if user and bcrypt.check_password_hash(user.contraseña, password):
+            # Aditional verification for user approval
+            if not user.aprobacion:
+                return jsonify({"msg": "Usuario no aprobado. Por favor, espera a que un administrador apruebe tu cuenta."}), 403
+            # Create the access token
+            access_token = create_access_token(identity=username)
+            logging.info('Usuario %s ha iniciado sesión exitosamente.', username)
+            return jsonify(access_token=access_token), 200
+        else:
+            logging.warning('Intento de inicio de sesión fallido para el usuario: %s', username)
+            return jsonify({"msg": "Credenciales incorrectas"}), 401
+    except Exception as e:
+        logging.error('Error durante el inicio de sesión: %s', e)
+        return jsonify({"message": "Error interno del servidor durante el inicio de sesión"}), 500
 
 @app.route('/solicitar_cambio_contrasena', methods=['POST'])
 def solicitar_cambio_contrasena():
+    """
+    Endpoint to request a password change.
+    Expects a JSON with 'username'.
+    If the user exists, an email is sent with a link to reset the password.
+    """
     try:
         datos = request.get_json()
         if not datos:
@@ -103,83 +119,154 @@ def solicitar_cambio_contrasena():
         msg.body = f"Por favor, haz click en el siguiente enlace para restablecer tu contraseña: {link}"
         msg.charset = 'utf-8'
         mail.send(msg)
+        logging.info('Correo electrónico de restablecimiento de contraseña enviado a: %s', usuario.correo)
         return jsonify({"msg": "Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña."}), 200
     except Exception as e:
+        logging.error('Error al solicitar el cambio de contraseña: %s', e)
         return jsonify({"msg": "Ocurrió el error: " + str(e)}), 500
 
 @app.route('/resetear_contrasena/<token>', methods=['POST'])
 def resetear_contraseña(token):
+    """
+    Endpoint to reset the password.
+    Expects a JSON with 'new_password'.
+    If the token is valid and has not expired, the user's password is updated.
+    """
     try:
         datos = request.get_json()
         nueva_contrasena = datos.get('nueva_contrasena', None)
-        correo = s.loads(token, salt='cambio-contrasena', max_age=3600)  # 3600 segundos = 1 hora
+        correo = s.loads(token, salt='cambio-contrasena', max_age=3600)  # 3600 seconds = 1 hour
         usuario = Usuario.query.filter_by(correo=correo).first()
         if usuario:
             hashed_password = bcrypt.generate_password_hash(nueva_contrasena).decode('utf-8')
             usuario.contraseña = hashed_password
             db.session.commit()
+            logging.info('Contraseña actualizada para el usuario: %s', usuario.username)
             return jsonify({"msg": "Tu contraseña ha sido actualizada."}), 200
         else:
+            logging.warning('Intento de restablecimiento de contraseña para usuario no existente: %s', correo)
             return jsonify({"msg": "Usuario no encontrado."}), 404
     except SignatureExpired:
+        logging.warning('Enlace de restablecimiento de contraseña expirado para: %s', correo)
         return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
     except BadSignature:
+        logging.warning('Enlace de restablecimiento de contraseña inválido para: %s', correo)
         return jsonify({"msg": "Enlace inválido."}), 400
-    
+
 @app.route('/usuario/actual', methods=['GET'])
 @jwt_required()
 def obtener_usuario_actual():
-    # Obtener la identidad del token JWT
-    identidad_usuario = get_jwt_identity()
-    # Buscar al usuario por su identidad (por ejemplo, su username)
-    usuario_actual = Usuario.query.filter_by(username=identidad_usuario).first()
-    if usuario_actual:
-        # Retornar el nombre y apellidos del usuario
-        return jsonify({
-            'id_usuario': usuario_actual.id_usuario,
-            'nombre': usuario_actual.nombre,
-            'apellidos': usuario_actual.apellidos,
-            'id_rol': usuario_actual.id_rol
-        }), 200
-    else:
-        return jsonify({'mensaje': 'Usuario no encontrado'}), 404
-
+    """
+    Endpoint to get the current user's information.
+    Requires a JWT access token.
+    If the token is valid, the user's information is returned.
+    """
+    try:
+        # Obtain the user's identity
+        identidad_usuario = get_jwt_identity()
+        # Search for the user in the database
+        usuario_actual = Usuario.query.filter_by(username=identidad_usuario).first()
+        if usuario_actual:
+            logging.info('Información del usuario actual obtenida para: %s', identidad_usuario)
+            return jsonify({
+                'id_usuario': usuario_actual.id_usuario,
+                'nombre': usuario_actual.nombre,
+                'apellidos': usuario_actual.apellidos,
+                'id_rol': usuario_actual.id_rol
+            }), 200
+        else:
+            logging.warning('Intento de obtener información del usuario actual para usuario no existente: %s', identidad_usuario)
+            return jsonify({'mensaje': 'Usuario no encontrado'}), 404
+    except Exception as e:
+        logging.error('Error al obtener información del usuario actual: %s', e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-################################################################## CRUD de Usuarios ##################################################################
+################################################################### CRUD for Users ###################################################################
 @app.route('/usuarios', methods=['POST'])
 def crear_usuario():
-    datos = request.get_json()
-    if not datos or 'username' not in datos or 'contraseña' not in datos:
-        return jsonify({'mensaje': 'Datos insuficientes para crear un usuario'}), 400
-    # Verificar la existencia del rol
-    rol = Rol.query.get(datos.get('id_rol'))
-    if not rol:
-        return jsonify({'mensaje': 'Rol no válido'}), 400
-    hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-    nuevo_usuario = Usuario(
-        nombre=datos.get('nombre'),
-        apellidos=datos.get('apellidos'),
-        username=datos.get('username'),
-        contraseña=hashed_password,
-        correo=datos.get('correo'),
-        aprobacion=datos.get('aprobacion', False),  # Valor predeterminado a False si no se proporciona
-        id_rol=datos.get('id_rol')
-    )
-    db.session.add(nuevo_usuario)
-    db.session.commit()
-    return jsonify({'mensaje': 'Usuario creado exitosamente'}), 201
+    """
+    Endpoint to create a new user.
+    Expects a JSON with 'username', 'password', 'nombre', 'apellidos', 'correo', 'aprobacion', and 'id_rol'.
+    If the data is valid and the role exists, a new user is created and saved to the database.
+    """
+    try:
+        datos = request.get_json()
+        if not datos or 'username' not in datos or 'contraseña' not in datos:
+            logging.warning('Datos insuficientes para crear un usuario')
+            return jsonify({'mensaje': 'Datos insuficientes para crear un usuario'}), 400
+        # Verify if the user already exists
+        rol = Rol.query.get(datos.get('id_rol'))
+        if not rol:
+            logging.warning('Rol no válido para la creación de usuario')
+            return jsonify({'mensaje': 'Rol no válido'}), 400
+        hashed_password = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
+        nuevo_usuario = Usuario(
+            nombre=datos.get('nombre'),
+            apellidos=datos.get('apellidos'),
+            username=datos.get('username'),
+            contraseña=hashed_password,
+            correo=datos.get('correo'),
+            aprobacion=datos.get('aprobacion', False),  # Value is False by default waiting for admin approval
+            id_rol=datos.get('id_rol')
+        )
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+        logging.info('Usuario creado exitosamente: %s', nuevo_usuario.username)
+        return jsonify({'mensaje': 'Usuario creado exitosamente'}), 201
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al crear usuario: %s', e)
+        return jsonify({'error': 'Error al crear el usuario: {}'.format(str(e))}), 400
 
 @app.route('/usuarios', methods=['GET'])
 @jwt_required()
 def obtener_usuarios():
-    current_user = get_jwt_identity()
-    usuario_actual = Usuario.query.filter_by(username=current_user).first()
-    if usuario_actual.id_rol != 1: 
-        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
-    usuarios = Usuario.query.filter(Usuario.id_usuario != usuario_actual.id_usuario).all()
-    resultado = [
-        {
+    """
+    Endpoint to retrieve all users.
+    Requires a valid JWT access token.
+    If the current user is an admin, all users except the current user are retrieved and returned.
+    """
+    try:
+        current_user = get_jwt_identity()
+        usuario_actual = Usuario.query.filter_by(username=current_user).first()
+        if usuario_actual.id_rol != 1: 
+            logging.warning('Acceso denegado: Solo administradores pueden realizar esta acción.')
+            return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
+        usuarios = Usuario.query.filter(Usuario.id_usuario != usuario_actual.id_usuario).all()
+        resultado = [
+            {
+                'id_usuario': usuario.id_usuario,
+                'nombre': usuario.nombre,
+                'apellidos': usuario.apellidos,
+                'username': usuario.username,
+                'correo': usuario.correo,
+                'aprobacion': usuario.aprobacion,
+                'id_rol': usuario.id_rol,
+                # Doesn't include the password
+            } for usuario in usuarios
+        ]
+        return jsonify(resultado), 200
+    except Exception as e:
+        logging.error('Error al obtener información de usuarios: %s', e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
+@app.route('/usuarios/<int:id_usuario>', methods=['GET'])
+@jwt_required()
+def obtener_usuario(id_usuario):
+    """
+    Endpoint to retrieve a specific user by their ID.
+    Requires a valid JWT access token.
+    If the current user is an admin, the user with the given ID is retrieved and returned.
+    """
+    try:
+        current_user = get_jwt_identity()
+        usuario_actual = Usuario.query.filter_by(username=current_user).first()
+        if usuario_actual.id_rol != 1:
+            logging.warning('Acceso denegado: Solo administradores pueden realizar esta acción.')
+            return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
+        usuario = Usuario.query.get_or_404(id_usuario)
+        usuario_datos = {
             'id_usuario': usuario.id_usuario,
             'nombre': usuario.nombre,
             'apellidos': usuario.apellidos,
@@ -187,141 +274,217 @@ def obtener_usuarios():
             'correo': usuario.correo,
             'aprobacion': usuario.aprobacion,
             'id_rol': usuario.id_rol,
-            # No se incluye la contraseña
-        } for usuario in usuarios
-    ]
-    return jsonify(resultado), 200
-
-@app.route('/usuarios/<int:id_usuario>', methods=['GET'])
-@jwt_required()
-def obtener_usuario(id_usuario):
-    current_user = get_jwt_identity()
-    usuario_actual = Usuario.query.filter_by(username=current_user).first()
-    if usuario_actual.id_rol != 1:
-        return jsonify({"msg": "Acceso denegado: Solo administradores pueden realizar esta acción."}), 403
-    usuario = Usuario.query.get_or_404(id_usuario)
-    usuario_datos = {
-        'id_usuario': usuario.id_usuario,
-        'nombre': usuario.nombre,
-        'apellidos': usuario.apellidos,
-        'username': usuario.username,
-        'correo': usuario.correo,
-        'aprobacion': usuario.aprobacion,
-        'id_rol': usuario.id_rol,
-        # No se incluye la contraseña
-    }
-    return jsonify(usuario_datos), 200
+            # Doesn't include the password
+        }
+        return jsonify(usuario_datos), 200
+    except Exception as e:
+        logging.error('Error al obtener información del usuario %s: %s', id_usuario, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/usuarios/<int:id_usuario>', methods=['PUT'])
 @jwt_required()
 def actualizar_usuario(id_usuario):
-    usuario = Usuario.query.get_or_404(id_usuario)
-    datos = request.get_json()
-    if 'id_rol' in datos:
-        rol = Rol.query.get(datos['id_rol'])
-        if not rol:
-            return jsonify({'mensaje': 'Rol no válido'}), 400
-        usuario.id_rol = datos['id_rol']
-    usuario.nombre = datos.get('nombre', usuario.nombre)
-    usuario.apellidos = datos.get('apellidos', usuario.apellidos)
-    usuario.username = datos.get('username', usuario.username)
-    if 'contraseña' in datos:
-        usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
-    usuario.correo = datos.get('correo', usuario.correo)
-    usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
-    db.session.commit()
-    return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
+    """
+    Endpoint to update a specific user by their ID.
+    Requires a valid JWT access token.
+    If the user exists, their data is updated and saved to the database.
+    """
+    try:
+        usuario = Usuario.query.get_or_404(id_usuario)
+        datos = request.get_json()
+        if 'id_rol' in datos:
+            rol = Rol.query.get(datos['id_rol'])
+            if not rol:
+                logging.warning('Rol no válido para la actualización del usuario')
+                return jsonify({'mensaje': 'Rol no válido'}), 400
+            usuario.id_rol = datos['id_rol']
+        usuario.nombre = datos.get('nombre', usuario.nombre)
+        usuario.apellidos = datos.get('apellidos', usuario.apellidos)
+        usuario.username = datos.get('username', usuario.username)
+        if 'contraseña' in datos:
+            usuario.contraseña = bcrypt.generate_password_hash(datos['contraseña']).decode('utf-8')
+        usuario.correo = datos.get('correo', usuario.correo)
+        usuario.aprobacion = datos.get('aprobacion', usuario.aprobacion)
+        db.session.commit()
+        logging.info('Usuario %s actualizado exitosamente', id_usuario)
+        return jsonify({'mensaje': 'Usuario actualizado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al actualizar el usuario %s: %s', id_usuario, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/usuarios/<int:id_usuario>/aprobacion', methods=['PUT'])
 @jwt_required()
 def cambiar_aprobacion_usuario(id_usuario):
-    datos = request.get_json()
-    usuario = Usuario.query.get_or_404(id_usuario)
-    # Se asume que el campo 'aprobacion' se envía en el cuerpo de la solicitud, y debe ser un valor booleano.
-    if 'aprobacion' in datos and isinstance(datos['aprobacion'], bool):
-        usuario.aprobacion = datos['aprobacion']
-        db.session.commit()
-        return jsonify({'mensaje': 'Estado de aprobación actualizado exitosamente'}), 200
-    else:
-        return jsonify({'error': 'Falta el campo de aprobación o el valor no es válido'}), 400
+    """
+    Endpoint to update the approval status of a specific user by their ID.
+    Requires a valid JWT access token.
+    If the user exists and the approval data is valid, the user's approval status is updated and saved to the database.
+    """
+    try:
+        datos = request.get_json()
+        usuario = Usuario.query.get_or_404(id_usuario)
+        if 'aprobacion' in datos and isinstance(datos['aprobacion'], bool):
+            usuario.aprobacion = datos['aprobacion']
+            db.session.commit()
+            logging.info('Estado de aprobación del usuario %s actualizado exitosamente', id_usuario)
+            return jsonify({'mensaje': 'Estado de aprobación actualizado exitosamente'}), 200
+        else:
+            logging.warning('Falta el campo de aprobación o el valor no es válido para el usuario %s', id_usuario)
+            return jsonify({'error': 'Falta el campo de aprobación o el valor no es válido'}), 400
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al actualizar el estado de aprobación del usuario %s: %s', id_usuario, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
 @jwt_required()
 def eliminar_usuario(id_usuario):
-    usuario = Usuario.query.get_or_404(id_usuario)
-    db.session.delete(usuario)
-    db.session.commit()
-    return jsonify({'mensaje': 'Usuario eliminado exitosamente'}), 200
+    """
+    Endpoint to delete a specific user by their ID.
+    Requires a valid JWT access token.
+    If the user exists, they are deleted from the database.
+    """
+    try:
+        usuario = Usuario.query.get_or_404(id_usuario)
+        db.session.delete(usuario)
+        db.session.commit()
+        logging.info('Usuario %s eliminado exitosamente', id_usuario)
+        return jsonify({'mensaje': 'Usuario eliminado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al eliminar el usuario %s: %s', id_usuario, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-################################################################ CRUD de Medicamentos ################################################################
+################################################################ CRUD for Medications ################################################################
 @app.route('/medicamentos', methods=['POST'])
 @jwt_required()
 def crear_medicamento():
-    datos = request.get_json()
-    nombre_comercial = datos.get('nombre_comercial')
-    principio_activo = datos.get('principio_activo')
-    presentacion = datos.get('presentacion')
-    if not nombre_comercial or not principio_activo or not presentacion:
-        return jsonify({'mensaje': 'Faltan datos necesarios para crear el medicamento'}), 400
-    nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
-    db.session.add(nuevo_medicamento)
-    db.session.commit()
+    """
+    Endpoint to create a new medication.
+    Expects a JSON with 'nombre_comercial', 'principio_activo', and 'presentacion'.
+    If the data is valid, a new medication is created and saved to the database.
+    """
+    try:
+        datos = request.get_json()
+        nombre_comercial = datos.get('nombre_comercial')
+        principio_activo = datos.get('principio_activo')
+        presentacion = datos.get('presentacion')
+        if not nombre_comercial or not principio_activo or not presentacion:
+            return jsonify({'mensaje': 'Faltan datos necesarios para crear el medicamento'}), 400
+        nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
+        db.session.add(nuevo_medicamento)
+        db.session.commit()
+        logging.info('Medicamento creado exitosamente: %s', nuevo_medicamento.nombre_comercial)
+        return jsonify({'mensaje': 'Medicamento creado exitosamente', 'id': nuevo_medicamento.id_medicamento}), 201
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al crear el medicamento %s: %s', nombre_comercial, e)
+        return jsonify({'error': 'Error interno del servidor al crear el medicamento: {}'.format(str(e))}), 500
 
 @app.route('/medicamentos', methods=['GET'])
 @jwt_required()
 def obtener_medicamentos():
-    medicamentos = Medicamento.query.all()
-    resultado = [{
-        'id_medicamento': medicamento.id_medicamento,
-        'nombre_comercial': medicamento.nombre_comercial,
-        'principio_activo': medicamento.principio_activo,
-        'presentacion': medicamento.presentacion
-    } for medicamento in medicamentos]
-    return jsonify(resultado), 200
+    """
+    Endpoint to retrieve all medications.
+    Requires a valid JWT access token.
+    All medications are retrieved and returned.
+    """
+    try:
+        medicamentos = Medicamento.query.all()
+        resultado = [{
+            'id_medicamento': medicamento.id_medicamento,
+            'nombre_comercial': medicamento.nombre_comercial,
+            'principio_activo': medicamento.principio_activo,
+            'presentacion': medicamento.presentacion
+        } for medicamento in medicamentos]
+        logging.info('Medicamentos obtenidos exitosamente')
+        return jsonify(resultado), 200
+    except Exception as e:
+        logging.error('Error al obtener medicamentos: %s', e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/medicamentos/<int:id_medicamento>', methods=['GET'])
 @jwt_required()
 def obtener_medicamento_por_id(id_medicamento):
-    medicamento = Medicamento.query.get_or_404(id_medicamento)
-    return jsonify({
-        'id_medicamento': medicamento.id_medicamento,
-        'nombre_comercial': medicamento.nombre_comercial,
-        'principio_activo': medicamento.principio_activo,
-        'presentacion': medicamento.presentacion
-    }), 200
+    """
+    Endpoint to retrieve a specific medication by their ID.
+    Requires a valid JWT access token.
+    The medication with the given ID is retrieved and returned.
+    """
+    try:
+        medicamento = Medicamento.query.get_or_404(id_medicamento)
+        logging.info('Medicamento %s obtenido exitosamente', id_medicamento)
+        return jsonify({
+            'id_medicamento': medicamento.id_medicamento,
+            'nombre_comercial': medicamento.nombre_comercial,
+            'principio_activo': medicamento.principio_activo,
+            'presentacion': medicamento.presentacion
+        }), 200
+    except Exception as e:
+        logging.error('Error al obtener el medicamento %s: %s', id_medicamento, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/medicamentos/<int:id_medicamento>', methods=['PUT'])
 @jwt_required()
 def actualizar_medicamento(id_medicamento):
-    medicamento = Medicamento.query.get_or_404(id_medicamento)
-    datos = request.get_json()
-    medicamento.nombre_comercial = datos.get('nombre_comercial', medicamento.nombre_comercial)
-    medicamento.principio_activo = datos.get('principio_activo', medicamento.principio_activo)
-    medicamento.presentacion = datos.get('presentacion', medicamento.presentacion)
-    db.session.commit()
-    return jsonify({'mensaje': 'Medicamento actualizado exitosamente'}), 200
+    """
+    Endpoint to update a specific medication by their ID.
+    Requires a valid JWT access token.
+    If the medication exists, their data is updated and saved to the database.
+    """
+    try:
+        medicamento = Medicamento.query.get_or_404(id_medicamento)
+        datos = request.get_json()
+        medicamento.nombre_comercial = datos.get('nombre_comercial', medicamento.nombre_comercial)
+        medicamento.principio_activo = datos.get('principio_activo', medicamento.principio_activo)
+        medicamento.presentacion = datos.get('presentacion', medicamento.presentacion)
+        db.session.commit()
+        logging.info('Medicamento %s actualizado exitosamente', id_medicamento)
+        return jsonify({'mensaje': 'Medicamento actualizado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al actualizar el medicamento %s: %s', id_medicamento, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/medicamentos/<int:id_medicamento>', methods=['DELETE'])
 @jwt_required()
 def eliminar_medicamento(id_medicamento):
-    medicamento = Medicamento.query.get_or_404(id_medicamento)
-    db.session.delete(medicamento)
-    db.session.commit()
-    return jsonify({'mensaje': 'Medicamento eliminado exitosamente'}), 200
-
+    """
+    Endpoint to delete a specific medication by their ID.
+    Requires a valid JWT access token.
+    If the medication exists, they are deleted from the database.
+    """
+    try:
+        medicamento = Medicamento.query.get_or_404(id_medicamento)
+        db.session.delete(medicamento)
+        db.session.commit()
+        logging.info('Medicamento %s eliminado exitosamente', id_medicamento)
+        return jsonify({'mensaje': 'Medicamento eliminado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al eliminar el medicamento %s: %s', id_medicamento, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-################################################################ CRUD de Pacientes ###################################################################
+################################################################# CRUD for Patients ##################################################################
 @app.route('/usuarios/<int:id_usuario>/pacientes', methods=['POST'])
 @jwt_required()
 def crear_paciente_para_usuario(id_usuario):
-    # Verificar que el usuario existe
+    """
+    Endpoint to create a new patient for a specific user.
+    Requires a valid JWT access token.
+    Expects a JSON with patient details including 'nombre', 'apellido_paterno', 'apellido_materno', 
+    'fecha_nacimiento', 'id_genero', 'id_estado_civil', 'id_escolaridad', 'id_lateralidad', and 'id_ocupacion'.
+    Validates user existence and saves the new patient to the database with optional details like phone numbers, emails, and addresses.
+    """
+    # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
     try:
         nuevo_paciente = Paciente(
-            id_usuario=id_usuario,  # Usamos el id_usuario de la ruta
+            id_usuario=id_usuario,  # Use the ID of the user in the URL to create the patient for that user
             nombre=datos['nombre'],
             apellido_paterno=datos['apellido_paterno'],
             apellido_materno=datos.get('apellido_materno', ''),
@@ -333,8 +496,8 @@ def crear_paciente_para_usuario(id_usuario):
             id_ocupacion=datos['id_ocupacion']
         )
         db.session.add(nuevo_paciente)
-        db.session.flush()  # Para obtener el id del paciente recién creado
-        # Añadir teléfonos, correos electrónicos y direcciones si se proporcionan
+        db.session.flush()  # For getting the ID of the new patient
+        # Add the phone numbers, emails and addresses
         if 'telefonos' in datos:
             for num in datos['telefonos']:
                 nuevo_telefono = Telefono(telefono=num, id_paciente=nuevo_paciente.id_paciente)
@@ -348,167 +511,232 @@ def crear_paciente_para_usuario(id_usuario):
                 nueva_direccion = Direccion(**direccion, id_paciente=nuevo_paciente.id_paciente)
                 db.session.add(nueva_direccion)
         db.session.commit()
+        logging.info('Paciente creado exitosamente para el usuario %s', id_usuario)
         return jsonify({'mensaje': 'Paciente creado exitosamente', 'id': nuevo_paciente.id_paciente}), 201
     except Exception as e:
         db.session.rollback()
+        logging.error('Error al crear el paciente para el usuario %s: %s', id_usuario, e)
         return jsonify({'error': str(e)}), 400
 
 @app.route('/usuarios/<int:id_usuario>/pacientes', methods=['GET'])
 @jwt_required()
 def obtener_pacientes_por_usuario(id_usuario):
-    pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
-    resultado = []
-    for paciente in pacientes:
-        # Calculamos la edad del paciente
-        today = datetime.today()
-        edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
-        # Obtenemos el número de sesiones
-        sesiones = paciente.sesiones.order_by(Sesion.fecha_consulta.desc()).all() # Ordenamos las sesiones por fecha en orden descendente
-        numero_de_sesiones = len(sesiones)
-        # Obtenemos las notas del psicólogo de la última sesión, si existe
-        notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
-        resultado.append({
+    """
+    Endpoint to retrieve all patients for a specific user.
+    Requires a valid JWT access token.
+    Retrieves detailed patient information including demographics, session count, and latest session notes.
+    """
+    try:
+        pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
+        resultado = []
+        for paciente in pacientes:
+            # Calculate the age of the patient
+            today = datetime.today()
+            edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
+            # Obtain the sessions for the patient
+            sesiones = paciente.sesiones.order_by(Sesion.fecha_consulta.desc()).all() # Order by the date of the session
+            numero_de_sesiones = len(sesiones)
+            # Obtain the notes of the last session, if any
+            notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
+            resultado.append({
+                'id_paciente': paciente.id_paciente,
+                'nombre': paciente.nombre,
+                'apellido_paterno': paciente.apellido_paterno,
+                'apellido_materno': paciente.apellido_materno or "",
+                'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+                'edad': edad,
+                'numero_de_sesiones': numero_de_sesiones,
+                'notas_ultima_sesion': notas_ultima_sesion,
+                'genero': paciente.genero.descripcion if paciente.genero else "",
+                'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
+                'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
+                'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
+                'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
+            })
+        logging.info('Pacientes obtenidos exitosamente para el usuario %s', id_usuario)
+        return jsonify(resultado), 200
+    except Exception as e:
+        logging.error('Error al obtener pacientes para el usuario %s: %s', id_usuario, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
+@app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
+@jwt_required()
+def obtener_detalles_paciente(id_paciente):
+    """
+    Endpoint to retrieve detailed information for a specific patient.
+    Requires a valid JWT access token.
+    Returns comprehensive patient details including personal information, contacts (phone, email, address), and consent status.
+    """
+    try:
+        paciente = Paciente.query.get_or_404(id_paciente)
+        detalles_paciente = {
             'id_paciente': paciente.id_paciente,
             'nombre': paciente.nombre,
             'apellido_paterno': paciente.apellido_paterno,
             'apellido_materno': paciente.apellido_materno or "",
             'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
-            'edad': edad,
-            'numero_de_sesiones': numero_de_sesiones,
-            'notas_ultima_sesion': notas_ultima_sesion,
             'genero': paciente.genero.descripcion if paciente.genero else "",
             'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
             'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
             'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
             'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
-        })
-    return jsonify(resultado), 200
-
-@app.route('/pacientes/<int:id_paciente>/detalles', methods=['GET'])
-@jwt_required()
-def obtener_detalles_paciente(id_paciente):
-    paciente = Paciente.query.get_or_404(id_paciente)
-    detalles_paciente = {
-        'id_paciente': paciente.id_paciente,
-        'nombre': paciente.nombre,
-        'apellido_paterno': paciente.apellido_paterno,
-        'apellido_materno': paciente.apellido_materno or "",
-        'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
-        'genero': paciente.genero.descripcion if paciente.genero else "",
-        'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
-        'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
-        'lateralidad': paciente.lateralidad.descripcion if paciente.lateralidad else "",
-        'ocupacion': paciente.ocupacion.descripcion if paciente.ocupacion else "",
-        'telefonos': [{'telefono': tel.telefono} for tel in paciente.telefonos],
-        'correos_electronicos': [{'correo_electronico': correo.correo_electronico} for correo in paciente.correos_electronicos],
-        'direcciones': [{
-            'calle_numero': direccion.calle_numero,
-            'colonia': direccion.colonia,
-            'ciudad': direccion.ciudad,
-            'estado': direccion.estado,
-            'pais': direccion.pais,
-            'codigo_postal': direccion.codigo_postal
-        } for direccion in paciente.direcciones],
-        'consentimientos': [{
-            'consentimiento': consent.consentimiento, 
-            'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
-        } for consent in paciente.consentimientos],
-    }
-    return jsonify(detalles_paciente), 200
+            'telefonos': [{'telefono': tel.telefono} for tel in paciente.telefonos],
+            'correos_electronicos': [{'correo_electronico': correo.correo_electronico} for correo in paciente.correos_electronicos],
+            'direcciones': [{
+                'calle_numero': direccion.calle_numero,
+                'colonia': direccion.colonia,
+                'ciudad': direccion.ciudad,
+                'estado': direccion.estado,
+                'pais': direccion.pais,
+                'codigo_postal': direccion.codigo_postal
+            } for direccion in paciente.direcciones],
+            'consentimientos': [{
+                'consentimiento': consent.consentimiento, 
+                'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
+            } for consent in paciente.consentimientos],
+        }
+        logging.info('Detalles del paciente %s obtenidos exitosamente', id_paciente)
+        return jsonify(detalles_paciente), 200
+    except Exception as e:
+        logging.error('Error al obtener detalles del paciente %s: %s', id_paciente, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
 @jwt_required()
 def obtener_eegs_por_sesion(id_sesion):
-    # Buscar la sesión por ID para asegurarse de que existe
-    sesion = Sesion.query.get_or_404(id_sesion)
-    # Buscar los EEGs asociados con la sesión
-    raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
-    normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
-    # Buscar los medicamentos asociados con la sesión
-    medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
-    eegs_response = {
-        'detalle_sesion': {
-            'id_sesion': sesion.id_sesion,
-            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
-            'estado_general': sesion.estado_general,
-            'estado_especifico': sesion.estado_especifico,
-            'resumen_sesion_actual': sesion.resumen_sesion_actual,
-            'notas_psicologo': sesion.notas_psicologo
-        },
-        'raw_eegs': [{
-            'id_eeg': eeg.id_eeg,
-            'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-            'data': eeg.data
-        } for eeg in raw_eegs],
-        'normalized_eegs': [{
-            'id_eeg_procesado': eeg.id_eeg_procesado,
-            'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_normalized': eeg.data_normalized,
-            'data_psd': eeg.data_psd
-        } for eeg in normalized_eegs]
-    }
-    return jsonify(eegs_response), 200
+    """
+    Endpoint to retrieve EEG data for a specific session.
+    Requires a valid JWT access token.
+    Fetches and returns raw and normalized EEG data along with session details and associated medications.
+    """
+    try:
+        # Search for the session for the given ID
+        sesion = Sesion.query.get_or_404(id_sesion)
+        # Search for the EEGs associated with the session
+        raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
+        normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
+        # Search for the medications associated with the session
+        medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
+        eegs_response = {
+            'detalle_sesion': {
+                'id_sesion': sesion.id_sesion,
+                'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+                'estado_general': sesion.estado_general,
+                'estado_especifico': sesion.estado_especifico,
+                'resumen_sesion_actual': sesion.resumen_sesion_actual,
+                'notas_psicologo': sesion.notas_psicologo
+            },
+            'raw_eegs': [{
+                'id_eeg': eeg.id_eeg,
+                'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
+                'data': eeg.data
+            } for eeg in raw_eegs],
+            'normalized_eegs': [{
+                'id_eeg_procesado': eeg.id_eeg_procesado,
+                'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
+                'data_normalized': eeg.data_normalized,
+                'data_psd': eeg.data_psd
+            } for eeg in normalized_eegs]
+        }
+        logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
+        return jsonify(eegs_response), 200
+    except Exception as e:
+        logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
+        return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
 
 @app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
 @jwt_required()
 def obtener_fechas_sesiones_por_paciente(id_paciente):
-    # Asegurarse de que el paciente existe
-    paciente = Paciente.query.get_or_404(id_paciente)
-    # Obtener todas las fechas de sesiones para el paciente especificado
-    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
-    # Extraer solo las fechas de las sesiones para el dropdown list
-    fechas_sesiones = [{
-        'id_sesion': sesion.id_sesion,
-        'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
-    } for sesion in sesiones]
-    # Devolver las fechas de las sesiones en formato JSON
-    return jsonify(fechas_sesiones), 200
+    """
+    Endpoint to retrieve all session dates for a specific patient.
+    Requires a valid JWT access token.
+    Lists dates of all sessions conducted for the patient, ordered by the date of the session.
+    """
+    try:
+        # Making sure the patient exists
+        paciente = Paciente.query.get_or_404(id_paciente)
+        # Obtain all the sessions for the patient
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
+        # Extract the dates of the sessions
+        fechas_sesiones = [{
+            'id_sesion': sesion.id_sesion,
+            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+        } for sesion in sesiones]
+        logging.info('Fechas de sesiones obtenidas exitosamente para el paciente %s', id_paciente)
+        # Return the dates of the sessions as a JSON response
+        return jsonify(fechas_sesiones), 200
+    except Exception as e:
+        logging.error('Error al obtener las fechas de las sesiones para el paciente %s: %s', id_paciente, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
 @jwt_required()
 def obtener_medicamentos_por_paciente(id_paciente):
-    # Asegurarse de que el paciente existe
-    paciente = Paciente.query.get_or_404(id_paciente)
-    # Obtener todas las sesiones del paciente
-    sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
-    # Lista para almacenar los medicamentos junto con la fecha de la sesión y notas del psicólogo
-    medicamentos_detalle = []
-    # Recorrer todas las sesiones para recolectar los medicamentos y las notas del psicólogo
-    for sesion in sesiones:
-        fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
-        notas_psicologo = sesion.notas_psicologo
-        for medicamento in sesion.medicamentos:
-            medicamentos_detalle.append({
-                'id_medicamento': medicamento.id_medicamento,
-                'nombre_comercial': medicamento.nombre_comercial,
-                'principio_activo': medicamento.principio_activo,
-                'presentacion': medicamento.presentacion,
-                'fecha_sesion': fecha_sesion,  # Incluir la fecha de la sesión
-                'notas_psicologo': notas_psicologo  # Incluir las notas del psicólogo
-            })
-    return jsonify(medicamentos_detalle), 200
+    """
+    Endpoint to retrieve medication details for a specific patient.
+    Requires a valid JWT access token.
+    Provides detailed medication information for all sessions, including the psychologist's notes.
+    """
+    try:
+        # Making sure the patient exists
+        paciente = Paciente.query.get_or_404(id_paciente)
+        # Obtain all the sessions for the patient
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        # List to store the medications and the psychologist's notes
+        medicamentos_detalle = []
+        # Go through each session to extract the medications and notes for each one
+        for sesion in sesiones:
+            fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
+            notas_psicologo = sesion.notas_psicologo
+            for medicamento in sesion.medicamentos:
+                medicamentos_detalle.append({
+                    'id_medicamento': medicamento.id_medicamento,
+                    'nombre_comercial': medicamento.nombre_comercial,
+                    'principio_activo': medicamento.principio_activo,
+                    'presentacion': medicamento.presentacion,
+                    'fecha_sesion': fecha_sesion,
+                    'notas_psicologo': notas_psicologo
+                })
+        logging.info('Medicamentos obtenidos exitosamente para el paciente %s', id_paciente)
+        return jsonify(medicamentos_detalle), 200
+    except Exception as e:
+        logging.error('Error al obtener medicamentos para el paciente %s: %s', id_paciente, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
 @jwt_required()
 def actualizar_paciente_de_usuario(id_usuario, id_paciente):
-    # Verificar si el paciente pertenece al usuario
+    """
+    Endpoint to update patient details for a specific user.
+    Requires a valid JWT access token.
+    Allows modification of patient's basic information and contacts (phone, email, address).
+    Validates patient's existence and updates the information in the database.
+    """
+    # Verify if the user exists
     paciente = Paciente.query.filter_by(id_usuario=id_usuario, id_paciente=id_paciente).first()
     if paciente is None:
         return jsonify({'error': 'Paciente no encontrado o no pertenece al usuario indicado'}), 404
     datos = request.get_json()
     try:
         actualizar_datos_basicos_paciente(paciente, datos)
-        # Actualizar relaciones (teléfonos, correos electrónicos, direcciones)
+        # Update the phone numbers, emails and addresses
         actualizar_telefonos(paciente, datos.get('telefonos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
         db.session.commit()
+        logging.info('Paciente %s actualizado exitosamente para el usuario %s', id_paciente, id_usuario)
         return jsonify({'mensaje': 'Paciente actualizado exitosamente'}), 200
     except Exception as e:
         db.session.rollback()
+        logging.error('Error al actualizar el paciente %s para el usuario %s: %s', id_paciente, id_usuario, e)
         return jsonify({'error': 'Error al actualizar el paciente: {}'.format(str(e))}), 400
 
 def actualizar_datos_basicos_paciente(paciente, datos):
+    """
+    Funtion to update the basic information of a patient.
+    The function receives a patient object and a dictionary with the new data.
+    The function updates the patient object with the new data.
+    """
     paciente.nombre = datos.get('nombre', paciente.nombre)
     paciente.apellido_paterno = datos.get('apellido_paterno', paciente.apellido_paterno)
     paciente.apellido_materno = datos.get('apellido_materno', paciente.apellido_materno)
@@ -520,21 +748,31 @@ def actualizar_datos_basicos_paciente(paciente, datos):
     paciente.id_ocupacion = datos.get('id_ocupacion', paciente.id_ocupacion)
 
 def actualizar_telefonos(paciente, telefonos_nuevos):
+    """
+    Funtion to update the phone numbers of a patient.
+    The function receives a patient object and a list of dictionaries with the new phone numbers.
+    The function updates the phone numbers of the patient with the new data.
+    """
     if telefonos_nuevos is not None:
-        # Obtener los teléfonos actuales y mapearlos por id_telefono
+        # Obtains the current phones of the patient
         telefonos_actuales = {tel.id_telefono: tel for tel in paciente.telefonos}
         for tel_data in telefonos_nuevos:
             if 'id_telefono' in tel_data and tel_data['id_telefono'] in telefonos_actuales:
                 telefono = telefonos_actuales.pop(tel_data['id_telefono'])
-                telefono.telefono = tel_data['numero']  # Cambio aquí
+                telefono.telefono = tel_data['numero']
             else:
-                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)  # Y aquí
+                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)
                 db.session.add(nuevo_telefono)
-        # Eliminar cualquier teléfono no incluido en la actualización
+        # Delete any phone number not included in the update
         for tel in telefonos_actuales.values():
             db.session.delete(tel)
 
 def actualizar_correos(paciente, correos_nuevos):
+    """
+    Funtion to update the email addresses of a patient.
+    The function receives a patient object and a list of dictionaries with the new email addresses.
+    The function updates the email addresses of the patient with the new data.
+    """
     if correos_nuevos is not None:
         correos_actuales = {correo.id_correo: correo for correo in paciente.correos_electronicos}
         for correo_data in correos_nuevos:
@@ -548,12 +786,17 @@ def actualizar_correos(paciente, correos_nuevos):
             db.session.delete(correo)
 
 def actualizar_direcciones(paciente, direcciones_nuevas):
+    """
+    Funtion to update the addresses of a patient.
+    The function receives a patient object and a list of dictionaries with the new addresses.
+    The function updates the addresses of the patient with the new data.
+    """
     if direcciones_nuevas is not None:
         direcciones_actuales = {direccion.id_direccion: direccion for direccion in paciente.direcciones}
         for direccion_data in direcciones_nuevas:
             if 'id_direccion' in direccion_data and direccion_data['id_direccion'] in direcciones_actuales:
                 direccion = direcciones_actuales.pop(direccion_data['id_direccion'])
-                # Actualiza los campos de la dirección aquí
+                # Update the address data
                 direccion.calle_numero = direccion_data.get('calle_numero', direccion.calle_numero)
                 direccion.colonia = direccion_data.get('colonia', direccion.colonia)
                 direccion.ciudad = direccion_data.get('ciudad', direccion.ciudad)
@@ -577,33 +820,49 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
 
 @app.route('/pacientes/<int:id_paciente>/consentimiento', methods=['PUT'])
 def actualizar_consentimiento(id_paciente):
-    paciente = Paciente.query.get(id_paciente)
-    if not paciente:
-        os.abort(404, description="Paciente no encontrado")
-    datos = request.get_json()
-    consentimiento_recibido = datos.get('consentimiento', None)
-    if consentimiento_recibido is None:
-        os.abort(400, description="Datos de consentimiento no proporcionados")
-    # Buscar un consentimiento existente
-    consentimiento = Consentimiento.query.filter_by(id_paciente=id_paciente).first()
-    if consentimiento:
-        # Actualizar el consentimiento existente
-        consentimiento.consentimiento = consentimiento_recibido
-        consentimiento.fecha_registro = datetime.now(timezone.utc)
-    else:
-        # Crear un nuevo registro de consentimiento si no existe
-        consentimiento_nuevo = Consentimiento(
-            id_paciente=id_paciente,
-            consentimiento=consentimiento_recibido,
-            fecha_registro=datetime.now(timezone.utc)
-        )
-        db.session.add(consentimiento_nuevo)
-    db.session.commit()
-    return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
+    """
+    Endpoint to update consent status for a specific patient.
+    Does not require JWT access as it might be used in contexts outside of user authentication.
+    Expects a JSON with 'consentimiento' status. Updates or creates the patient's consent record.
+    """
+    try:
+        paciente = Paciente.query.get(id_paciente)
+        if not paciente:
+            os.abort(404, description="Paciente no encontrado")
+        datos = request.get_json()
+        consentimiento_recibido = datos.get('consentimiento', None)
+        if consentimiento_recibido is None:
+            os.abort(400, description="Datos de consentimiento no proporcionados")
+        # Search for the consent of the patient
+        consentimiento = Consentimiento.query.filter_by(id_paciente=id_paciente).first()
+        if consentimiento:
+            # Update the consent if it already exists
+            consentimiento.consentimiento = consentimiento_recibido
+            consentimiento.fecha_registro = datetime.now(timezone.utc)
+        else:
+            # Create a new consent if it doesn't exist
+            consentimiento_nuevo = Consentimiento(
+                id_paciente=id_paciente,
+                consentimiento=consentimiento_recibido,
+                fecha_registro=datetime.now(timezone.utc)
+            )
+            db.session.add(consentimiento_nuevo)
+        db.session.commit()
+        logging.info('Consentimiento actualizado exitosamente para el paciente %s', id_paciente)
+        return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', id_paciente, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
 @jwt_required()
 def eliminar_paciente(id_usuario, id_paciente):
+    """
+    Endpoint to delete a patient for a specific user.
+    Requires a valid JWT access token.
+    Validates the patient's association with the user before deletion. Removes the patient and all related data from the database.
+    """
     paciente = Paciente.query.get_or_404(id_paciente)
     if paciente.id_usuario != id_usuario:
         return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
@@ -611,11 +870,8 @@ def eliminar_paciente(id_usuario, id_paciente):
         sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
         for sesion in sesiones:
             sesion.medicamentos = []
-            # Asegurarte de eliminar o desvincular cualquier otro dato dependiente aquí
-        # En vez de llamar a delete() directamente en la consulta, hazlo a través de un bucle para controlar mejor el proceso
         for sesion in sesiones:
             db.session.delete(sesion)
-        # Ahora puedes continuar con la eliminación de otros registros relacionados
         Telefono.query.filter_by(id_paciente=id_paciente).delete()
         CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
         Direccion.query.filter_by(id_paciente=id_paciente).delete()
@@ -624,11 +880,12 @@ def eliminar_paciente(id_usuario, id_paciente):
         Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
         db.session.delete(paciente)
         db.session.commit()
+        logging.info('Paciente %s eliminado exitosamente para el usuario %s', id_paciente, id_usuario)
         return jsonify({'mensaje': 'Paciente eliminado exitosamente'}), 200
     except Exception as e:
         db.session.rollback()
+        logging.error('Error al eliminar el paciente %s para el usuario %s: %s', id_paciente, id_usuario, e)
         return jsonify({'error': 'Error al eliminar el paciente: ' + str(e)}), 500
-
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ Procesamiento de EEG ################################################################
@@ -636,6 +893,16 @@ def eliminar_paciente(id_usuario, id_paciente):
 @app.route('/sesiones/nueva', methods=['POST'])
 @jwt_required()
 def crear_nueva_sesion():
+    """
+    Endpoint to create a new session with EEG data.
+    Requires a valid JWT access token.
+    Expects multipart/form-data with an 'archivo_eeg' file and additional form data including 'id_paciente', 
+    'estado_general', 'estado_especifico' (as a list), 'resumen_sesion_actual', and 'medicamentos_ids' (as a list).
+    Processes the uploaded EEG file, saving session details and EEG data (both raw and processed) to the database.
+    Applies preprocessing steps like channel renaming, band-pass filtering, notch filtering, and ICA for artifact removal.
+    Also calculates and stores the power spectral density (PSD) of the EEG signal.
+    Returns the session ID upon successful creation and processing of the EEG data.
+    """
     logging.info('Iniciando la creación de una nueva sesión')
     try:
         if 'archivo_eeg' not in request.files:
@@ -648,27 +915,27 @@ def crear_nueva_sesion():
         if not id_paciente:
             raise BadRequest('ID del paciente no proporcionado')
         estado_general = datos.get('estado_general')
-        estado_especifico = datos.getlist('estado_especifico')  # Asumiendo que es posible seleccionar más de uno
+        estado_especifico = datos.getlist('estado_especifico')  # Assumed to be a list
         resumen_sesion_actual = datos.get('resumen_sesion_actual')
-        medicamentos_ids = datos.getlist('medicamentos_ids')  # Asume que recibes IDs de medicamentos como una lista
+        medicamentos_ids = datos.getlist('medicamentos_ids')  # Assuming this is a list of IDs
         logging.info('Datos recibidos correctamente')
-        # Guardar temporalmente y procesar archivo EEG
+        # Save the EEG file temporarily
         path_temporal = os.path.join('/tmp', archivo_eeg.filename)
         archivo_eeg.save(path_temporal)
         logging.info('Archivo EEG guardado temporalmente')
-        # Crea una instancia de Sesion con los datos recibidos
+        # Create an instance of the session and add it to the database
         nueva_sesion = Sesion(
             id_paciente=id_paciente,
             fecha_consulta=datetime.now(timezone.utc),
             estado_general=estado_general,
             estado_especifico=','.join(estado_especifico),
             resumen_sesion_actual=resumen_sesion_actual,
-            notas_psicologo=''  # Si tienes un campo para esto en tu formulario, cámbialo acorde
+            notas_psicologo=''
         )
         db.session.add(nueva_sesion)
-        db.session.flush()  # Para obtener el ID de la nueva sesión antes de commit
+        db.session.flush()  # For getting the ID of the new session before committing
         logging.info('Nueva sesión creada y añadida a la base de datos')
-        # Asocia medicamentos a la sesión
+        # Asoociate the medications with the session
         for med_id in medicamentos_ids:
             medicamento = Medicamento.query.get(int(med_id))
             if medicamento:
@@ -683,11 +950,11 @@ def crear_nueva_sesion():
                 nuevos_nombres.append(nuevo_nombre)
             return nuevos_nombres
         try:
-            # Leer el archivo .edf
+            # Read the EEG data from the .edf file
             raw = mne.io.read_raw_edf(path_temporal, preload=True)
-            os.remove(path_temporal)  # Eliminar archivo temporal
+            os.remove(path_temporal)  # Delete the temporary file
             logging.info('Archivo .edf leído y eliminado temporalmente')
-            # Renombrar canales
+            # Rename the channels to remove the '-A1' suffix and make them lowercase
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
             logging.info('Canales renombrados')
@@ -699,24 +966,23 @@ def crear_nueva_sesion():
             )
             db.session.add(nuevo_raw_eeg)
             logging.info('Datos EEG crudos convertidos a JSON y almacenados en RawEEG')
-            # Filtrado pasa-banda para conservar solo las frecuencias de interés
+            # Pass-band filter to remove frequencies outside the 1-40 Hz range
             raw.filter(1., 40., fir_design='firwin')
-            # Filtrado Notch para eliminar frecuencias de la línea eléctrica (50-60Hz)
-            nyquist_freq = raw.info['sfreq'] / 2 # Sino hardocdeamos a 128 Hz
+            # Notch filter to remove 50 Hz noise and its harmonics 
+            nyquist_freq = raw.info['sfreq'] / 2 # If the sampling frequency is 250 Hz, the Nyquist frequency is 125 Hz
             raw.notch_filter(np.arange(50, nyquist_freq, 50), fir_design='firwin')
             logging.info('Filtrado Notch y pasa-banda aplicados')
-            # ICA para identificar y remover componentes de artefactos
-            ica = ICA(n_components=20, random_state=97, max_iter=800)
-            ica.fit(raw)
-            ica.apply(raw)  # Asumiendo que ya identificaste los componentes a excluir antes de esta línea
+            # ICA to remove eye blinks and other artifacts
+            ica = ICA(n_components=20, random_state=97, max_iter=800) # Assuming 20 components to remove artifacts 
+            ica.fit(raw) # Fit the ICA to the raw data to identify the components to exclude 
+            ica.apply(raw)  # Apply the ICA to remove the components identified in the previous step
             logging.info('ICA aplicado')
-            # Calcular la PSD para los datos raw procesados usando compute_psd
+            # Calculate the power spectral density (PSD) of the EEG data in the 1-40 Hz range using Welch's method 
             spectrum = raw.compute_psd(method='welch', fmin=1, fmax=40, n_fft=2048)
             psds, freqs = spectrum.get_data(return_freqs=True)
-            #psds, freqs = mne.time_frequency.psd_welch(raw, fmin=1, fmax=40, n_fft=2048)
-            # Convertir PSDs a decibeles (dB) para una mejor visualización
+            # Convert the PSDs to decibels (dB) for visualization purposes
             psds_db = 10 * np.log10(psds)
-            # Preparar los datos para almacenar o enviar al frontend
+            # Prepare the data for visualization in the frontend as a JSON object
             data_for_frontend = [
                 {
                     'name': ch_name,
@@ -726,20 +992,20 @@ def crear_nueva_sesion():
                 }
                 for i, ch_name in enumerate(raw.ch_names)
             ]
-            # En este punto, los datos ya están filtrados y limpios, por lo que procedemos a guardarlos para NormalizedEEG
-            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Datos después de ICA, filtrado Notch, Pasa-banda, etc.
-            datos_psd_json = json.dumps(data_for_frontend)  # Datos PSD en formato JSON
-            # Cuando creamos la instancia de NormalizedEEG, incluyimos 'data_psd'.
+            # At this point, the data is cleaned, filtered, ready for visualization and is ready to be stored in the database as a JSON object
+            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Data cleaned and processed in JSON format
+            datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
+            # When storing the data in the database, it is necessary to store the PSD data as well
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
                 fecha_hora_procesado=datetime.now(timezone.utc),
                 data_normalized=datos_procesados_json,
-                data_psd=datos_psd_json  # Aquí se asignan los datos PSD serializados.
+                data_psd=datos_psd_json  # Here we store the PSD data
             )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')
         except Exception as e:
-            # Manejo de errores específicos del procesamiento EEG
+            # Handle any errors that may occur during the processing of the EEG data
             logging.error(f"Error durante el procesamiento del EEG: {e}")
             raise
         db.session.commit()
@@ -754,7 +1020,7 @@ def crear_nueva_sesion():
         logging.error('Error inesperado: ' + str(e))
         return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
     finally:
-        # Asegurarse de eliminar el archivo temporal
+        # Delete the temporary file in case of an error
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
@@ -762,11 +1028,11 @@ def crear_nueva_sesion():
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 
 
-# Manejador global de errores
+# Handle the 404 error
 @app.errorhandler(Exception)
 def handle_exception(error):
     return jsonify({'message': str(error)}), 500
 
-# Iniciar la aplicación
+# Initialize the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
