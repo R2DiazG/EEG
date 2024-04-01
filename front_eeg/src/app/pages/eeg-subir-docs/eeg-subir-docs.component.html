@@ -12,37 +12,50 @@
       <label>Estado del paciente:</label>
       <div class="form-group">
         <label>
-          <input type="radio" id="stateWakefullness" name="estadoGeneral" value="wakefullness" [(ngModel)]="estadoGeneral"> Vigilia
+          <input type="radio" id="stateWakefullness" name="estadoGeneral" value="Vigilia" [(ngModel)]="estadoGeneral"> Vigilia
         </label>
         <label>
-          <input type="radio" id="stateSleep" name="estadoGeneral" value="sleep" [(ngModel)]="estadoGeneral"> Sueño
+          <input type="radio" id="stateSleep" name="estadoGeneral" value="Sueño" [(ngModel)]="estadoGeneral"> Sueño
         </label>
         <label>
-          <input type="radio" id="stateSedation" name="estadoGeneral" value="sedation" [(ngModel)]="estadoGeneral"> Sedación
+          <input type="radio" id="stateSedation" name="estadoGeneral" value="Sedación" [(ngModel)]="estadoGeneral"> Sedación
+        </label>
+        <label>
+          <input type="radio" id="stateAnesthesia" name="estadoGeneral" value="Ayuno" [(ngModel)]="estadoGeneral"> Ayuno
         </label>
       </div>
 
       <label>Específico:</label>
-      <div>
-        <input type="checkbox" id="hyperventilation" value="hyperventilation"
-              (change)="toggleEstadoEspecifico('hyperventilation', $event)">
-        <label for="hyperventilation">Hiperventilación</label>
-      </div>
-      <div>
-        <input type="checkbox" id="visualStimulus" value="visualStimulus"
-               (change)="toggleEstadoEspecifico('visualStimulus', $event)">
-        <label for="visualStimulus">Estímulo visual</label>
-      </div>
-      <div>
-        <input type="checkbox" id="auditoryStimulus" value="auditoryStimulus"
-               (change)="toggleEstadoEspecifico('auditoryStimulus', $event)">
-        <label for="auditoryStimulus">Estímulo auditivo</label>
-      </div>
-      <div>
-        <input type="checkbox" id="none" value="none"
-               (change)="toggleEstadoEspecifico('none', $event)">
-        <label for="none">Ninguno</label>
-      </div>
+      <!-- ... -->
+
+<div>
+  <input type="checkbox" id="hiperventilacion" value="hiperventilacion"
+         [disabled]="estadosEspecificos['ninguno']"
+         (change)="toggleEstadoEspecifico('hiperventilacion', $event.target.checked)"
+         [checked]="estadosEspecificos['hiperventilacion']">
+  <label for="hyperventilation">Hiperventilación</label>
+</div>
+<div>
+  <input type="checkbox" id="estimulo_visual" value="estimulo_visual"
+         [disabled]="estadosEspecificos['none']"
+         (change)="toggleEstadoEspecifico('estimulo_visual', $event.target.checked)"
+         [checked]="estadosEspecificos['estimulo_visual']">
+  <label for="hyperventilation">Estímulo visual</label>
+</div>
+<div>
+  <input type="checkbox" id="estimulo_auditivo" value="estimulo_auditivo"
+         [disabled]="estadosEspecificos['none']"
+         (change)="toggleEstadoEspecifico('estimulo_auditivo', $event.target.checked)"
+         [checked]="estadosEspecificos['estimulo_auditivo']">
+  <label for="hyperventilation">Estímulo auditivo</label>
+</div>
+<div>
+  <input type="checkbox" id="none" value="ninguno"
+         (change)="toggleEstadoEspecifico('ninguno', $event.target.checked)"
+         [checked]="estadosEspecificos['ninguno']">
+  <label for="none">Ninguno</label>
+</div>
+
 
       <div class="form-group">
         <label for="description">Resumen de la sesión:</label>

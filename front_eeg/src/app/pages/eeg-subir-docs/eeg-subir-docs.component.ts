@@ -11,8 +11,14 @@ export class EegSubirDocsComponent {
   selectedFile: File | null = null;
   fecha: string = ''; // Asigna un string vacío como valor inicial
   estadoGeneral: string = ''; // Puede ser 'wakefullness' o cualquier otro valor predeterminado
-  estadosEspecificos: string[] = [];
   resumenSesionActual: string = '';
+
+  estadosEspecificos: {[key: string]: boolean} = {
+    hiperventilacion: false,
+    estimulo_visual: false,
+    estimulo_auditivo: false,
+    ninguno: false,
+  };
 
   constructor(private eegService: EegService, private router: Router) {}
 
@@ -20,25 +26,25 @@ export class EegSubirDocsComponent {
     this.selectedFile = event.target.files[0];
   }
 
-  // Actualización en el componente para manejar la selección de checkboxes
-  toggleEstadoEspecifico(estado: string, event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    const isChecked = inputElement.checked;
-  
-    if (estado === 'none' && isChecked) {
-      // Si 'Ninguno' es seleccionado, asegúrate de desmarcar todos los demás y limpiar el arreglo
-      this.estadosEspecificos = ['none'];
-      // Aquí necesitarías desmarcar los demás checkboxes manualmente si no se actualizan automáticamente
-    } else if (estado !== 'none' && isChecked) {
-      // Elimina 'none' si estaba seleccionado y agrega el nuevo estado si no es 'none'
-      this.estadosEspecificos = this.estadosEspecificos.filter(e => e !== 'none');
-      this.estadosEspecificos.push(estado);
+  toggleEstadoEspecifico(estado: string, isChecked: boolean): void {
+    if (estado === 'ninguno') {
+      if (isChecked) {
+        // Si 'Ninguno' es seleccionado, desmarcar y deshabilitar todos los demás
+        Object.keys(this.estadosEspecificos).forEach(key => {
+          this.estadosEspecificos[key] = false;
+        });
+        // Marcar 'Ninguno' como seleccionado
+        this.estadosEspecificos['ninguno'] = true;
+      } else {
+        // Si 'Ninguno' es deseleccionado, habilitar todos los demás
+        this.estadosEspecificos['ninguno'] = false;
+      }
     } else {
-      // Si un checkbox es desmarcado, simplemente quítalo del arreglo
-      this.estadosEspecificos = this.estadosEspecificos.filter(e => e !== estado);
+      // Si se selecciona cualquier otra opción, deseleccionar 'Ninguno'
+      this.estadosEspecificos['ninguno'] = false;
+      this.estadosEspecificos[estado] = isChecked;
     }
   }
-  
   
   onCancel(){
     this.router.navigate(['/graficas-paciente']);
@@ -53,13 +59,21 @@ export class EegSubirDocsComponent {
     // Prepara FormData
     const formData = new FormData();
     formData.append('eegFile', this.selectedFile, this.selectedFile.name);
-
+  
     // Agrega cualquier otro campo de formulario relevante aquí
     formData.append('fecha', this.fecha);
     formData.append('estado_general', this.estadoGeneral);
-    formData.append('estado_especifico', this.estadosEspecificos.join(','));
+  
+    // Convierte el objeto estadosEspecificos a un array de claves donde el valor es true
+    const estadosEspecificosSeleccionados = Object.entries(this.estadosEspecificos)
+      .filter(([_, value]) => value)
+      .map(([key, _]) => key);
+  
+    // Usa join(',') para unir los elementos del array en una cadena de texto
+    formData.append('estado_especifico', estadosEspecificosSeleccionados.join(','));
+  
     formData.append('resumen_sesion_actual', this.resumenSesionActual);
-
+  
     // Llama al servicio para subir la sesión con el archivo y otros datos
     this.eegService.crearNuevaSesion(formData).subscribe({
       next: (response) => {
