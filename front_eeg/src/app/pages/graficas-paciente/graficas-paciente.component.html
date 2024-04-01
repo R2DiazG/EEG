@@ -5,11 +5,15 @@
     <app-info-paciente></app-info-paciente>
     <!--Consume crear_nueva_sesion()-->
     <button (click)="addSession()">Agregar sesion</button>
-    <!--Cambiar search por dropdown list que consuma obtener_fechas_sesiones_por_paciente-->
     <div class="search-upload-section">
-        <!-- <input type="search" placeholder="Nombre del Paciente" (input)="searchPatient($event.target.value)"> -->
-        <input type="search" placeholder="Buscar sesion">
-      </div>
+      <!-- Dropdown para seleccionar la fecha de sesión -->
+      <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
+          <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
+              {{ sesion.fecha_consulta }}
+          </option>
+      </select>
+    </div>
+
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('contentEEG')" [class.active]="activeTab === 'contentEEG'">Contenido EEG</button>
       <button class="tab" (click)="setActiveTab('meds')" [class.active]="activeTab === 'meds'">Medicamentos</button>

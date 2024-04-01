@@ -31,27 +31,27 @@
 <div>
   <input type="checkbox" id="hiperventilacion" value="hiperventilacion"
          [disabled]="estadosEspecificos['ninguno']"
-         (change)="toggleEstadoEspecifico('hiperventilacion', $event.target.checked)"
+         (change)="toggleEstadoEspecifico('hiperventilacion', $event)"
          [checked]="estadosEspecificos['hiperventilacion']">
   <label for="hyperventilation">Hiperventilación</label>
 </div>
 <div>
   <input type="checkbox" id="estimulo_visual" value="estimulo_visual"
          [disabled]="estadosEspecificos['none']"
-         (change)="toggleEstadoEspecifico('estimulo_visual', $event.target.checked)"
+         (change)="toggleEstadoEspecifico('estimulo_visual', $event)"
          [checked]="estadosEspecificos['estimulo_visual']">
   <label for="hyperventilation">Estímulo visual</label>
 </div>
 <div>
   <input type="checkbox" id="estimulo_auditivo" value="estimulo_auditivo"
          [disabled]="estadosEspecificos['none']"
-         (change)="toggleEstadoEspecifico('estimulo_auditivo', $event.target.checked)"
+         (change)="toggleEstadoEspecifico('estimulo_auditivo', $event)"
          [checked]="estadosEspecificos['estimulo_auditivo']">
   <label for="hyperventilation">Estímulo auditivo</label>
 </div>
 <div>
   <input type="checkbox" id="none" value="ninguno"
-         (change)="toggleEstadoEspecifico('ninguno', $event.target.checked)"
+  (change)="toggleEstadoEspecifico('ninguno', $event)"
          [checked]="estadosEspecificos['ninguno']">
   <label for="none">Ninguno</label>
 </div>

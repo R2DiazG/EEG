@@ -6,6 +6,7 @@ import { Options } from 'highcharts';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
+import { PacienteService } from '../../services/pacientes/paciente.service';
 
 interface SeriesOptions {
   name: string;
@@ -22,25 +23,42 @@ interface SeriesOptions {
 export class GraficasPacienteComponent implements OnInit {
   activeTab: string = 'contentEEG'; // Tab activa por defecto
   idSesion: number | null = null; // Declarar idSesion como propiedad del componente
+  sesiones: any[] = []; // Almacenará las fechas de las sesiones
+  selectedSesionId: number | null = null;
   constructor(
     private eegService: EegService,
     private route: ActivatedRoute,
+    private pacienteService: PacienteService,
     private router: Router
   ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      // 'id' es el nombre del parámetro definido en tu configuración de ruta
-      const idSesion = params.get('id');
-      if (idSesion) {
-        this.idSesion = +idSesion; // El '+' convierte el valor a número
-        this.cargarDatosEEG();
+      const idPaciente = params.get('idPaciente'); // Asume que tienes un parámetro idPaciente
+      if (idPaciente) {
+        this.cargarFechasSesionesPorPaciente(+idPaciente);
       } else {
-        // Manejar el caso de que el idSesion no esté disponible
-        console.error('ID de sesión no proporcionado');
+        console.error('ID de paciente no proporcionado');
       }
     });
   }
+
+  cargarFechasSesionesPorPaciente(idPaciente: number) {
+    this.pacienteService.obtenerFechasSesionesPorPaciente(idPaciente).subscribe({
+      next: (data) => {
+        this.sesiones = data;
+        // Opcionalmente, selecciona una sesión por defecto aquí
+      },
+      error: (error) => console.error('Error al obtener fechas de sesiones:', error)
+    });
+  }
+
+  onSesionChange() {
+    // Aquí puedes hacer lo que necesites cuando el usuario cambie la selección del dropdown
+    console.log('Sesión seleccionada:', this.selectedSesionId);
+    // Por ejemplo, cargar datos de la sesión seleccionada
+  }
+
 
   addSession(): void {
     this.router.navigate(['/eeg-subir-docs']);

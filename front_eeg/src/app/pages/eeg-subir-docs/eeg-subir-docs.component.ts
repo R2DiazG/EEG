@@ -26,25 +26,25 @@ export class EegSubirDocsComponent {
     this.selectedFile = event.target.files[0];
   }
 
-  toggleEstadoEspecifico(estado: string, isChecked: boolean): void {
-    if (estado === 'ninguno') {
-      if (isChecked) {
-        // Si 'Ninguno' es seleccionado, desmarcar y deshabilitar todos los demás
-        Object.keys(this.estadosEspecificos).forEach(key => {
-          this.estadosEspecificos[key] = false;
-        });
-        // Marcar 'Ninguno' como seleccionado
-        this.estadosEspecificos['ninguno'] = true;
-      } else {
-        // Si 'Ninguno' es deseleccionado, habilitar todos los demás
-        this.estadosEspecificos['ninguno'] = false;
-      }
-    } else {
-      // Si se selecciona cualquier otra opción, deseleccionar 'Ninguno'
+  toggleEstadoEspecifico(estado: string, event: Event): void {
+    const inputElement = event.target as HTMLInputElement; // Aserción de tipo
+    // La siguiente línea verifica si inputElement es realmente un HTMLInputElement
+    // Y luego verifica si está marcado antes de proceder.
+    const isChecked = inputElement ? inputElement.checked : false;
+  
+    if (estado === 'ninguno' && isChecked) {
+      Object.keys(this.estadosEspecificos).forEach(key => {
+        this.estadosEspecificos[key] = false;
+      });
+      this.estadosEspecificos['ninguno'] = true;
+    } else if (estado !== 'ninguno' && isChecked) {
       this.estadosEspecificos['ninguno'] = false;
+      this.estadosEspecificos[estado] = isChecked;
+    } else if (!isChecked) {
       this.estadosEspecificos[estado] = isChecked;
     }
   }
+  
   
   onCancel(){
     this.router.navigate(['/graficas-paciente']);
