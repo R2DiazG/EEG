@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from '../login/auth.service';
-
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -10,16 +9,24 @@ import { AuthService } from '../login/auth.service';
 export class UsuarioService {
   private apiUrl = 'http://127.0.0.1:5000/usuarios';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object  // Inyectar PLATFORM_ID para verificar el entorno de ejecución
+  ) { }
 
   private getHeaders(): HttpHeaders {
-    const access_token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-    if (access_token) {
-      headers = headers.set('Authorization', `Bearer ${access_token}`);
+    // Inicializar headers sin Authorization
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json', });
+
+    // Verificar si se está en el lado del cliente
+    if (isPlatformBrowser(this.platformId)) {
+      const access_token = localStorage.getItem('access_token');
+      if (access_token) {
+        // Agregar Authorization solo si se está en el cliente y el token existe
+        headers = headers.set('Authorization', `Bearer ${access_token}`);
+      }
     }
+
     return headers;
   }
 
@@ -28,26 +35,13 @@ export class UsuarioService {
   }
 
   obtenerUsuarios(): Observable<any[]> {
-    // Asegúrate de que 'Authorization' se agrega correctamente a los encabezados.
-    const access_token = localStorage.getItem('access_token');
-    if (!access_token) {
-      console.error('Error: Token de autenticación no encontrado.');
-      // Aquí podrías manejar el caso de que el token no exista,
-      // como redirigir al usuario a la página de inicio de sesión.
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${access_token}`
-    });
-    return this.http.get<any[]>(this.apiUrl, { headers });
+    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
   
   cambiarAprobacionUsuario(idUsuario: number, aprobacion: boolean): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // Asegúrate de que apiUrl esté definido correctamente
-    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
-    const body = { aprobacion }; // Cuerpo de la solicitud con la nueva aprobación
-
-    // Realiza la solicitud PUT
-    return this.http.put(url, body, { headers });
+    const url = `${this.apiUrl}/${idUsuario}/aprobacion`;
+    const body = { aprobacion };
+    return this.http.put(url, body, { headers: this.getHeaders() });
   }
 
   obtenerUsuario(idUsuario: number): Observable<any> {
@@ -55,21 +49,13 @@ export class UsuarioService {
   }
 
   actualizarUsuario(idUsuario: number, usuario: any): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}`; // Asegúrate de que apiUrl esté definido correctamente
-    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
-
-    // Realiza la solicitud PUT
-    return this.http.put(url, usuario, { headers });
-    //return this.http.put(`${this.apiUrl}/${idUsuario}`, usuario, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${idUsuario}`;
+    return this.http.put(url, usuario, { headers: this.getHeaders() });
   }
 
   eliminarUsuario(idUsuario: number): Observable<any> {
     const url = `${this.apiUrl}/${idUsuario}`;
-    const headers = this.getHeaders();
-
-    // Realiza la solicitud DELETE
-    return this.http.delete(url, { headers });
-    //return this.http.delete(`${this.apiUrl}/${idUsuario}`, { headers: this.getHeaders() });
+    return this.http.delete(url, { headers: this.getHeaders() });
   }
-
 }
+
