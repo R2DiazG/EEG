@@ -13,7 +13,8 @@ from flask_mail import Mail, Message
 from mne.io import RawArray
 from mne.io import read_raw_edf
 from mne.filter import filter_data
-from mne.preprocessing import ICA
+from mne.preprocessing import ICA, create_eog_epochs
+from sklearn.decomposition import PCA
 import os
 import mne
 import json
@@ -973,9 +974,20 @@ def crear_nueva_sesion():
             raw.notch_filter(np.arange(50, nyquist_freq, 50), fir_design='firwin')
             logging.info('Filtrado Notch y pasa-banda aplicados')
             # ICA to remove eye blinks and other artifacts
-            ica = ICA(n_components=20, random_state=97, max_iter=800) # Assuming 20 components to remove artifacts 
+            n_channels = len(raw.ch_names)
+            # Step 1: Determine the number of components for ICA based on the explained variance of PCA
+            pca = PCA(n_components=min(n_channels, 20))  # Limiting to 20 components for computational efficiency
+            data_transformed = pca.fit_transform(raw.get_data().transpose())
+            explained_variance = pca.explained_variance_ratio_ # Percentage of variance explained by each component 
+            # Step 2: Select the number of components for ICA that explain 99% of the variance 
+            n_components_ica = np.argmax(np.cumsum(explained_variance) >= 0.99) + 1
+            # Step 3: Apply ICA to the raw data to remove the components identified as artifacts
+            ica = ICA(n_components=n_components_ica, random_state=97, max_iter=800)
             ica.fit(raw) # Fit the ICA to the raw data to identify the components to exclude 
-            ica.apply(raw)  # Apply the ICA to remove the components identified in the previous step
+            # Identify the components that are related to eye movements (EOG)
+            eog_indices, eog_scores = ica.find_bads_eog(raw)
+            ica.exclude = eog_indices
+            ica.apply(raw) # Aplly the ICA to remove the components identified as artifacts
             logging.info('ICA aplicado')
             # Calculate the power spectral density (PSD) of the EEG data in the 1-40 Hz range using Welch's method 
             spectrum = raw.compute_psd(method='welch', fmin=1, fmax=40, n_fft=2048)
