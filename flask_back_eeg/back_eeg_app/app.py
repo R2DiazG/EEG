@@ -196,7 +196,7 @@ def crear_usuario():
             logging.warning('Datos insuficientes para crear un usuario')
             return jsonify({'mensaje': 'Datos insuficientes para crear un usuario'}), 400
         # Verify if the user already exists
-        rol = Rol.query.get(datos.get('id_rol'))
+        rol = db.session.get(Rol, datos.get('id_rol'))
         if not rol:
             logging.warning('Rol no válido para la creación de usuario')
             return jsonify({'mensaje': 'Rol no válido'}), 400
@@ -293,7 +293,7 @@ def actualizar_usuario(id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
         datos = request.get_json()
         if 'id_rol' in datos:
-            rol = Rol.query.get(datos['id_rol'])
+            rol = db.session.get(Rol, datos.get('id_rol'))
             if not rol:
                 logging.warning('Rol no válido para la actualización del usuario')
                 return jsonify({'mensaje': 'Rol no válido'}), 400
