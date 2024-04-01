@@ -1,32 +1,25 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://127.0.0.1:5000/usuarios';
+  private apiUrl = 'http://localhost:4200/usuarios';
 
   constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object  // Inyectar PLATFORM_ID para verificar el entorno de ejecución
+    private http: HttpClient
   ) { }
 
   private getHeaders(): HttpHeaders {
-    // Inicializar headers sin Authorization
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json', });
-
-    // Verificar si se está en el lado del cliente
-    if (isPlatformBrowser(this.platformId)) {
-      const access_token = localStorage.getItem('access_token');
-      if (access_token) {
-        // Agregar Authorization solo si se está en el cliente y el token existe
-        headers = headers.set('Authorization', `Bearer ${access_token}`);
-      }
+    const access_token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    if (access_token) {
+      headers = headers.set('Authorization', `Bearer ${access_token}`);
     }
-
     return headers;
   }
 

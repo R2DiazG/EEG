@@ -29,7 +29,8 @@ const routes: Routes = [
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
   { path: '**', redirectTo: '/login' },
-  { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 } },
+  { path: 'lista-psicologos', component: ListaPsicologosComponent},
+  //, canActivate: [RoleGuard], data: { expectedRole: 1 } 
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
