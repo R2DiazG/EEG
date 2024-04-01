@@ -77,67 +77,25 @@ export class EditarPacienteComponent implements OnInit {
     }
   }
 
-  // Asegúrate de que el género puede ser 'male', 'female' o undefined
-getGeneroDisplay(value: 'male' | 'female' | undefined): string {
-  switch (value) {
-    case 'male':
-      return 'Masculino';
-    case 'female':
-      return 'Femenino';
-    default:
-      return 'No especificado'; // Si el valor es undefined o no reconocido
+  getGeneroDisplay(gender: string | undefined): string {
+    return gender ?? 'No especificado'; // Si 'gender' es null o undefined, devuelve 'No especificado'
   }
-}
   
-  // Actualiza la función para que acepte un string o undefined
-getEstadoCivil(value: string | undefined): string {
-  if (value === undefined) return 'No especificado'; // Maneja el caso undefined
+  getEstadoCivil(civilStatus: string | undefined): string {
+    return civilStatus ?? 'No especificado'; // Si 'civilStatus' es null o undefined, devuelve 'No especificado'
+  }
   
-  switch (value) {
-    case 'single':
-      return 'Soltero/a';
-    case 'married':
-      return 'Casado/a';
-    case 'divorced':
-      return 'Divorciado/a';
-    case 'widower':
-      return 'Viudo/a';
-    default:
-      return 'No especificado';
+  getEscolaridadDisplay(educationLevel: string | undefined): string {
+    return educationLevel ?? 'No especificado'; // Si 'educationLevel' es null o undefined, devuelve 'No especificado'
   }
-}
-
-getLateralidadDisplay(value: string | undefined): string {
-  switch (value) {
-    case 'left':
-      return 'Zurdo';
-    case 'right':
-      return 'Diestro';
-    case 'ambidextrous':
-      return 'Ambidiestro';
-    default:
-      return 'No especificado';
+  
+  getLateralidadDisplay(laterality: string | undefined): string {
+    return laterality ?? 'No especificado'; // Si 'laterality' es null o undefined, devuelve 'No especificado'
   }
-}
-
-getEscolaridadDisplay(value: string | undefined): string {
-  switch (value) {
-    case 'elementary':
-      return 'Primaria';
-    case 'secondary':
-      return 'Secundaria';
-    case 'highSchool':
-      return 'Preparatoria';
-    case 'university':
-      return 'Universidad';
-    case 'mastersDegree':
-      return 'Maestría';
-    case 'doctorate':
-      return 'Doctorado';
-    default:
-      return 'No especificado';
+  
+  getOcupationDisplay(occupation: string | undefined): string {
+    return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
-}
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
   private mapToInfoPaciente(data: any): InfoPaciente {
@@ -146,12 +104,12 @@ getEscolaridadDisplay(value: string | undefined): string {
       nombre: data.nombre,
       apellido_paterno: data.apellido_paterno,
       apellido_materno: data.apellido_materno,
-      fecha_nacimiento: new Date(data.fecha_nacimiento),
-      genero: data.genero === 'Masculino' ? 'male' : 'female',
-      estado_civil: data.estado_civil,
-      escolaridad: data.escolaridad,
-      ocupacion: data.ocupacion,
-      lateralidad: data.lateralidad,
+      fecha_nacimiento: this.formatDate(new Date(data.fecha_nacimiento)),
+      genero: data.genero === 'No especificado' ? undefined : data.genero,
+      estado_civil: data.estado_civil == 'No especificado' ? undefined : data.estado_civil,
+      escolaridad: data.escolaridad == 'No especificado' ? undefined : data.escolaridad,
+      ocupacion: data.ocupacion == 'No especificado' ? undefined : data.ocupacion,
+      lateralidad: data.lateralidad === 'No especificado' ? undefined : data.lateralidad,
       // Asume que puedes tener varios teléfonos y correos, por lo que mapea los arrays
       telefonos: data.telefonos.map((tel: any) => ({ telefono: tel.telefono })),
       correos_electronicos: data.correos_electronicos.map((email: any) => ({ correo_electronico: email.correo_electronico })),
@@ -192,6 +150,13 @@ getEscolaridadDisplay(value: string | undefined): string {
   
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+  }
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // getMonth() devuelve un índice basado en cero (0-11)
+    const day = date.getDate();
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   }
 
   onDeletePatient(): void {
@@ -235,24 +200,24 @@ getEscolaridadDisplay(value: string | undefined): string {
   }
 
   onSubmit(): void {
-    // Verifica que tanto isEditMode como id_usuario estén definidos y sean verdaderos,
-    // y además asegúrate de que id_paciente no sea undefined.
     if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {
+      // Convertir valores de presentación a valores esperados por el backend si es necesario
+      // Ejemplo: Si tu backend espera 'male' o 'female' para género, asegúrate de que esos sean los valores enviados.
+      
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
           console.log('Información del paciente actualizada');
           this.isEditMode = false;
-          // Navega a la vista del paciente actualizado
           this.router.navigate(['/ver-paciente', this.id_paciente]);
         },
         error: (error) => console.error('Error al actualizar el paciente:', error)
       });
     } else {
-      // Aquí puedes manejar el caso en que id_paciente sea undefined,
-      // o bien mostrar un mensaje al usuario o hacer otro tipo de manejo de error.
       console.error('No se puede actualizar: ID del paciente o usuario no definido.');
     }
   }
+  
+  
 
   addMedication(): void {
     if (!this.patient.medicamentos_actuales) {

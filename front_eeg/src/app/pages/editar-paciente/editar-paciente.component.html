@@ -24,8 +24,10 @@
         <form (ngSubmit)="onSubmit()" ngForm>
           <h2>Información del paciente</h2>
 
+          <!-- Dentro de <div *ngIf="activeTab === 'infoPatient'"> y otros tabs según corresponda -->
           <div class="form-actions">
-            <button type="button" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
+            <button type="button" (click)="isEditMode ? onSubmit() : toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>
           <div class="form-section">              
             <label for="firstName">Nombre:</label>
@@ -38,14 +40,13 @@
             <input type="text" id="surname" name="surname"[(ngModel)]="patient.apellido_materno" required [readonly]="!isEditMode">
             
             <label for="birthDate">Fecha de nacimiento:</label>
-            <input type="date" id="birthDate" name="birthDate" [(ngModel)]="patient.fecha_nacimiento" required [readonly]="!isEditMode">
+            <input type="date" id="birthDate" name="birthDate" [(ngModel)]="patient.fecha_nacimiento" required [readonly]="!isEditMode" [value]="patient.fecha_nacimiento | date:'yyyy-MM-dd'">
             
             <!-- Género guardado -->
             <div *ngIf="!isEditMode">
               <label>Género:</label>
               <span>{{ getGeneroDisplay(patient.genero) }}</span>
             </div>
-            <br>
 
             <!-- Botones de radio para editar -->
             <div *ngIf="isEditMode">
@@ -66,7 +67,7 @@
               <label>Estado civil:</label>
               <span>{{ getEstadoCivil(patient.estado_civil) }}</span>
             </div>
-            <br>
+
 
             <!-- Botones de radio para editar -->
             <div *ngIf="isEditMode">
@@ -84,24 +85,25 @@
                 <input type="radio" name="civilStatus" value="widower" [(ngModel)]="patient.estado_civil"> Viudo/a
               </label>
             </div>
-            <br>
   
             <!-- Lateralidad guardada -->
             <div *ngIf="!isEditMode">
               <label>Lateralidad:</label>
               <span>{{ getLateralidadDisplay(patient.lateralidad) }}</span>
             </div>
-            <br>
 
             <!-- Selector para editar Lateralidad -->
             <div *ngIf="isEditMode">
               <label for="laterality">Lateralidad:</label>
-              <select id="laterality" name="lateralidad" [(ngModel)]="patient.lateralidad" required>
-                <option value="" disabled>Seleccione la lateralidad</option>
-                <option value="left">Zurdo</option>
-                <option value="right">Diestro</option>
-                <option value="ambidextrous">Ambidiestro</option>
-              </select>
+              <label>
+                <input type="radio" name="laterality" value="left" [(ngModel)]="patient.lateralidad"> Zurdo
+              </label>
+              <label>
+                <input type="radio" name="laterality" value="right" [(ngModel)]="patient.lateralidad"> Diestro
+              </label>
+              <label>
+                <input type="radio" name="laterality" value="ambidextrous" [(ngModel)]="patient.lateralidad"> Ambidiestro
+              </label>
             </div>
             <br>
 
@@ -110,28 +112,55 @@
               <label>Escolaridad:</label>
               <span>{{ getEscolaridadDisplay(patient.escolaridad) }}</span>
             </div>
-            <br>
 
             <!-- Selector para editar Escolaridad -->
             <div *ngIf="isEditMode">
               <label for="educationLevel">Escolaridad:</label>
-              <select id="educationLevel" name="escolaridad" [(ngModel)]="patient.escolaridad" required>
-                <option value="" disabled>Seleccione la escolaridad</option>
-                <option value="elementary">Primaria</option>
-                <option value="secondary">Secundaria</option>
-                <option value="highSchool">Preparatoria</option>
-                <option value="university">Universidad</option>
-                <option value="mastersDegree">Maestría</option>
-                <option value="doctorate">Doctorado</option>
-              </select>
+              <label>
+                <input type="radio" name="educationLevel" value="elementary" [(ngModel)]="patient.escolaridad"> Primaria
+              </label>
+              <label>
+                <input type="radio" name="educationLevel" value="secondary" [(ngModel)]="patient.escolaridad"> Secundaria
+              </label>
+              <label>
+                <input type="radio" name="educationLevel" value="highSchool" [(ngModel)]="patient.escolaridad"> Preparatoria
+              </label>
+              <label>
+                <input type="radio" name="educationLevel" value="university" [(ngModel)]="patient.escolaridad"> Universidad
+              </label>
+              <label>
+                <input type="radio" name="educationLevel" value="mastersDegree" [(ngModel)]="patient.escolaridad"> Maestría
+              </label>
+              <label>
+                <input type="radio" name="educationLevel" value="doctorate" [(ngModel)]="patient.escolaridad"> Doctorado
+              </label>
             </div>
             <br>
 
-            <label for="occupation">Ocupación:</label>
-            <input type="text" id="occupation" name="occupation" [(ngModel)]="patient.ocupacion" required [readonly]="!isEditMode">
-          </div>
-        </form>
+            <div *ngIf="!isEditMode">
+              <label>Ocupación:</label>
+              <span>{{ getOcupationDisplay(patient.ocupacion) }}</span>
+            </div>
+
+            <div *ngIf="isEditMode">
+              <label for="occupation">Ocupación:</label>
+              <label>
+                <input type="radio" name="occupation" value="student" [(ngModel)]="patient.ocupacion"> Estudiante
+              </label>
+              <label>
+                <input type="radio" name="occupation" value="employee" [(ngModel)]="patient.ocupacion"> Empleado
+              </label>
+              <label>
+                <input type="radio" name="occupation" value="freelancer" [(ngModel)]="patient.ocupacion"> Empresario
+              </label>
+              <label>
+                <input type="radio" name="occupation" value="freelancer" [(ngModel)]="patient.ocupacion"> Independiente
+              </label>
+            </div>
+            <br>
       </div>
+    </form>
+  </div>
 
       <!-- Contacto del paciente
       <div *ngIf="activeTab === 'contactPatient'">

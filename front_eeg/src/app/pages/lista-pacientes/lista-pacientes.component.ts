@@ -6,6 +6,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
+import { EegService } from '../../services/sesiones/eeg.service';
 
 @Component({
   selector: 'app-lista-pacientes',
@@ -13,7 +14,7 @@ import { AuthService } from '../../services/login/auth.service';
   styleUrls: ['./lista-pacientes.component.scss']
 })
 export class ListaPacientesComponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'apellido_paterno', 'apellido_materno', 'edad', 'numero_de_sesiones', 'notas_ultima_sesion', 'eliminar', 'acciones'];
+  displayedColumns: string[] = ['nombre', 'apellido_paterno', 'apellido_materno', 'edad', 'numero_de_sesiones', 'notas_ultima_sesion', 'eliminar', 'acciones', 'sesion'];
   dataSource = new MatTableDataSource<any>([]);
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
@@ -25,6 +26,7 @@ export class ListaPacientesComponent implements OnInit {
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+    private eegService: EegService, // Inyecta el EegService aquí
     private authService: AuthService // Inyecta el AuthService aquí
   ) { }
 
@@ -111,6 +113,27 @@ export class ListaPacientesComponent implements OnInit {
         }, 3000);
     }
 }
+
+// Dentro de tu componente ListaPacientesComponent
+
+getLastSession(idPaciente: number): void {
+  this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
+    next: (sesion) => {
+      if (sesion) {
+        // Aquí puedes hacer lo que necesites con la información de la sesión
+        console.log('La última sesión es:', sesion);
+        // Por ejemplo, podrías querer navegar a una página de detalles de la sesión
+        this.router.navigate(['/graficas-paciente', sesion.id_sesion]);
+      } else {
+        console.log('No se encontró la última sesión para este paciente.');
+      }
+    },
+    error: (error) => {
+      console.error('Error al obtener la última sesión:', error);
+    }
+  });
+}
+
 
   registerPatient() {
     this.router.navigate(['/registrar-paciente']);
