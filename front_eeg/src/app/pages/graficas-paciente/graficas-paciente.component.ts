@@ -43,7 +43,7 @@ export class GraficasPacienteComponent implements OnInit {
   }
 
   addSession(): void {
-    this.router.navigate(['/nueva-sesion']);
+    this.router.navigate(['/eeg-subir-docs']);
   }
 
   setActiveTab(tab: string): void {

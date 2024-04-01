@@ -121,6 +121,6 @@ export class ListaPacientesComponent implements OnInit {
   }
 
   viewDetails(id_paciente: number) {
-    this.router.navigate(['/ver-paciente', id_paciente]);
+    this.router.navigate(['/editar-paciente', id_paciente]);
   }
 }

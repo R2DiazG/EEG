@@ -1,60 +1,62 @@
 <div class="container">
-<app-menu-lateral></app-menu-lateral>
-<div class="eeg-upload-container">
-    <h1>Subir nuevo EEG</h1>
+  <app-menu-lateral></app-menu-lateral>
+  <div class="eeg-upload-container">
+    <h1>Nueva sesión</h1>
     <app-info-paciente></app-info-paciente>
     <div class="upload-form">
       <div class="form-group">
-        <label for="interpret">Interprete</label>
-        <input type="text" id="interpret">
+        <label for="eegDate">Ingresa la fecha de la toma del electroencefalograma:</label>
+        <input type="date" id="eegDate" [(ngModel)]="fecha" name="eegDate" required>
       </div>
+
+      <label>Estado del paciente:</label>
       <div class="form-group">
-        <label for="patientName">Ingresa la fecha de la toma del electroencefalograma</label>
-        <input type="date" id="eegDate" name="eegDate" required>
+        <label>
+          <input type="radio" id="stateWakefullness" name="estadoGeneral" value="wakefullness" [(ngModel)]="estadoGeneral"> Vigilia
+        </label>
+        <label>
+          <input type="radio" id="stateSleep" name="estadoGeneral" value="sleep" [(ngModel)]="estadoGeneral"> Sueño
+        </label>
+        <label>
+          <input type="radio" id="stateSedation" name="estadoGeneral" value="sedation" [(ngModel)]="estadoGeneral"> Sedación
+        </label>
       </div>
-      
-      <label>Estado del paciente: </label>
-      <div class="form-group">
-        <label for="state">General:</label>
-        <select id="state" name="state">
-          <option value="" disabled selected>Seleccione un estado general</option>
-          <option value="wakefullness">Vigilia</option>
-          <option value="sleep">Sueño</option>
-          <option value="sedation">Sedación</option>
-        </select>
-      </div>    
 
       <label>Específico:</label>
-              <div>
-                <input type="checkbox" id="hyperventilation" name="condition" value="generalState">
-                <label for="hyperventilation">Hiperventilación</label>
-              </div>
-              <div>
-                <input type="checkbox" id="visualStimulus" name="condition" value="visualStimulus">
-                <label for="visualStimulus">Estímulo visual</label>
-              </div>
-              <div>
-                <input type="checkbox" id="auditoryStimulus" name="condition" value="auditoryStimulus">
-                <label for="auditoryStimulus">Estímulo auditivo</label>
-              </div>
-              <div>
-                <input type="checkbox" id="none" name="condition" value="none">
-                <label for="none">Ninguno</label>
-              </div>
-      <br>
+      <div>
+        <input type="checkbox" id="hyperventilation" value="hyperventilation"
+              (change)="toggleEstadoEspecifico('hyperventilation', $event)">
+        <label for="hyperventilation">Hiperventilación</label>
+      </div>
+      <div>
+        <input type="checkbox" id="visualStimulus" value="visualStimulus"
+               (change)="toggleEstadoEspecifico('visualStimulus', $event)">
+        <label for="visualStimulus">Estímulo visual</label>
+      </div>
+      <div>
+        <input type="checkbox" id="auditoryStimulus" value="auditoryStimulus"
+               (change)="toggleEstadoEspecifico('auditoryStimulus', $event)">
+        <label for="auditoryStimulus">Estímulo auditivo</label>
+      </div>
+      <div>
+        <input type="checkbox" id="none" value="none"
+               (change)="toggleEstadoEspecifico('none', $event)">
+        <label for="none">Ninguno</label>
+      </div>
 
       <div class="form-group">
-        <label for="description">Resumen</label>
-        <textarea id="description"></textarea>
+        <label for="description">Resumen de la sesión:</label>
+        <textarea id="description" [(ngModel)]="resumenSesionActual" name="description"></textarea>
       </div>
-  
+
       <div class="form-group">
-        <p>En la aplicación "Nombre aplicación", ve a la pestaña "file", selecciona exportar y selecciona "EDF" para descargar el archivo y subelo dentro de este apartado</p>
-        <label for="file">Subir un nuevo archivo CSV</label>
-        <input type="file" id="file" (change)="onFileSelected($event)">
+        <p>En la aplicación "Nombre de la aplicación", ve a la pestaña "file", selecciona exportar y elige "EDF" para descargar el archivo y súbelo dentro de este apartado.</p>
+        <label for="file">Subir un nuevo archivo EEG</label>
+        <input type="file" id="file" (change)="onFileSelected($event)" name="file">
       </div>
-  
+
       <button (click)="onUpload()">Subir archivo</button>
+      <button (click)="onCancel()">Cancelar</button>
     </div>
-</div>
+  </div>
 </div>

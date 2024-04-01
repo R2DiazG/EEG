@@ -8,28 +8,27 @@ import { EegSubirDocsComponent } from './pages/eeg-subir-docs/eeg-subir-docs.com
 import { ConfirmDialogComponent } from './pages/confirm-dialog/confirm-dialog.component';
 import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.component';
 import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
-import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
-import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicologos.component';
 import { RoleGuard } from './services/guard/guards/role.guard';
+import { MedicamentosComponent } from './pages/medicamentos/medicamentos.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registrar-paciente', component: RegistrarPacienteComponent },
-  { path: 'editar-paciente', component: EditarPacienteComponent },
+  { path: 'editar-paciente/:id_paciente', component: EditarPacienteComponent },
   { path: 'lista-pacientes', component: ListaPacientesComponent },
   { path: 'eeg-subir-docs', component: EegSubirDocsComponent },
   { path: 'confirm-dialog', component: ConfirmDialogComponent },
   { path: 'menu-lateral', component: MenuLateralComponent },
-  { path: 'info-paciente', component: InfoPacienteComponent },
-  { path: 'ver-paciente', component: VerPacienteComponent },
+  { path: 'info-paciente/:id_paciente', component: InfoPacienteComponent },
   { path: 'graficas-paciente', component: GraficasPacienteComponent },
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
-  { path: 'nueva-consulta', component: NuevaConsultaComponent}, 
+  { path: 'medicamentos', component: MedicamentosComponent },
+  { path: '**', redirectTo: '/login' },
   { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 } },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];

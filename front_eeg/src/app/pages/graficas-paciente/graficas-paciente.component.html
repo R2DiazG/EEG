@@ -3,7 +3,9 @@
 <div class="graphs-container">
     <h1>Visualizador de Electroencefalograma</h1>
     <app-info-paciente></app-info-paciente>
+    <!--Consume crear_nueva_sesion()-->
     <button (click)="addSession()">Agregar sesion</button>
+    <!--Cambiar search por dropdown list que consuma obtener_fechas_sesiones_por_paciente-->
     <div class="search-upload-section">
         <!-- <input type="search" placeholder="Nombre del Paciente" (input)="searchPatient($event.target.value)"> -->
         <input type="search" placeholder="Buscar sesion">
