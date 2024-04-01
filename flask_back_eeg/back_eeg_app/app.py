@@ -647,6 +647,7 @@ def obtener_eegs_por_sesion(id_sesion):
 
 @app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
 @jwt_required()
+@cross_origin()
 def obtener_fechas_sesiones_por_paciente(id_paciente):
     """
     Endpoint to retrieve all session dates for a specific patient.
