@@ -27,7 +27,8 @@ load_dotenv()
 
 # Initialize the Flask application
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+CORS(app)
+#CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
 
 # Configure the application
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -647,8 +648,8 @@ def obtener_eegs_por_sesion(id_sesion):
 
 @app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
 @jwt_required()
-@cross_origin()
-@cross_origin(origins=['http://localhost:4200']) 
+#@cross_origin()
+#@cross_origin(origins=['http://localhost:4200']) 
 def obtener_fechas_sesiones_por_paciente(id_paciente):
     """
     Endpoint to retrieve all session dates for a specific patient.
