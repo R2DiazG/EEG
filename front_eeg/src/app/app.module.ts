@@ -13,12 +13,10 @@ import { MenuLateralComponent } from './pages/menu-lateral/menu-lateral.componen
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { InfoPacienteComponent } from './pages/info-paciente/info-paciente.component';
-import { VerPacienteComponent } from './pages/ver-paciente/ver-paciente.component';
 import { GraficasPacienteComponent } from './pages/graficas-paciente/graficas-paciente.component';
 import { RegistrarPsicologoComponent } from './pages/registrar-psicologo/registrar-psicologo.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.component';
-import { NuevaConsultaComponent } from './pages/nueva-consulta/nueva-consulta.component';
 import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicologos.component';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -26,6 +24,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MatTableModule } from '@angular/material/table';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
+import { MedicamentosComponent } from './pages/medicamentos/medicamentos.component';
+import { CrearMedicamentoDialogComponent } from './pages/crear-medicamento-dialog/crear-medicamento-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -38,12 +42,12 @@ import { MatIconModule } from '@angular/material/icon';
     ConfirmDialogComponent,
     MenuLateralComponent,
     InfoPacienteComponent,
-    VerPacienteComponent,
     GraficasPacienteComponent,
     RegistrarPsicologoComponent,
     OlvideContraComponent,
-    NuevaConsultaComponent,
-    ListaPsicologosComponent
+    ListaPsicologosComponent,
+    MedicamentosComponent,
+    CrearMedicamentoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +58,11 @@ import { MatIconModule } from '@angular/material/icon';
     MatPaginatorModule,
     MatTableModule,
     MatSlideToggleModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
+    BrowserAnimationsModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     provideClientHydration(),

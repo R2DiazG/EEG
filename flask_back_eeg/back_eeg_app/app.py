@@ -13,8 +13,6 @@ from flask_mail import Mail, Message
 from mne.io import RawArray
 from mne.io import read_raw_edf
 from mne.filter import filter_data
-from mne.time_frequency import psd_welch
-from mne.channels import create_info
 from mne.preprocessing import ICA
 import os
 import mne
@@ -688,7 +686,9 @@ def crear_nueva_sesion():
             ica.apply(raw)  # Asumiendo que ya identificaste los componentes a excluir antes de esta línea
             logging.info('ICA aplicado')
             # Calcular la PSD para los datos raw procesados usando compute_psd
-            psds, freqs = mne.time_frequency.psd_welch(raw, fmin=1, fmax=40, n_fft=2048)
+            spectrum = raw.compute_psd(method='welch', fmin=1, fmax=40, n_fft=2048)
+            psds, freqs = spectrum.get_data(return_freqs=True)
+            #psds, freqs = mne.time_frequency.psd_welch(raw, fmin=1, fmax=40, n_fft=2048)
             # Convertir PSDs a decibeles (dB) para una mejor visualización
             psds_db = 10 * np.log10(psds)
             # Preparar los datos para almacenar o enviar al frontend

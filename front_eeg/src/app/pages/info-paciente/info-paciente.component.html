@@ -1,13 +1,11 @@
 <!-- patient-info.component.html -->
-<div class="patient-info-container">
-    <div class="patient-basic-info">
-      <span><strong>Nombre:</strong> Eugene Fitzherbert</span>
-      <span><strong>Edad:</strong> 23</span>
-      <span><strong>Peso:</strong> 65 kilos</span>
-    </div>
-    <div class="patient-clinical-info">
-      <strong>Información clínica:</strong>
-      <p>El paciente ha reportado episodios de cefalea y mareos intermitentes en las últimas dos semanas. Actualmente toma medicación para el control de la migraña. Se ha programado el EEG después de una noche de privación de sueño para evaluar la actividad cerebral durante episodios de fatiga extrema. No hay antecedentes familiares de epilepsia. Estudios previos de imagen no muestran anomalías estructurales.</p>
-    </div>
+<div *ngIf="paciente" class="patient-info-container">
+  <div class="patient-basic-info">
+    <span><strong>Nombre:</strong> {{ paciente.nombre }}</span>
+    <span><strong>Edad:</strong> {{ paciente.edad}}</span>
   </div>
-  
+  <div class="patient-clinical-info">
+    <strong>Información clínica:</strong>
+    <p>{{ paciente.notas_ultima_sesion }}</p>
+  </div>
+</div>

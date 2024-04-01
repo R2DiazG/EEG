@@ -9,8 +9,9 @@
   
   <nav class="nav-menu">
     <a routerLink="/lista-pacientes" routerLinkActive="active" class="nav-link">Pacientes</a>
-    <a routerLink="/ver-paciente" routerLinkActive="active" class="nav-link">Ver paciente</a>
+    <a routerLink="/editar-paciente" routerLinkActive="active" class="nav-link">Ver paciente</a>
     <a routerLink="/graficas-paciente" routerLinkActive="active" class="nav-link">Sesiones del paciente</a>
+    <a routerLink="/medicamentos" routerLinkActive="active" class="nav-link">Medicamentos</a>
     <!-- Utiliza *ngIf para condicionar la visualización de este enlace basado en el id_rol del usuario -->
     <a *ngIf="userInfo?.id_rol === 1" routerLink="/lista-psicologos" routerLinkActive="active" class="nav-link">Psicólogos</a>
     <a (click)="logout()" class="nav-link">Cerrar sesión</a>
