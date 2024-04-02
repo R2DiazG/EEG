@@ -1,6 +1,11 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+<<<<<<< Updated upstream
+=======
+import { AuthService } from '../login/auth.service';
+import { isPlatformBrowser } from '@angular/common';
+>>>>>>> Stashed changes
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +14,12 @@ export class UsuarioService {
   private apiUrl = 'http://localhost:4200/usuarios';
 
   constructor(
+<<<<<<< Updated upstream
     private http: HttpClient
+=======
+    private http: HttpClient,
+    private authService: AuthService,
+>>>>>>> Stashed changes
   ) { }
 
   private getHeaders(): HttpHeaders {
