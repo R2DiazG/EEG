@@ -26,17 +26,31 @@ export class UsuarioService {
   }
 
   crearUsuario(usuario: any): Observable<any> {
-    return this.http.post(this.apiUrl, usuario, { headers: this.getHeaders() });
+    const headers = this.getHeaders();
+    return this.http.post(this.apiUrl, usuario, { headers});
   }
 
   obtenerUsuarios(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
+    // Asegúrate de que 'Authorization' se agrega correctamente a los encabezados.
+    const access_token = localStorage.getItem('access_token');
+    if (!access_token) {
+      console.error('Error: Token de autenticación no encontrado.');
+      // Aquí podrías manejar el caso de que el token no exista,
+      // como redirigir al usuario a la página de inicio de sesión.
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${access_token}`
+    });
+    return this.http.get<any[]>(this.apiUrl, { headers });
   }
   
   cambiarAprobacionUsuario(idUsuario: number, aprobacion: boolean): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}/aprobacion`;
-    const body = { aprobacion };
-    return this.http.put(url, body, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // Asegúrate de que apiUrl esté definido correctamente
+    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
+    const body = { aprobacion }; // Cuerpo de la solicitud con la nueva aprobación
+
+    // Realiza la solicitud PUT
+    return this.http.put(url, body, { headers });
   }
 
   obtenerUsuario(idUsuario: number): Observable<any> {
@@ -44,13 +58,21 @@ export class UsuarioService {
   }
 
   actualizarUsuario(idUsuario: number, usuario: any): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}`;
-    return this.http.put(url, usuario, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${idUsuario}`; // Asegúrate de que apiUrl esté definido correctamente
+    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
+
+    // Realiza la solicitud PUT
+    return this.http.put(url, usuario, { headers });
+    //return this.http.put(`${this.apiUrl}/${idUsuario}`, usuario, { headers: this.getHeaders() });
   }
 
   eliminarUsuario(idUsuario: number): Observable<any> {
     const url = `${this.apiUrl}/${idUsuario}`;
-    return this.http.delete(url, { headers: this.getHeaders() });
+    const headers = this.getHeaders();
+
+    // Realiza la solicitud DELETE
+    return this.http.delete(url, { headers });
+    //return this.http.delete(`${this.apiUrl}/${idUsuario}`, { headers: this.getHeaders() });
   }
 }
 

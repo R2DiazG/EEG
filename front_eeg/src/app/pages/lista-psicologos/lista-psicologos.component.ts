@@ -34,7 +34,9 @@ export class ListaPsicologosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('entre al onInit')
     this.loadUsers();
+    console.log('Token from localStorage:', localStorage.getItem('access_token'));
     this.searchControl.valueChanges
       .subscribe(value => {
         // Se proporciona una cadena vacía como valor por defecto si value es null
