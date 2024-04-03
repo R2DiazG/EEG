@@ -117,6 +117,7 @@ export class ListaPacientesComponent implements OnInit {
 // Dentro de tu componente ListaPacientesComponent
 
 getLastSession(idPaciente: number): void {
+  console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
   this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
     next: (sesion) => {
       if (sesion) {
@@ -133,7 +134,6 @@ getLastSession(idPaciente: number): void {
     }
   });
 }
-
 
   registerPatient() {
     this.router.navigate(['/registrar-paciente']);

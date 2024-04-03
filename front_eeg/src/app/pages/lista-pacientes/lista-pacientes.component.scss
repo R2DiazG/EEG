@@ -233,6 +233,24 @@ button {
     opacity: 1;
   }
 
+  margin-bottom: 20px;
+  width: 90%;
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 1rem;
+  }
+  .disabled-option {
+    color: #ccc;
+  }
+  select:disabled, option:disabled {
+    color: #cccccc;
+  }
+
   // Estilos de confirmación y eliminación
   &.confirm {
     .icon.fas.fa-trash { display: none; }

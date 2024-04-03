@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'; // Importa Router y ActivatedRoute juntos
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { AuthService } from '../../services/login/auth.service';
+import { Observable } from 'rxjs';
+import { EegService } from '../../services/sesiones/eeg.service';
 
 @Component({
   selector: 'app-info-paciente',
@@ -11,16 +13,20 @@ import { AuthService } from '../../services/login/auth.service';
 })
 export class InfoPacienteComponent implements OnInit {
   paciente: InfoPaciente | null = null;
+  
   id_usuario: number | null = null;
+  @Input() id_sesion!: number; 
 
   constructor(
     private pacienteService: PacienteService,
     private authService: AuthService,
     private router: Router,
+    private EegService: EegService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    console.log(`ID de la sesion recibido: ${this.id_sesion}`);
     this.getCurrentUser();
   }
 
@@ -43,18 +49,34 @@ export class InfoPacienteComponent implements OnInit {
 
   cargarDetallesPaciente(): void {
     // Asumiendo que el ID del paciente se obtiene de la ruta, directamente aquí.
-    const id_paciente = this.route.snapshot.paramMap.get('id_paciente');
-    if (id_paciente) {
-      this.pacienteService.obtenerDetallesPaciente(+id_paciente).subscribe({
-        next: (data) => {
-          this.paciente = data;
+    const id_sesion = this.route.snapshot.paramMap.get('id_sesion');
+    console.log(this.route.params)
+    if(id_sesion) {
+      this.obtenerPacienteEnBaseASesion(+id_sesion).subscribe({
+        next: (id_paciente) => {
+          console.log('Id del paciente:', id_paciente);
+          this.pacienteService.obtenerDetallesPaciente(id_paciente).subscribe({
+            next: (data) => {
+              console.log('Detalles del paciente:', data);
+              this.paciente = data;
+            },
+    
+            error: (error) => {
+              console.error('Error al obtener los detalles del paciente', error);
+            }
+          });
         },
         error: (error) => {
           console.error('Error al obtener los detalles del paciente', error);
         }
       });
+      
     } else {
       console.error('ID de paciente no encontrado en la ruta');
     }
+  }
+
+  obtenerPacienteEnBaseASesion(idSesion: number): Observable<any> {
+    return this.EegService.obtener_paciente_en_base_a_sesion(idSesion);
   }
 }

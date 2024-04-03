@@ -7,6 +7,7 @@ import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
 import { PacienteService } from '../../services/pacientes/paciente.service';
+import { Observable } from 'rxjs';
 
 interface SeriesOptions {
   name: string;
@@ -22,19 +23,136 @@ interface SeriesOptions {
 
 export class GraficasPacienteComponent implements OnInit {
   activeTab: string = 'contentEEG'; // Tab activa por defecto
-  idSesion: number | null = null; // Declarar idSesion como propiedad del componente
+  idSesion!: number; // Declarar idSesion como propiedad del componente
   sesiones: any[] = []; // Almacenará las fechas de las sesiones
   selectedSesionId: number | null = null;
+  idPaciente!: number;
+  fechaSesion!: string;
+
+  fecha_consulta!: string;
+  estado_general!: string;
+  estado_especifico!: string;
+  resumen_sesion_actual!: string;
+
   constructor(
     private eegService: EegService,
     private route: ActivatedRoute,
     private pacienteService: PacienteService,
     private router: Router
   ) {}
-
+/*
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const idPaciente = params.get('idPaciente'); // Asume que tienes un parámetro idPaciente
+      console.log('ID de sesión:', params);
+      this.idSesion = +params.get('id_sesion')!;
+      console.log('ID de sesión:', this.idSesion);
+      if (this.idSesion) {
+        this.obtenerPacienteEnBaseASesion(this.idSesion).subscribe({
+          next: (paciente) => {
+            console.log('Paciente:', paciente);
+            if (paciente) {
+              this.idPaciente = paciente;
+              if (this.idPaciente !== null) {
+                this.cargarFechasSesionesPorPaciente(this.idPaciente);
+                this.cargarDatosNormalizedEEG();
+                this.cargarDatosEEG();
+              } else {
+                console.error('ID de paciente no encontrado para la sesión proporcionada.');
+              }
+            } else {
+              console.error('ID de paciente no encontrado para la sesión proporcionada.');
+            }
+          },
+          error: (error) => console.error('Error al obtener ID de paciente:', error)
+        });
+      } else {
+        console.error('ID de sesión no proporcionado');
+      }
+    });
+  }
+*/
+
+
+ngOnInit() {
+  this.route.paramMap.subscribe(params => {
+    console.log('ID de sesión:', params);
+    this.idSesion = +params.get('id_sesion')!;
+    console.log('ID de sesión:', this.idSesion);
+    if (this.idSesion) {
+      this.obtenerPacienteEnBaseASesion(this.idSesion).subscribe({
+        next: (paciente) => {
+          console.log('Paciente:', paciente);
+          if (paciente) {
+            this.idPaciente = paciente;
+            if (this.idPaciente !== null) {
+              this.cargarFechasSesionesPorPaciente(this.idPaciente);
+              // Cargar datos de la sesión de EEG directamente aquí
+              this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
+            } else {
+              console.error('ID de paciente no encontrado para la sesión proporcionada.');
+            }
+          } else {
+            console.error('ID de paciente no encontrado para la sesión proporcionada.');
+          }
+        },
+        error: (error) => console.error('Error al obtener ID de paciente:', error)
+      });
+    } else {
+      console.error('ID de sesión no proporcionado');
+    }
+  });
+}
+
+cargarDatosDeEeg(idSesion: number): void {
+  this.eegService.obtenerEEGPorSesion(idSesion).subscribe({
+    next: (datosEeg) => {
+      console.log(datosEeg)
+      if (datosEeg) {
+        // Asume que la respuesta incluye las propiedades directamente
+        this.fecha_consulta = datosEeg.detalle_sesion.fecha_consulta;
+        this.estado_general = datosEeg.detalle_sesion.estado_general;
+        this.estado_especifico = datosEeg.detalle_sesion.estado_especifico;
+        this.resumen_sesion_actual = datosEeg.detalle_sesion.resumen_sesion_actual;
+      } else {
+        console.error('Datos de EEG no encontrados para esta sesión.');
+      }
+    },
+    error: (error) => console.error('Error al obtener datos de EEG:', error)
+  });
+}
+
+
+  obtenerPacienteEnBaseASesion(idSesion: number): Observable<any> {
+    return this.eegService.obtener_paciente_en_base_a_sesion(idSesion);
+  }
+
+  obtenerEegPorSesion(idSesion: number): Observable<any> {
+    return this.eegService.obtenerEEGPorSesion(idSesion);
+  }
+
+  /*
+  fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+                'estado_general': sesion.estado_general,
+                'estado_especifico': sesion.estado_especifico,
+                'resumen_sesion_actual': sesion.resumen_sesion_actual,
+                'notas_psicologo': sesion.notas_psicologo
+  */
+
+  cargarFechasSesionesPorPaciente(idPaciente: number) {
+    this.pacienteService.obtenerFechasSesionesPorPaciente(idPaciente).subscribe({
+      next: (data) => {
+        console.log('Fechas de sesiones:', data);
+        this.sesiones = data;
+        this.fechaSesion = data[data.length-1.].fecha_consulta;
+        // Opcionalmente, selecciona una sesión por defecto aquí
+      },
+      error: (error) => console.error('Error al obtener fechas de sesiones:', error)
+    });
+  }
+/*
+  ngOnInit() {
+this.route.paramMap.subscribe(params => {
+      const idPaciente = params.get('idPaciente');
       if (idPaciente) {
         this.cargarFechasSesionesPorPaciente(+idPaciente);
       } else {
@@ -52,18 +170,20 @@ export class GraficasPacienteComponent implements OnInit {
       error: (error) => console.error('Error al obtener fechas de sesiones:', error)
     });
   }
-
+*/
   onSesionChange() {
     // Aquí puedes hacer lo que necesites cuando el usuario cambie la selección del dropdown
     console.log('Sesión seleccionada:', this.selectedSesionId);
     // Por ejemplo, cargar datos de la sesión seleccionada
   }
 
-
   addSession(): void {
     this.router.navigate(['/eeg-subir-docs']);
   }
 
+  regresar(){
+    this.router.navigate(['/lista-pacientes']);
+  }
   setActiveTab(tab: string): void {
     this.activeTab = tab;
   }
@@ -72,6 +192,7 @@ export class GraficasPacienteComponent implements OnInit {
     if (this.idSesion) {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response: { normalized_eegs: string | any[]; }) => {
+          console.log('Datos EEG normalizados:', response);
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const dataNormalized = JSON.parse(response.normalized_eegs[0].data_normalized);
             this.procesarYMostrarDatosNormalizedEEG(dataNormalized);

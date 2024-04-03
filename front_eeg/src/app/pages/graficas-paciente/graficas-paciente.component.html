@@ -2,12 +2,14 @@
 <app-menu-lateral></app-menu-lateral>
 <div class="graphs-container">
     <h1>Visualizador de Electroencefalograma</h1>
-    <app-info-paciente></app-info-paciente>
+    <button (click)="regresar()">Regresar a lista de pacientes</button>
+    <app-info-paciente [id_sesion]="idSesion"></app-info-paciente>
     <!--Consume crear_nueva_sesion()-->
     <button (click)="addSession()">Agregar sesion</button>
     <div class="search-upload-section">
       <!-- Dropdown para seleccionar la fecha de sesión -->
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
+        <option [value]="null" disabled selected>{{fechaSesion}}</option>
           <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
               {{ sesion.fecha_consulta }}
           </option>
@@ -24,10 +26,10 @@
       <div *ngIf="activeTab === 'contentEEG'">
         <h2>Contenido de EEG</h2>
         <div class="info-eeg">
-            <p><strong>Fecha:</strong> 20/02/2024</p>
-            <p><strong>Resumen de la sesión:</strong> Se tomaron datos muestra para gráficar</p>
-            <p><strong>Estado general:</strong> Vigilia</p>
-            <p><strong>Estado especifico:</strong> Hiperventilación y estímulo visual</p>
+            <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
+            <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
+            <p><strong>Estado general:</strong> {{estado_general}}</p>
+            <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
             <button>Agregar notas</button>
         </div>
         <div class="space1"></div>

@@ -70,6 +70,10 @@ export class RegistrarPacienteComponent implements OnInit {
     this.patient.medicamentos_actuales.push(''); // Agrega un medicamento vacío al arreglo
   }
 
+  cancelButton(): void {
+    this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
+  }
+
   onSubmit(): void {
     // Verifica si existe al menos un objeto de consentimiento con consentimiento === true
     const consentimientoOtorgado = this.patient.consentimientos.some(consent => consent.consentimiento === true);
