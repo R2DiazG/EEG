@@ -82,6 +82,26 @@ class Paciente(db.Model):
     direcciones = db.relationship('Direccion', backref='paciente', lazy='dynamic')
     sesiones = db.relationship('Sesion', backref='paciente', lazy='dynamic')
     consentimientos = db.relationship('Consentimiento', backref='paciente', lazy='dynamic')
+    contacto_emergencia = db.relationship('ContactoEmergencia', uselist=False, back_populates='paciente')
+
+# Model for Emerency Contacts
+class ContactoEmergencia(db.Model):
+    __tablename__ = 'contactos_emergencia'
+    id_contacto_emergencia = db.Column(db.Integer, primary_key=True)
+    id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    apellido_paterno = db.Column(db.String(255), nullable=False)
+    apellido_materno = db.Column(db.String(255))
+    parentesco = db.Column(db.String(255), nullable=False)
+    telefono = db.Column(db.String(20), nullable=False)
+    correo_electronico = db.Column(db.String(255))
+    direccion = db.Column(db.String(255))
+    ciudad = db.Column(db.String(255))
+    estado = db.Column(db.String(255))
+    codigo_postal = db.Column(db.String(20))
+    pais = db.Column(db.String(255))
+    notas = db.Column(db.Text)
+    paciente = db.relationship('Paciente', back_populates='contacto_emergencia')
 
 # Model for Phones
 class Telefono(db.Model):
