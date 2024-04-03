@@ -792,24 +792,39 @@ def actualizar_correos(paciente, correos_nuevos):
     The function receives a patient object and a list of dictionaries with the new email addresses.
     The function updates the email addresses of the patient with the new data.
     """
+    logging.info('Actualizando correos para el paciente %s', paciente.id_paciente)
     if correos_nuevos is not None:
-        correos_actuales = {correo.correo_electronico: correo for correo in paciente.correos_electronicos}
-        # For new and existing emails
+        correos_actuales = {correo.id_correo: correo for correo in paciente.correos_electronicos.all()}
         correos_procesados = set()
         for correo_data in correos_nuevos:
-            correo_electronico = correo_data['correo_electronico']
-            if correo_electronico in correos_actuales:
-                # If the email already exists, update it
-                correos_procesados.add(correo_electronico)
+            id_correo = correo_data.get('id_correo')
+            correo_electronico = correo_data.get('correo_electronico')
+            if id_correo:
+                # Update the email if it already exists
+                if id_correo in correos_actuales:
+                    correo = correos_actuales[id_correo]
+                    correo.correo_electronico = correo_electronico
+                    correos_procesados.add(correo.id_correo)
+                    logging.info('Correo actualizado: %s', correo_electronico)
             else:
-                # If the email is new, add it
-                nuevo_correo = CorreoElectronico(correo_electronico=correo_electronico, id_paciente=paciente.id_paciente)
-                db.session.add(nuevo_correo)
-                correos_procesados.add(correo_electronico)
+                # Verify if the email already exists
+                correo_existente = CorreoElectronico.query.filter_by(correo_electronico=correo_electronico, id_paciente=paciente.id_paciente).first()
+                if correo_existente:
+                    # The email already exists, add it to the processed set
+                    correos_procesados.add(correo_existente.id_correo)
+                    logging.info('Correo existente procesado: %s', correo_electronico)
+                else:
+                    # Insert the new email
+                    nuevo_correo = CorreoElectronico(correo_electronico=correo_electronico, id_paciente=paciente.id_paciente)
+                    db.session.add(nuevo_correo)
+                    db.session.flush()  # This is necessary to get the ID of the new email
+                    correos_procesados.add(nuevo_correo.id_correo)
+                    logging.info('Nuevo correo agregado: %s', correo_electronico)
         # Delete any email not included in the update
-        for correo_electronico, correo in correos_actuales.items():
-            if correo_electronico not in correos_procesados:
+        for id_correo, correo in correos_actuales.items():
+            if id_correo not in correos_procesados:
                 db.session.delete(correo)
+                logging.info('Correo eliminado: %s', correo.correo_electronico)
 
 def actualizar_direcciones(paciente, direcciones_nuevas):
     """
