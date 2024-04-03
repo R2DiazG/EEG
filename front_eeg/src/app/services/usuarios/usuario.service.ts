@@ -11,7 +11,6 @@ export class UsuarioService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
   ) { }
 
   private getHeaders(): HttpHeaders {

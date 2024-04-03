@@ -9,7 +9,6 @@ import { set } from 'date-fns';
 import { access } from 'fs';
 import { FormControl } from '@angular/forms';
 
-
 @Component({
   selector: 'app-lista-psicologos',
   templateUrl: './lista-psicologos.component.html',
