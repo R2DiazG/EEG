@@ -35,7 +35,6 @@ export class MenuLateralComponent {
           apellidos: user.apellidos, 
           id_rol: user.id_rol 
         };
-        
         console.log('Usuario actual:', this.userInfo);
       },
       error: (error) => {
@@ -57,8 +56,8 @@ export class MenuLateralComponent {
 
   // Método para navegar a una ruta específica
   navigateTo(route: string): void {
-    this.router.navigateByUrl(route);
     console.log('Navegando a:', route);
+    this.router.navigate([`/${route}`]);
     this.isSidebarActive = false; // Opcional: Ocultar el sidebar después de la navegación en pantallas pequeñas
   }
 

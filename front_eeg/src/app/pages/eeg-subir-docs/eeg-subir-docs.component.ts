@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { EegService } from '../../services/sesiones/eeg.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-eeg-subir-docs',
@@ -20,11 +21,13 @@ export class EegSubirDocsComponent {
     ninguno: false,
   };
 
-  constructor(private eegService: EegService, private router: Router) {}
+  constructor(private eegService: EegService, private router: Router, private location: Location) {}
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
+
+
 
   toggleEstadoEspecifico(estado: string, event: Event): void {
     const inputElement = event.target as HTMLInputElement; // Aserción de tipo
@@ -47,7 +50,7 @@ export class EegSubirDocsComponent {
   
   
   onCancel(){
-    this.router.navigate(['/graficas-paciente']);
+    this.location.back();
   }
 
   onUpload(): void {

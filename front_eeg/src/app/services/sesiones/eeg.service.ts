@@ -10,6 +10,7 @@ export class EegService {
 
   private apiUrl = 'http://127.0.0.1:5000/sesiones';
 
+
   constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
@@ -36,6 +37,11 @@ export class EegService {
       })
     });
   }
+
+  obtener_paciente_en_base_a_sesion(idSesion: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${idSesion}/paciente`, { headers: this.getHeaders() });
+  }
+
   obtenerSesiones(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }

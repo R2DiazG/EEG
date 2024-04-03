@@ -48,7 +48,7 @@ export class PacienteService {
   }
 
   obtenerFechasSesionesPorPaciente(idPaciente: number): Observable<any[]> {
-    const url = `${this.apiUrl}/pacientes/${idPaciente}/sesiones/fechas`;
+    const url = `${this.apiUrl}/sesiones/pacientes/${idPaciente}/sesiones/fechas`;
     return this.http.get<any[]>(url, { headers: this.getHeaders() });
   }
 

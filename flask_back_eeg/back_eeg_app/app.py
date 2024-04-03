@@ -571,12 +571,16 @@ def obtener_detalles_paciente(id_paciente):
     """
     try:
         paciente = Paciente.query.get_or_404(id_paciente)
+        print(paciente)
+        today = datetime.today()
+        edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
         detalles_paciente = {
             'id_paciente': paciente.id_paciente,
             'nombre': paciente.nombre,
             'apellido_paterno': paciente.apellido_paterno,
             'apellido_materno': paciente.apellido_materno or "",
             'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
+            'edad': edad, # Calculated age
             'genero': paciente.genero.descripcion if paciente.genero else "",
             'estado_civil': paciente.estado_civil.descripcion if paciente.estado_civil else "",
             'escolaridad': paciente.escolaridad.descripcion if paciente.escolaridad else "",
@@ -646,7 +650,18 @@ def obtener_eegs_por_sesion(id_sesion):
         logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
         return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
 
-@app.route('/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
+@app.route('/sesiones/<int:id_sesion>/paciente', methods=['GET'])
+@jwt_required()   
+def obtener_paciente_en_base_a_sesion(id_sesion):
+    """
+    Function to retrieve the patient associated with a specific session.
+    The function receives the session ID and returns the patient associated with that session.
+    """
+    sesion = Sesion.query.get_or_404(id_sesion)
+    paciente = Paciente.query.get_or_404(sesion.id_paciente)
+    return jsonify(paciente.id_paciente), 200
+
+@app.route('/sesiones/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
 @jwt_required()
 #@cross_origin()
 #@cross_origin(origins=['http://localhost:4200']) 

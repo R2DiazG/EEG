@@ -2,6 +2,7 @@
   <app-menu-lateral></app-menu-lateral>
   <div class="patient-registration-container">
       <h1>Registrar nuevo paciente</h1>
+      <button (click)="cancelButton()">Cancelar</button>
       <div class="tab-menu">
         <button class="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
         <button class="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
