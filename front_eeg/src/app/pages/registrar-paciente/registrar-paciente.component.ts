@@ -74,7 +74,36 @@ export class RegistrarPacienteComponent implements OnInit {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
   }
 
-  onSubmit(): void {
+  // En tu componente
+
+// Método temporal para guardar la información actualizada
+saveCurrentTabData(): void {
+  // Aquí puedes validar o procesar los datos antes de asignarlos al paciente
+  console.log('Datos guardados temporalmente:', this.patient);
+  // Puedes mostrar una notificación al usuario de que los datos se han guardado temporalmente
+}
+
+// Método final para enviar todos los datos
+registerPatient(): void {
+  // Aquí envías todos los datos al servidor
+  if (this.id_usuario) {
+    this.pacienteService.crearPaciente(this.id_usuario, this.patient).subscribe({
+      next: (response) => {
+        console.log('Paciente registrado con éxito', response);
+        this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
+      },
+      error: (error) => {
+        console.error('Error al registrar el paciente', error);
+        // Aquí deberías manejar el error, por ejemplo, mostrar un mensaje al usuario
+      }
+    });
+  } else {
+    console.error('ID de usuario no definido.');
+    // Maneja la falta del ID de usuario, por ejemplo, redirigir al login o mostrar un mensaje
+  }
+}
+
+  /*onSubmit(): void {
     // Verifica si existe al menos un objeto de consentimiento con consentimiento === true
     const consentimientoOtorgado = this.patient.consentimientos.some(consent => consent.consentimiento === true);
   
@@ -91,6 +120,6 @@ export class RegistrarPacienteComponent implements OnInit {
     } else {
       console.error('El consentimiento es necesario para registrar al paciente');
     }
-  }
+  }*/
   
 }

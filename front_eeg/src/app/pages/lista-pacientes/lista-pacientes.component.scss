@@ -212,6 +212,49 @@ body {
   }
 }
 
+.button-eliminar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  background-color: $black;
+  margin: 0.5rem;
+  cursor: pointer;
+
+  .icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .text {
+    display: block;
+    opacity: 1;
+  }
+
+  // Estilos de confirmación y eliminación
+  &.confirm {
+    .icon.fas.fa-trash { display: none; }
+    .icon.fas.fa-question-circle { display: inline-block; }
+    .icon.fas.fa-check-circle { display: none; }
+    background-color: $blue;
+    .text { color: white; }
+  }
+
+  &.done {
+    .icon.fas.fa-trash { display: none; }
+    .icon.fas.fa-question-circle { display: none; }
+    .icon.fas.fa-check-circle { display: inline-block; }
+    background-color: $green;
+    .text { color: white; }
+  }
+
+  &:not(.confirm):not(.done):hover {
+    background-color: $red;
+    .text { color: white; }
+  }
+}
+
 // Botones de acción
 button {
   display: flex;
@@ -222,6 +265,10 @@ button {
   background-color: $black;
   margin: 0.5rem;
   cursor: pointer;
+  &.hover {
+    background-color: $blue;
+    .text { color: white; }
+  }
 
   .icon {
     font-size: 1.5rem;
@@ -251,27 +298,6 @@ button {
     color: #cccccc;
   }
 
-  // Estilos de confirmación y eliminación
-  &.confirm {
-    .icon.fas.fa-trash { display: none; }
-    .icon.fas.fa-question-circle { display: inline-block; }
-    .icon.fas.fa-check-circle { display: none; }
-    background-color: $blue;
-    .text { color: white; }
-  }
-
-  &.done {
-    .icon.fas.fa-trash { display: none; }
-    .icon.fas.fa-question-circle { display: none; }
-    .icon.fas.fa-check-circle { display: inline-block; }
-    background-color: $green;
-    .text { color: white; }
-  }
-
-  &:not(.confirm):not(.done):hover {
-    background-color: $red;
-    .text { color: white; }
-  }
 }
 
 @keyframes fadeInZoom {

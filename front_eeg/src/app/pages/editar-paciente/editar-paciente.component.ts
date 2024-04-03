@@ -28,6 +28,7 @@ export class EditarPacienteComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentUser();
+    //this.patient.latestConsent = this.getLatestConsent(this.patient.consentimientos);
   }
 
   getCurrentUser(): void {
@@ -68,7 +69,7 @@ export class EditarPacienteComponent implements OnInit {
         next: (data) => {
           // Suponiendo que 'data' es el objeto con los detalles del paciente.
           this.patient = this.mapToInfoPaciente(data); // Usamos la función de mapeo aquí.
-          console.log('Datos del paciente:', this.patient);
+          console.log('Datos del paciente completos:', this.patient);
         },
         error: (error) => console.error('Error al obtener detalles del paciente:', error)
       });
@@ -95,6 +96,10 @@ export class EditarPacienteComponent implements OnInit {
   
   getOcupationDisplay(occupation: string | undefined): string {
     return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
+  }
+
+  getConsentimientoDisplay(consentimientos: string | undefined): string {
+    return consentimientos ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
@@ -189,6 +194,9 @@ export class EditarPacienteComponent implements OnInit {
     }
   }
   
+  regresar(){
+    this.router.navigate(['/lista-pacientes']);
+  }
 
   cancelEdit(): void {
     this.isEditMode = false;
@@ -198,12 +206,43 @@ export class EditarPacienteComponent implements OnInit {
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
   }
+/*
+  onSubmit(): void {
+    if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {
+      // Prepárate para enviar los datos actualizados al backend
+      console.log('Datos del paciente actualizados:', this.patient);
 
+      // Incluye la lógica para manejar los cambios de consentimiento aquí.
+      // Puede ser tan simple como añadir el último consentimiento al array de consentimientos.
+      this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, {
+        ...this.patient,
+        consentimientos: [...this.patient.consentimientos, this.patient.latestConsent]
+      }).subscribe({
+        next: () => {
+          console.log('Información del paciente actualizada');
+          this.isEditMode = false;
+          // Navega a la vista de paciente o donde corresponda
+          this.router.navigate(['/ver-paciente', this.id_paciente]);
+        },
+        error: (error) => console.error('Error al actualizar el paciente:', error)
+      });
+    } else {
+      console.error('No se puede actualizar: ID del paciente o usuario no definido.');
+    }
+  }
+
+  getLatestConsent(consentimientos: { consentimiento: boolean; fecha_registro: Date }[]): any {
+    // Retorna el consentimiento más reciente o un objeto por defecto si no hay ninguno.
+    // Esta función puede requerir lógica adicional basada en tu backend.
+    return consentimientos?.length ? consentimientos[consentimientos.length - 1] : { consentimiento: false, fecha_registro: new Date() };
+  }
+  */
+  
   onSubmit(): void {
     if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {
       // Convertir valores de presentación a valores esperados por el backend si es necesario
       // Ejemplo: Si tu backend espera 'male' o 'female' para género, asegúrate de que esos sean los valores enviados.
-      
+      console.log('Datos del paciente actualizados:', this.patient);
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
           console.log('Información del paciente actualizada');
@@ -216,8 +255,6 @@ export class EditarPacienteComponent implements OnInit {
       console.error('No se puede actualizar: ID del paciente o usuario no definido.');
     }
   }
-  
-  
 
   addMedication(): void {
     if (!this.patient.medicamentos_actuales) {

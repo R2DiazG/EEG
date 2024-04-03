@@ -49,9 +49,9 @@ export class AuthService {
           return response;
         }),
         catchError(error => {
-          // Manejo de error
-          return throwError(() => new Error('Error al obtener el usuario actual'));
-        })
+          console.error("Error al obtener el usuario actual:", error);
+          return throwError(() => new Error(`Error al obtener el usuario actual: ${error.message}`));
+        })        
       );
   }
 
