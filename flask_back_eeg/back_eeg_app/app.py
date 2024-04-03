@@ -793,25 +793,23 @@ def actualizar_correos(paciente, correos_nuevos):
     The function updates the email addresses of the patient with the new data.
     """
     if correos_nuevos is not None:
-        # Keeps track of the current emails of the patient using a dictionary with the email as the key and the object as the value
         correos_actuales = {correo.correo_electronico: correo for correo in paciente.correos_electronicos}
-        # New emails are processed and added to the database
-        correos_procesados = {}
+        # For new and existing emails
+        correos_procesados = set()
         for correo_data in correos_nuevos:
             correo_electronico = correo_data['correo_electronico']
-            # If the email already exists, update it if it has not been processed yet (to avoid duplicates)
-            if correo_electronico in correos_actuales and correo_electronico not in correos_procesados:
-                # Mark the email as processed
-                correos_procesados[correo_electronico] = True
-                continue  # Doesn't update the email if it has already been processed
-            # If the email doesn't exist, create a new one
-            elif correo_electronico not in correos_actuales:
+            if correo_electronico in correos_actuales:
+                # If the email already exists, update it
+                correos_procesados.add(correo_electronico)
+            else:
+                # If the email is new, add it
                 nuevo_correo = CorreoElectronico(correo_electronico=correo_electronico, id_paciente=paciente.id_paciente)
                 db.session.add(nuevo_correo)
-        # Delete any email not included in the update (not processed)
-        correos_a_eliminar = set(correos_actuales.keys()) - set(correos_procesados.keys())
-        for correo in correos_a_eliminar:
-            db.session.delete(correos_actuales[correo])
+                correos_procesados.add(correo_electronico)
+        # Delete any email not included in the update
+        for correo_electronico, correo in correos_actuales.items():
+            if correo_electronico not in correos_procesados:
+                db.session.delete(correo)
 
 def actualizar_direcciones(paciente, direcciones_nuevas):
     """
