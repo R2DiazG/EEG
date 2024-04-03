@@ -778,16 +778,25 @@ def actualizar_correos(paciente, correos_nuevos):
     The function updates the email addresses of the patient with the new data.
     """
     if correos_nuevos is not None:
-        correos_actuales = {correo.id_correo: correo for correo in paciente.correos_electronicos}
+        # Keeps track of the current emails of the patient using a dictionary with the email as the key and the object as the value
+        correos_actuales = {correo.correo_electronico: correo for correo in paciente.correos_electronicos}
+        # New emails are processed and added to the database
+        correos_procesados = {}
         for correo_data in correos_nuevos:
-            if 'id_correo' in correo_data and correo_data['id_correo'] in correos_actuales:
-                correo = correos_actuales.pop(correo_data['id_correo'])
-                correo.correo_electronico = correo_data['correo_electronico']
-            else:
-                nuevo_correo = CorreoElectronico(correo_electronico=correo_data['correo_electronico'], id_paciente=paciente.id_paciente)
+            correo_electronico = correo_data['correo_electronico']
+            # If the email already exists, update it if it has not been processed yet (to avoid duplicates)
+            if correo_electronico in correos_actuales and correo_electronico not in correos_procesados:
+                # Mark the email as processed
+                correos_procesados[correo_electronico] = True
+                continue  # Doesn't update the email if it has already been processed
+            # If the email doesn't exist, create a new one
+            elif correo_electronico not in correos_actuales:
+                nuevo_correo = CorreoElectronico(correo_electronico=correo_electronico, id_paciente=paciente.id_paciente)
                 db.session.add(nuevo_correo)
-        for correo in correos_actuales.values():
-            db.session.delete(correo)
+        # Delete any email not included in the update (not processed)
+        correos_a_eliminar = set(correos_actuales.keys()) - set(correos_procesados.keys())
+        for correo in correos_a_eliminar:
+            db.session.delete(correos_actuales[correo])
 
 def actualizar_direcciones(paciente, direcciones_nuevas):
     """
