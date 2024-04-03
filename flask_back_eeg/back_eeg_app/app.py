@@ -1025,8 +1025,8 @@ def crear_nueva_sesion():
             ica = ICA(n_components=n_components_ica, random_state=97, max_iter=800)
             ica.fit(raw) # Fit the ICA to the raw data to identify the components to exclude 
             # Identify the components that are related to eye movements (EOG)
-            eog_indices, eog_scores = ica.find_bads_eog(raw)
-            ica.exclude = eog_indices
+            #eog_indices, eog_scores = ica.find_bads_eog(raw)
+            #ica.exclude = eog_indices
             ica.apply(raw) # Aplly the ICA to remove the components identified as artifacts
             logging.info('ICA aplicado')
             # Calculate the power spectral density (PSD) of the EEG data in the 1-40 Hz range using Welch's method 
