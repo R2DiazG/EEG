@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'registrar-paciente', component: RegistrarPacienteComponent },
   { path: 'editar-paciente/:id_paciente', component: EditarPacienteComponent },
   { path: 'lista-pacientes', component: ListaPacientesComponent },
-  { path: 'eeg-subir-docs', component: EegSubirDocsComponent },
+  { path: 'eeg-subir-docs/:id_paciente', component: EegSubirDocsComponent },
   { path: 'confirm-dialog', component: ConfirmDialogComponent },
   { path: 'menu-lateral', component: MenuLateralComponent },
   { path: 'info-paciente/:id_paciente', component: InfoPacienteComponent },
