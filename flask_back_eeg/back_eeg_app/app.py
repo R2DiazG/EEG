@@ -903,6 +903,15 @@ def eliminar_paciente(id_usuario, id_paciente):
     Endpoint to delete a patient for a specific user.
     Requires a valid JWT access token.
     Validates the patient's association with the user before deletion. Removes the patient and all related data from the database.
+    ·Parameters:
+        id_usuario: int - The ID of the user.
+        id_paciente: int - The ID of the patient.
+    ·Responses:
+        200: If the patient was successfully deleted.
+        403: If the patient is not associated with the user.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /usuarios/1/pacientes/2
     """
     paciente = Paciente.query.get_or_404(id_paciente)
     if paciente.id_usuario != id_usuario:
@@ -1077,36 +1086,82 @@ def crear_nueva_sesion():
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
 
-@app.route('/sesiones/<int:id_sesion>', methods=['PUT'])
+@app.route('/sesiones/<int:id_sesion>/medicamentos', methods=['PUT'])
 @jwt_required()
-def actualizar_sesion(id_sesion):
+def actualizar_medicamentos_sesion(id_sesion):
     """
-    Endpoint to update a session.
+    Endpoint to update the medications for a specific session.
     Requires a valid JWT access token.
-    Allows adding or updating medications and psychologist's notes after the session has occurred.
+    Validates the existence of the medications before updating. Clears the current medications and adds the new ones.
+    ·Parameters:
+        id_sesion: int - The ID of the session.
+        medicamentos_ids: list - The IDs of the new medications.
+    ·Responses:
+        200: If the medications were successfully updated.
+        400: If the medication IDs were not provided or a medication was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        PUT /sesiones/1/medicamentos
+        {
+            "medicamentos_ids": [1, 2, 3]
+        }
     """
-    logging.info('Iniciando la actualización de la sesión %s', id_sesion)
+    logging.info('Actualizando medicamentos de la sesión %s', id_sesion)
     try:
-        # Obtain the session to update
         sesion = Sesion.query.get_or_404(id_sesion)
         datos = request.get_json()
-        # Update the general state of the patient after the session
-        notas_psicologo = datos.get('notas_psicologo')
-        if notas_psicologo is not None:
-            sesion.notas_psicologo = notas_psicologo
-        # Update the medications associated with the session
         medicamentos_ids = datos.get('medicamentos_ids', [])
-        if medicamentos_ids:
-            # First, remove the current medications
-            sesion.medicamentos.clear()
-            # Then, add the new medications
-            for med_id in medicamentos_ids:
-                medicamento = Medicamento.query.get(int(med_id))
-                if medicamento:
-                    sesion.medicamentos.append(medicamento)
+        if not medicamentos_ids:
+            raise BadRequest('No se proporcionaron IDs de medicamentos')
+        sesion.medicamentos.clear()
+        for med_id in medicamentos_ids:
+            medicamento = Medicamento.query.get(int(med_id))
+            if not medicamento:
+                raise BadRequest(f'No se encontró el medicamento con ID {med_id}')
+            sesion.medicamentos.append(medicamento)
         db.session.commit()
-        logging.info('Sesión %s actualizada exitosamente', id_sesion)
-        return jsonify({'mensaje': 'Sesión actualizada exitosamente', 'id_sesion': id_sesion}), 200
+        logging.info('Medicamentos de la sesión %s actualizados exitosamente', id_sesion)
+        return jsonify({'mensaje': 'Medicamentos actualizados exitosamente'}), 200
+    except BadRequest as e:
+        db.session.rollback()
+        logging.error('Error al procesar la solicitud: %s', str(e))
+        return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error inesperado: %s', str(e))
+        return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
+
+@app.route('/sesiones/<int:id_sesion>/notas_psicologo', methods=['PUT'])
+@jwt_required()
+def actualizar_notas_psicologo_sesion(id_sesion):
+    """
+    Endpoint to update the psychologist's notes for a specific session.
+    Requires a valid JWT access token.
+    Validates the existence of the notes before updating. Replaces the current notes with the new ones.
+    ·Parameters:
+        id_sesion: int - The ID of the session.
+        notas_psicologo: str - The new notes from the psychologist.
+    ·Responses:
+        200: If the notes were successfully updated.
+        400: If the notes were not provided.
+        500: If an internal server error occurred.
+    ·Usage example:
+        PUT /sesiones/1/notas_psicologo
+        {
+            "notas_psicologo": "New notes from the psychologist."
+        }
+    """
+    logging.info('Actualizando notas del psicólogo de la sesión %s', id_sesion)
+    try:
+        sesion = Sesion.query.get_or_404(id_sesion)
+        datos = request.get_json()
+        notas_psicologo = datos.get('notas_psicologo')
+        if notas_psicologo is None:
+            raise BadRequest('No se proporcionaron las notas del psicólogo')
+        sesion.notas_psicologo = notas_psicologo
+        db.session.commit()
+        logging.info('Notas del psicólogo de la sesión %s actualizadas exitosamente', id_sesion)
+        return jsonify({'mensaje': 'Notas del psicólogo actualizadas exitosamente'}), 200
     except BadRequest as e:
         db.session.rollback()
         logging.error('Error al procesar la solicitud: %s', str(e))
