@@ -958,7 +958,7 @@ def crear_nueva_sesion():
         estado_general = datos.get('estado_general')
         estado_especifico = datos.getlist('estado_especifico')  # Assumed to be a list
         resumen_sesion_actual = datos.get('resumen_sesion_actual')
-        medicamentos_ids = datos.getlist('medicamentos_ids')  # Assuming this is a list of IDs
+        # medicamentos_ids = datos.getlist('medicamentos_ids')  # Assuming this is a list of IDs
         logging.info('Datos recibidos correctamente')
         # Save the EEG file temporarily
         path_temporal = os.path.join('/tmp', archivo_eeg.filename)
@@ -977,11 +977,11 @@ def crear_nueva_sesion():
         db.session.flush()  # For getting the ID of the new session before committing
         logging.info('Nueva sesión creada y añadida a la base de datos')
         # Asoociate the medications with the session
-        for med_id in medicamentos_ids:
-            medicamento = Medicamento.query.get(int(med_id))
-            if medicamento:
-                nueva_sesion.medicamentos.append(medicamento)
-        logging.info('Medicamentos asociados a la sesión')
+        #for med_id in medicamentos_ids:
+        #    medicamento = Medicamento.query.get(int(med_id))
+        #    if medicamento:
+        #        nueva_sesion.medicamentos.append(medicamento)
+        #logging.info('Medicamentos asociados a la sesión')
         def renombrar_canales(ch_names):
             nuevos_nombres = []
             for ch in ch_names:
