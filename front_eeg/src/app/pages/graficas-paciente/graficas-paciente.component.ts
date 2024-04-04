@@ -211,7 +211,36 @@ this.route.paramMap.subscribe(params => {
     } else {
       console.error('ID de sesión es nulo');
     }
+  }*/
+
+  cargarDatosNormalizedEEG(): void {
+    if (this.idSesion) {
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response) => {
+          console.log('Datos EEG normalizados:', response);
+          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+            // Obtén la cadena JSON de data_normalized del primer elemento del array normalized_eegs
+            const dataNormalizedString = response.normalized_eegs[0].data_normalized;
+            try {
+              // Parsea la cadena JSON para convertirla en un objeto/array JavaScript
+              const dataNormalized = JSON.parse(dataNormalizedString);
+              console.log('EEG normalizados:', dataNormalized);
+              // Ahora que tienes dataNormalized como un objeto/array, puedes pasarlo a la función
+              this.procesarYMostrarDatosNormalizedEEG(dataNormalized);
+            } catch (error) {
+              console.error('Error al parsear los datos EEG normalizados:', error);
+            }
+          } else {
+            console.error('No se encontraron EEGs normalizados para esta sesión.');
+          }
+        },
+        error: (error) => console.error('Error al obtener datos EEG normalizados:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
   }
+  
   
   cargarDatosEEG(): void {
     if (this.idSesion) { // Verifica que idSesion no sea null
@@ -235,48 +264,52 @@ this.route.paramMap.subscribe(params => {
   }
 
   procesarYMostrarDatosNormalizedEEG(data: any): void {
-    // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
-    const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
-    // Aplica el offset a cada serie de datos
-    const offsetSeries = data.map((serie: any, i: number) => ({
-      name: serie.name,
-      data: serie.data.map((d: number) => d + i * offset)
-    }));
-    const options: Options = {
-      chart: {
-        renderTo: 'eeg',
-        type: 'line',
-        zooming: {
-          type: 'x'
+    if (!Array.isArray(data) || !data.length) {
+      console.error('Los datos no están disponibles o no son un array.');
+      return;
+    }
+      // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
+      const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
+      // Aplica el offset a cada serie de datos
+      const offsetSeries = data.map((serie: any, i: number) => ({
+        name: serie.name,
+        data: serie.data.map((d: number) => d + i * offset)
+      }));
+      const options: Options = {
+        chart: {
+          renderTo: 'eeg',
+          type: 'line',
+          zooming: {
+            type: 'x'
+          },
+          height: 800
         },
-        height: 800
-      },
-      title: {
-        text: 'Visualización de Datos EEG Normalizados'
-      },
-      xAxis: {
         title: {
-          text: 'Número de Muestra'
-        }
-      },
-      yAxis: {
-        title: {
-          text: 'Amplitud (µV)'
+          text: 'Visualización de Datos EEG Normalizados'
         },
-        labels: {
-          formatter: function () {
-            const index = Math.floor((this.value as number) / offset);
-            return index >= 0 && index < data.length ? data[index].name : '';
+        xAxis: {
+          title: {
+            text: 'Número de Muestra'
           }
-        }
-      },
-      tooltip: {
-        shared: true
-      },
-      series: offsetSeries
-    };
-    Highcharts.chart(options);
-  }
+        },
+        yAxis: {
+          title: {
+            text: 'Amplitud (µV)'
+          },
+          labels: {
+            formatter: function () {
+              const index = Math.floor((this.value as number) / offset);
+              return index >= 0 && index < data.length ? data[index].name : '';
+            }
+          }
+        },
+        tooltip: {
+          shared: true
+        },
+        series: offsetSeries as Highcharts.SeriesOptionsType[]
+      };
+      Highcharts.chart(options);
+    }
   
   procesarYMostrarDatosPSD(dataPSD: any): void {
     // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
