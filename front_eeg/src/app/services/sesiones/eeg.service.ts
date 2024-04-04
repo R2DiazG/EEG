@@ -24,12 +24,12 @@ export class EegService {
     return headers;
   }
 
-  // obtenerEEGPorSesion(idSesion: number): Observable<any> {
-  //   const url = `${this.apiUrl}/${idSesion}/eegs`;
-  //   return this.http.get(url, { headers: this.getHeaders() });
-  // }
+   obtenerEEGPorSesion(idSesion: number): Observable<any> {
+     const url = `${this.apiUrl}/${idSesion}/eegs`;
+     return this.http.get(url, { headers: this.getHeaders() });
+   }
 
-  obtenerEEGPorSesion(idSesion: number): Observable<any> {
+  /*obtenerEEGPorSesion(idSesion: number): Observable<any> {
     const url = `${this.apiUrl}/${idSesion}/eegs`;
   
     return this.http.get(url, { headers: this.getHeaders(), observe: 'response' })
@@ -43,7 +43,7 @@ export class EegService {
           return throwError(() => new Error('Error al obtener datos de EEG'));
         })
       );
-  }
+  }*/
   
 
   crearNuevaSesion(datosSesion: FormData): Observable<any> {
