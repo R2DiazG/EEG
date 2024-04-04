@@ -22,7 +22,7 @@ interface SeriesOptions {
 })
 
 export class GraficasPacienteComponent implements OnInit {
-  activeTab: string = 'contentEEG'; // Tab activa por defecto
+  activeTab: string = 'detailsSesion'; // Tab activa por defecto
   idSesion!: number; // Declarar idSesion como propiedad del componente
   sesiones: any[] = []; // Almacenará las fechas de las sesiones
   selectedSesionId: number | null = null;
@@ -85,7 +85,10 @@ ngOnInit() {
           if (paciente) {
             this.idPaciente = paciente;
             if (this.idPaciente !== null) {
+              console.log('Datos eeg', this.idPaciente);
               this.cargarFechasSesionesPorPaciente(this.idPaciente);
+              this.cargarDatosNormalizedEEG();
+              this.cargarDatosEEG();
               // Cargar datos de la sesión de EEG directamente aquí
               this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
             } else {
