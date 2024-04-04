@@ -1089,7 +1089,6 @@ def actualizar_sesion(id_sesion):
     try:
         # Obtain the session to update
         sesion = Sesion.query.get_or_404(id_sesion)
-        
         datos = request.get_json()
         # Update the general state of the patient after the session
         notas_psicologo = datos.get('notas_psicologo')
