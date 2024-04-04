@@ -1321,7 +1321,7 @@ def obtener_eegs_por_sesion(id_sesion):
             } for eeg in normalized_eegs]
         }
         logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
-        return Response(generar_datos_eeg(raw_eegs, normalized_eegs), mimetype='application/json')
+        return jsonify(eegs_response), 200
     except Exception as e:
         logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
         return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
