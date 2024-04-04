@@ -264,16 +264,18 @@ this.route.paramMap.subscribe(params => {
   }
 
   procesarYMostrarDatosNormalizedEEG(data: any): void {
-    if (!Array.isArray(data) || !data.length) {
-      console.error('Los datos no están disponibles o no son un array.');
+    if (!data|| !data.nombres_canales || !data.datos) {
+      console.error('Los datos EEG normalizados no están en el formato esperado.');
       return;
     }
+      const { nombres_canales, datos } = data;
       // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
       const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
       // Aplica el offset a cada serie de datos
-      const offsetSeries = data.map((serie: any, i: number) => ({
-        name: serie.name,
-        data: serie.data.map((d: number) => d + i * offset)
+      // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
+      const series = nombres_canales.map((nombreCanal: string, i: number) => ({
+        name: nombreCanal,
+        data: datos[i].map((valor: number) => valor + i * offset) // Asume que datos[i] es un array de valores para el canal i
       }));
       const options: Options = {
         chart: {
@@ -299,14 +301,14 @@ this.route.paramMap.subscribe(params => {
           labels: {
             formatter: function () {
               const index = Math.floor((this.value as number) / offset);
-              return index >= 0 && index < data.length ? data[index].name : '';
+              return nombres_canales[index] || '';
             }
           }
         },
         tooltip: {
           shared: true
         },
-        series: offsetSeries as Highcharts.SeriesOptionsType[]
+        series: series as Highcharts.SeriesOptionsType[]
       };
       Highcharts.chart(options);
     }
