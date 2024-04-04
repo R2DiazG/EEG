@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { EegService } from '../../services/sesiones/eeg.service';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-eeg-subir-docs',
@@ -13,6 +14,8 @@ export class EegSubirDocsComponent {
   fecha: string = ''; // Asigna un string vacío como valor inicial
   estadoGeneral: string = ''; // Puede ser 'wakefullness' o cualquier otro valor predeterminado
   resumenSesionActual: string = '';
+  idPaciente!: number;
+  archivo_eeg!: File;
 
   estadosEspecificos: {[key: string]: boolean} = {
     hiperventilacion: false,
@@ -21,13 +24,30 @@ export class EegSubirDocsComponent {
     ninguno: false,
   };
 
-  constructor(private eegService: EegService, private router: Router, private location: Location) {}
+  constructor(
+    private eegService: EegService, 
+    private router: Router, 
+    private location: Location, 
+    private route: ActivatedRoute
+    ) {}
+
+  ngOnInit() {
+    console.log('Hola', this.route.params)
+    this.route.paramMap.subscribe(params => {
+      console.log(params); // Imprime los parámetros de la URL
+      const id_paciente = params.get('id_paciente'); // Asegúrate de que 'idPaciente' coincide con el nombre del parámetro definido en tus rutas.
+      if (id_paciente) {
+        this.idPaciente = +id_paciente;
+        console.log('ID del paciente recibido eeg documentos:', this.idPaciente); // Imprime el id para verificar
+      } else {
+        console.error('No se recibió el ID del paciente');
+      }
+    });
+  }
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
-
-
 
   toggleEstadoEspecifico(estado: string, event: Event): void {
     const inputElement = event.target as HTMLInputElement; // Aserción de tipo
@@ -48,7 +68,6 @@ export class EegSubirDocsComponent {
     }
   }
   
-  
   onCancel(){
     this.location.back();
   }
@@ -58,35 +77,35 @@ export class EegSubirDocsComponent {
       alert('Por favor, selecciona un archivo para subir.');
       return;
     }
-    
-    // Prepara FormData
+    // Asegúrate de tener el idPaciente disponible aquí
+    if (!this.idPaciente) {
+      alert('El ID del paciente no está disponible.');
+      return;
+    }
+  
     const formData = new FormData();
     formData.append('eegFile', this.selectedFile, this.selectedFile.name);
-  
-    // Agrega cualquier otro campo de formulario relevante aquí
     formData.append('fecha', this.fecha);
     formData.append('estado_general', this.estadoGeneral);
-  
-    // Convierte el objeto estadosEspecificos a un array de claves donde el valor es true
+    
     const estadosEspecificosSeleccionados = Object.entries(this.estadosEspecificos)
       .filter(([_, value]) => value)
       .map(([key, _]) => key);
-  
-    // Usa join(',') para unir los elementos del array en una cadena de texto
+    
     formData.append('estado_especifico', estadosEspecificosSeleccionados.join(','));
-  
     formData.append('resumen_sesion_actual', this.resumenSesionActual);
+    formData.append('id_paciente', this.idPaciente.toString()); // Añadir el idPaciente al FormData
   
-    // Llama al servicio para subir la sesión con el archivo y otros datos
     this.eegService.crearNuevaSesion(formData).subscribe({
       next: (response) => {
         console.log(response);
         alert('EEG subido exitosamente.');
+        // Navegar a otro componente o actualizar la vista según sea necesario
       },
       error: (error) => {
         console.error(error);
         alert('Hubo un problema al subir el EEG.');
       }
     });
-  }
+  }  
 }

@@ -5,6 +5,7 @@ import { InfoPaciente } from '../../models/info-paciente.model';
 import { AuthService } from '../../services/login/auth.service';
 import { Observable } from 'rxjs';
 import { EegService } from '../../services/sesiones/eeg.service';
+import { id } from 'date-fns/locale';
 
 @Component({
   selector: 'app-info-paciente',
@@ -16,6 +17,7 @@ export class InfoPacienteComponent implements OnInit {
   
   id_usuario: number | null = null;
   @Input() id_sesion!: number; 
+  @Input() id_paciente!: number;
 
   constructor(
     private pacienteService: PacienteService,
@@ -51,7 +53,18 @@ export class InfoPacienteComponent implements OnInit {
     // Asumiendo que el ID del paciente se obtiene de la ruta, directamente aquí.
     const id_sesion = this.route.snapshot.paramMap.get('id_sesion');
     console.log(this.route.params)
-    if(id_sesion) {
+    if(this.id_paciente){
+      this.pacienteService.obtenerDetallesPaciente(this.id_paciente).subscribe({
+        next: (data) => {
+          console.log('Detalles del paciente:', data);
+          this.paciente = data;
+        },
+  
+        error: (error) => {
+          console.error('Error al obtener los detalles del paciente', error);
+        }
+      });
+    } else if(id_sesion) {
       this.obtenerPacienteEnBaseASesion(+id_sesion).subscribe({
         next: (id_paciente) => {
           console.log('Id del paciente:', id_paciente);

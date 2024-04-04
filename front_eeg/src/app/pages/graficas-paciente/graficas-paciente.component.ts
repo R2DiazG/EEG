@@ -178,7 +178,13 @@ this.route.paramMap.subscribe(params => {
   }
 
   addSession(): void {
-    this.router.navigate(['/eeg-subir-docs']);
+    console.log('ID de paciente:', this.idPaciente);
+    if (this.idPaciente) {
+      console.log('ID de paciente:', this.idPaciente);
+      this.router.navigate(['/eeg-subir-docs', this.idPaciente]);
+    } else {
+      console.error('ID de paciente no está disponible');
+    }
   }
 
   regresar(){
