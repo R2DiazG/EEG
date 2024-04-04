@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, url_for
+from flask import Flask, jsonify, request, url_for, Response
 from flask_cors import CORS, cross_origin
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
@@ -1325,10 +1325,33 @@ def obtener_eegs_por_sesion(id_sesion):
             } for eeg in normalized_eegs]
         }
         logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
-        return jsonify(eegs_response), 200
+        return Response(generar_datos_eeg(raw_eegs, normalized_eegs), mimetype='application/json')
     except Exception as e:
         logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
         return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
+    
+def generar_datos_eeg(raw_eegs, normalized_eegs):
+    yield '{"detalle_sesion": {...},'  # Envía la parte inicial de tu JSON
+    yield '"raw_eegs": ['
+    for eeg in raw_eegs:
+        # Suponiendo que `eeg.data` es una cadena JSON de los datos EEG crudos
+        yield json.dumps({
+            'id_eeg': eeg.id_eeg,
+            'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
+            'data': eeg.data
+        }) + ','
+    yield '],'
+    yield '"normalized_eegs": ['
+    for eeg in normalized_eegs:
+        # Similar a raw_eegs, pero con los datos normalizados
+        yield json.dumps({
+            'id_eeg_procesado': eeg.id_eeg_procesado,
+            'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
+            'data_normalized': eeg.data_normalized,
+            'data_psd': eeg.data_psd
+        }) + ','
+    yield ']}'
+
 
 @app.route('/sesiones/<int:id_sesion>/paciente', methods=['GET'])
 @jwt_required()   
