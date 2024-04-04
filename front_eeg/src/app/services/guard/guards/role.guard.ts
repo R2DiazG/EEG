@@ -8,17 +8,18 @@ import {
 } from '@angular/router';
 import { AuthService } from '../../login/auth.service';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleGuard implements CanActivate {
-
+  
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {
+  ) 
+  {
 
     console.log('RoleGuard constructor');
   }
@@ -31,10 +32,15 @@ export class RoleGuard implements CanActivate {
     const expectedRole = route.data['expectedRole'];
     console.log('Rol esperado:', expectedRole);
     return this.authService.getCurrentUser().pipe(
-      map(user => {
+      tap(user => {
+        if (!user || user.id_rol !== expectedRole) {
+          this.router.navigate(['/login']);
+        }
+/*
         console.log('Usuario', user);
         if (user && user.id_rol === expectedRole) {
           // Si el rol coincide, permitir el acceso
+          console.log('Tienes permisos para acceder a esta página');
           return true;
         } else {
           // Si no coincide, redirigir al login y negar acceso
@@ -43,7 +49,9 @@ export class RoleGuard implements CanActivate {
           this.router.navigate(['/login']);
           return false;
         }
-      })
+*/
+      }),
+      map(user => user && user.id_rol === expectedRole)
     );
   }
 }

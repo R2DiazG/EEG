@@ -14,6 +14,7 @@ import { OlvideContraComponent } from './pages/olvide-contra/olvide-contra.compo
 import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicologos.component';
 import { RoleGuard } from './services/guard/guards/role.guard';
 import { MedicamentosComponent } from './pages/medicamentos/medicamentos.component';
+import { AprobarPsicologosComponent } from './pages/aprobar-psicologos/aprobar-psicologos.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,8 +29,9 @@ const routes: Routes = [
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
-  { path: '**', redirectTo: '/login' },
+  { path: 'aprobar-psicologos', component: AprobarPsicologosComponent},
   { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
+  { path: '**', redirectTo: '/login' },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
