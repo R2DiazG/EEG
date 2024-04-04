@@ -1076,6 +1076,46 @@ def crear_nueva_sesion():
         if os.path.exists(path_temporal):
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
+
+@app.route('/sesiones/<int:id_sesion>', methods=['PUT'])
+@jwt_required()
+def actualizar_sesion(id_sesion):
+    """
+    Endpoint to update a session.
+    Requires a valid JWT access token.
+    Allows adding or updating medications and psychologist's notes after the session has occurred.
+    """
+    logging.info('Iniciando la actualización de la sesión %s', id_sesion)
+    try:
+        # Obtain the session to update
+        sesion = Sesion.query.get_or_404(id_sesion)
+        
+        datos = request.get_json()
+        # Update the general state of the patient after the session
+        notas_psicologo = datos.get('notas_psicologo')
+        if notas_psicologo is not None:
+            sesion.notas_psicologo = notas_psicologo
+        # Update the medications associated with the session
+        medicamentos_ids = datos.get('medicamentos_ids', [])
+        if medicamentos_ids:
+            # First, remove the current medications
+            sesion.medicamentos.clear()
+            # Then, add the new medications
+            for med_id in medicamentos_ids:
+                medicamento = Medicamento.query.get(int(med_id))
+                if medicamento:
+                    sesion.medicamentos.append(medicamento)
+        db.session.commit()
+        logging.info('Sesión %s actualizada exitosamente', id_sesion)
+        return jsonify({'mensaje': 'Sesión actualizada exitosamente', 'id_sesion': id_sesion}), 200
+    except BadRequest as e:
+        db.session.rollback()
+        logging.error('Error al procesar la solicitud: %s', str(e))
+        return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error inesperado: %s', str(e))
+        return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 
