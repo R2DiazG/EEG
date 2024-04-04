@@ -22,7 +22,7 @@ interface SeriesOptions {
 })
 
 export class GraficasPacienteComponent implements OnInit {
-  activeTab: string = 'contentEEG'; // Tab activa por defecto
+  activeTab: string = 'detailsSesion'; // Tab activa por defecto
   idSesion!: number; // Declarar idSesion como propiedad del componente
   sesiones: any[] = []; // Almacenará las fechas de las sesiones
   selectedSesionId: number | null = null;
@@ -85,7 +85,10 @@ ngOnInit() {
           if (paciente) {
             this.idPaciente = paciente;
             if (this.idPaciente !== null) {
+              console.log('Datos eeg', this.idPaciente);
               this.cargarFechasSesionesPorPaciente(this.idPaciente);
+              this.cargarDatosNormalizedEEG();
+              this.cargarDatosEEG();
               // Cargar datos de la sesión de EEG directamente aquí
               this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
             } else {
@@ -194,7 +197,7 @@ this.route.paramMap.subscribe(params => {
     this.activeTab = tab;
   }
 
-  cargarDatosNormalizedEEG(): void {
+  /*cargarDatosNormalizedEEG(): void {
     if (this.idSesion) {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response: { normalized_eegs: string | any[]; }) => {
@@ -211,7 +214,30 @@ this.route.paramMap.subscribe(params => {
     } else {
       console.error('ID de sesión es nulo');
     }
+  }*/
+
+  cargarDatosNormalizedEEG(): void {
+    if (this.idSesion) {
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response) => {
+          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+            const datosEEG = JSON.parse(response.normalized_eegs[0].data_normalized);
+            if (datosEEG && Array.isArray(datosEEG)) {
+              this.procesarYMostrarDatosNormalizedEEG(datosEEG);
+            } else {
+              console.error('La estructura de los datos EEG normalizados no es la esperada.');
+            }
+          } else {
+            console.error('No se encontraron EEGs normalizados para esta sesión.');
+          }
+        },
+        error: (error) => console.error('Error al obtener datos EEG normalizados:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
   }
+  
   
   cargarDatosEEG(): void {
     if (this.idSesion) { // Verifica que idSesion no sea null
