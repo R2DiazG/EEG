@@ -4,10 +4,10 @@
     <h1>Nueva sesión</h1>
     <app-info-paciente  [id_paciente]="idPaciente"></app-info-paciente>
     <div class="upload-form">
-      <div class="form-group">
+    <!--  <div class="form-group">
         <label for="eegDate">Ingresa la fecha de la toma del electroencefalograma:</label>
         <input type="date" id="eegDate" [(ngModel)]="fecha" name="eegDate" required>
-      </div>
+      </div>-->
 
       <label>Estado del paciente:</label>
       <div class="form-group">
@@ -26,8 +26,6 @@
       </div>
 
       <label>Específico:</label>
-      <!-- ... -->
-
 <div>
   <input type="checkbox" id="hiperventilacion" value="hiperventilacion"
          [disabled]="estadosEspecificos['ninguno']"
@@ -37,25 +35,31 @@
 </div>
 <div>
   <input type="checkbox" id="estimulo_visual" value="estimulo_visual"
-         [disabled]="estadosEspecificos['none']"
+         [disabled]="estadosEspecificos['ninguno']"
          (change)="toggleEstadoEspecifico('estimulo_visual', $event)"
          [checked]="estadosEspecificos['estimulo_visual']">
   <label for="hyperventilation">Estímulo visual</label>
 </div>
 <div>
   <input type="checkbox" id="estimulo_auditivo" value="estimulo_auditivo"
-         [disabled]="estadosEspecificos['none']"
+         [disabled]="estadosEspecificos['ninguno']"
          (change)="toggleEstadoEspecifico('estimulo_auditivo', $event)"
          [checked]="estadosEspecificos['estimulo_auditivo']">
   <label for="hyperventilation">Estímulo auditivo</label>
 </div>
 <div>
-  <input type="checkbox" id="none" value="ninguno"
+  <input type="checkbox" id="ninguno" value="ninguno"
   (change)="toggleEstadoEspecifico('ninguno', $event)"
          [checked]="estadosEspecificos['ninguno']">
   <label for="none">Ninguno</label>
 </div>
 
+<select #selectMedicamento (change)="agregarMedicamento(selectMedicamento.value)">
+  <option value="" disabled selected>Selecciona un medicamento</option>
+  <option *ngFor="let medicamento of medicamentos" [value]="medicamento.id">
+    {{ medicamento.nombre }}
+  </option>
+</select>
 
       <div class="form-group">
         <label for="description">Resumen de la sesión:</label>
@@ -65,7 +69,7 @@
       <div class="form-group">
         <p>En la aplicación "Nombre de la aplicación", ve a la pestaña "file", selecciona exportar y elige "EDF" para descargar el archivo y súbelo dentro de este apartado.</p>
         <label for="file">Subir un nuevo archivo EEG</label>
-        <input type="file" id="file" (change)="onFileSelected($event)" name="file">
+        <input type="file" id="file" (change)="onFileSelected($event)" name="file" [(ngModel)]="archivo_eeg" >
       </div>
 
       <button (click)="onUpload()">Subir archivo</button>
