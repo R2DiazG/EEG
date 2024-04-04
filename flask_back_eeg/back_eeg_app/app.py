@@ -1187,7 +1187,11 @@ def crear_nueva_sesion():
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
             logging.info('Canales renombrados')
-            datos_eeg_crudos_json = json.dumps(raw.get_data().tolist())
+            data_eeg_with_channels = {
+                'names': nuevos_nombres,
+                'data': raw.get_data().tolist()
+            }
+            datos_eeg_crudos_json = json.dumps(data_eeg_with_channels)
             nuevo_raw_eeg = RawEEG(
                 id_sesion=nueva_sesion.id_sesion, 
                 fecha_hora_registro=datetime.now(timezone.utc), 
@@ -1233,7 +1237,11 @@ def crear_nueva_sesion():
                 for i, ch_name in enumerate(raw.ch_names)
             ]
             # At this point, the data is cleaned, filtered, ready for visualization and is ready to be stored in the database as a JSON object
-            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Data cleaned and processed in JSON format
+            data_eeg_normalized_with_channels = {
+                'names': nuevos_nombres,
+                'data': raw.get_data().tolist()
+            }
+            datos_procesados_json = json.dumps(data_eeg_normalized_with_channels)  # Data cleaned and processed in JSON format
             datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
             # When storing the data in the database, it is necessary to store the PSD data as well
             nuevo_normalized_eeg = NormalizedEEG(
