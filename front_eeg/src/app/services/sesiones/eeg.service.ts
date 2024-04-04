@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse  } from '@angular/common/http';
+import { Observable, throwError, timeout, catchError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -24,10 +24,27 @@ export class EegService {
     return headers;
   }
 
+  // obtenerEEGPorSesion(idSesion: number): Observable<any> {
+  //   const url = `${this.apiUrl}/${idSesion}/eegs`;
+  //   return this.http.get(url, { headers: this.getHeaders() });
+  // }
+
   obtenerEEGPorSesion(idSesion: number): Observable<any> {
     const url = `${this.apiUrl}/${idSesion}/eegs`;
-    return this.http.get(url, { headers: this.getHeaders() });
+  
+    return this.http.get(url, { headers: this.getHeaders(), observe: 'response' })
+      .pipe(
+        catchError((error) => {
+          console.error('Error completo:', error);
+          if (error instanceof HttpErrorResponse && error.status === 200) {
+            // Manejo especial si el status es 200 pero hay un error
+            console.error('Error a pesar del status 200:', error.message);
+          }
+          return throwError(() => new Error('Error al obtener datos de EEG'));
+        })
+      );
   }
+  
 
   crearNuevaSesion(datosSesion: FormData): Observable<any> {
     // Nota: Usamos FormData para manejar la carga de archivos.

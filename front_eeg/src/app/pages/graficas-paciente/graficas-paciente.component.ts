@@ -194,7 +194,7 @@ this.route.paramMap.subscribe(params => {
     this.activeTab = tab;
   }
 
-  cargarDatosNormalizedEEG(): void {
+  /*cargarDatosNormalizedEEG(): void {
     if (this.idSesion) {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response: { normalized_eegs: string | any[]; }) => {
