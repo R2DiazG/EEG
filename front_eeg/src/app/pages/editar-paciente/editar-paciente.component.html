@@ -173,7 +173,7 @@
             <label>Teléfonos celulares:</label>
             <div *ngFor="let phone of patient.telefonos; let i = index">
               <input type="text" [id]="'phone' + i" [name]="'phone' + i" [(ngModel)]="patient.telefonos[i].telefono" [readonly]="!isEditMode">
-            </div>
+          </div>
 
             <label>Correos electrónicos:</label>
             <div *ngFor="let email of patient.correos_electronicos; let i = index">

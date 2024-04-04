@@ -86,7 +86,6 @@ export class MedicamentosComponent implements OnInit {
     }
   }
   
-
   abrirDialogoCrearMedicamento() {
     const dialogRef = this.dialog.open(CrearMedicamentoDialogComponent, {
       width: '500px', // Ajusta el tamaño según sea necesario
