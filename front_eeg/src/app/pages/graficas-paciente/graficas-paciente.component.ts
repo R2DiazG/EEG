@@ -263,55 +263,58 @@ this.route.paramMap.subscribe(params => {
     }
   }
 
-  procesarYMostrarDatosNormalizedEEG(data: any): void {
-    if (!data|| !data.nombres_canales || !data.datos) {
-      console.error('Los datos EEG normalizados no están en el formato esperado.');
-      return;
-    }
-      const { nombres_canales, datos } = data;
-      // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
-      const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
-      // Aplica el offset a cada serie de datos
-      // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
-      const series = nombres_canales.map((nombreCanal: string, i: number) => ({
-        name: nombreCanal,
-        data: datos[i].map((valor: number) => valor + i * offset) // Asume que datos[i] es un array de valores para el canal i
-      }));
-      const options: Options = {
-        chart: {
-          renderTo: 'eeg',
-          type: 'line',
-          zooming: {
-            type: 'x'
+  procesarYMostrarDatosNormalizedEEG(dataNormalizedString: any): void {
+    try {
+        // Parsea la cadena JSON para convertirla en un objeto JavaScript
+        const dataNormalizedObj = JSON.parse(dataNormalizedString);
+        const { names, data } = dataNormalizedObj;
+        // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
+        const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
+        // Aplica el offset a cada serie de datos
+        // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
+        const series = names.map((name: string, index: number) => ({
+          name,
+          data: data[index].map((value: number, i: number) => [i, value + index * offset]) // Crea pares de [x, y] para Highcharts
+        }));
+        const options: Options = {
+          chart: {
+            renderTo: 'eeg',
+            type: 'line',
+            zooming: {
+              type: 'x'
+            },
+            height: 800
           },
-          height: 800
-        },
-        title: {
-          text: 'Visualización de Datos EEG Normalizados'
-        },
-        xAxis: {
           title: {
-            text: 'Número de Muestra'
-          }
-        },
-        yAxis: {
-          title: {
-            text: 'Amplitud (µV)'
+            text: 'Visualización de Datos EEG Normalizados'
           },
-          labels: {
-            formatter: function () {
-              const index = Math.floor((this.value as number) / offset);
-              return nombres_canales[index] || '';
+          xAxis: {
+            title: {
+              text: 'Número de Muestra'
             }
-          }
-        },
-        tooltip: {
-          shared: true
-        },
-        series: series as Highcharts.SeriesOptionsType[]
-      };
-      Highcharts.chart(options);
+          },
+          yAxis: {
+            title: {
+              text: 'Amplitud (µV)'
+            }/*,
+            labels: {
+              formatter: function () {
+                const index = Math.floor((this.value as number) / offset);
+                return nombres_canales[index] || '';
+              }
+            } */
+          },
+          tooltip: {
+            shared: true
+          },
+          //series: series as Highcharts.SeriesOptionsType[]
+          series: series
+        };
+        Highcharts.chart(options);
+    } catch (error) {
+      console.error('Error al procesar los datos EEG normalizados:', error);
     }
+  }
   
   procesarYMostrarDatosPSD(dataPSD: any): void {
     // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
