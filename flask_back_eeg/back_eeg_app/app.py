@@ -68,8 +68,23 @@ def health():
 def login():
     """
     Endpoint for user login.
-    Expects a JSON with 'username' and 'password'.
+    Requires a JSON with 'username' and 'password'.
     If the credentials are correct and the user is approved, a JWT access token is returned.
+    ·Parameters:
+        username: str - The username of the user.
+        contraseña: str - The password of the user.
+    ·Responses:
+        200: If the login was successful and the user is approved.
+        400: If the JSON, username, or password were not provided.
+        401: If the credentials are incorrect.
+        403: If the user is not approved.
+        500: If an internal server error occurred.
+    ·Usage example:
+        POST /login
+        {
+            "username": "user",
+            "contraseña": "password"
+        }
     """
     try:
         if not request.is_json:
@@ -102,8 +117,20 @@ def login():
 def solicitar_cambio_contrasena():
     """
     Endpoint to request a password change.
-    Expects a JSON with 'username'.
+    Requires a JSON with 'username'.
     If the user exists, an email is sent with a link to reset the password.
+    ·Parameters:
+        username: str - The username of the user.
+    ·Responses:
+        200: If the email was successfully sent.
+        400: If the JSON or username were not provided.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        POST /solicitar_cambio_contrasena
+        {
+            "username": "user"
+        }
     """
     try:
         datos = request.get_json()
@@ -131,8 +158,20 @@ def solicitar_cambio_contrasena():
 def resetear_contraseña(token):
     """
     Endpoint to reset the password.
-    Expects a JSON with 'new_password'.
+    Requires a JSON with 'nueva_contrasena' and a valid token in the URL.
     If the token is valid and has not expired, the user's password is updated.
+    ·Parameters:
+        token: str - The token for password reset.
+        nueva_contrasena: str - The new password.
+    ·Responses:
+        200: If the password was successfully updated.
+        400: If the token has expired or is invalid.
+        404: If the user was not found.
+    ·Usage example:
+        POST /resetear_contrasena/<token>
+        {
+            "nueva_contrasena": "new_password"
+        }
     """
     try:
         datos = request.get_json()
@@ -162,6 +201,13 @@ def obtener_usuario_actual():
     Endpoint to get the current user's information.
     Requires a JWT access token.
     If the token is valid, the user's information is returned.
+    ·Responses:
+        200: If the user's information was successfully retrieved.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /usuario/actual
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         # Obtain the user's identity
@@ -189,8 +235,31 @@ def obtener_usuario_actual():
 def crear_usuario():
     """
     Endpoint to create a new user.
-    Expects a JSON with 'username', 'password', 'nombre', 'apellidos', 'correo', 'aprobacion', and 'id_rol'.
+    Requires a JSON with 'username', 'contraseña', 'nombre', 'apellidos', 'correo', 'aprobacion', and 'id_rol'.
     If the data is valid and the role exists, a new user is created and saved to the database.
+    ·Parameters:
+        username: str - The username of the new user.
+        contraseña: str - The password of the new user.
+        nombre: str - The name of the new user.
+        apellidos: str - The last name of the new user.
+        correo: str - The email of the new user.
+        aprobacion: bool - The approval status of the new user. Default is False.
+        id_rol: int - The role id of the new user.
+    ·Responses:
+        201: If the user was successfully created.
+        400: If the data is insufficient or the role is invalid.
+        500: If an internal server error occurred.
+    ·Usage example:
+        POST /usuarios
+        {
+            "username": "user",
+            "contraseña": "password",
+            "nombre": "name",
+            "apellidos": "last name",
+            "correo": "email",
+            "aprobacion": false,
+            "id_rol": 1
+        }
     """
     try:
         datos = request.get_json()
@@ -228,6 +297,13 @@ def obtener_usuarios():
     Endpoint to retrieve all users.
     Requires a valid JWT access token.
     If the current user is an admin, all users except the current user are retrieved and returned.
+    ·Responses:
+        200: If the users' information was successfully retrieved.
+        403: If the current user is not an admin.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /usuarios
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         current_user = get_jwt_identity()
@@ -260,6 +336,16 @@ def obtener_usuario(id_usuario):
     Endpoint to retrieve a specific user by their ID.
     Requires a valid JWT access token.
     If the current user is an admin, the user with the given ID is retrieved and returned.
+    ·Parameters:
+        id_usuario: int - The ID of the user to retrieve.
+    ·Responses:
+        200: If the user's information was successfully retrieved.
+        403: If the current user is not an admin.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /usuarios/<id_usuario>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         current_user = get_jwt_identity()
@@ -290,6 +376,27 @@ def actualizar_usuario(id_usuario):
     Endpoint to update a specific user by their ID.
     Requires a valid JWT access token.
     If the user exists, their data is updated and saved to the database.
+    ·Parameters:
+        id_usuario: int - The ID of the user to update.
+    ·Request Body:
+        JSON object with fields 'nombre', 'apellidos', 'username', 'contraseña', 'correo', 'aprobacion', and 'id_rol'.
+    ·Responses:
+        200: If the user was successfully updated.
+        400: If the role is invalid.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        PUT /usuarios/<id_usuario>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+        Body: {
+            "nombre": "new name",
+            "apellidos": "new last name",
+            "username": "new username",
+            "contraseña": "new password",
+            "correo": "new email",
+            "aprobacion": true,
+            "id_rol": 2
+        }
     """
     try:
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -322,6 +429,21 @@ def cambiar_aprobacion_usuario(id_usuario):
     Endpoint to update the approval status of a specific user by their ID.
     Requires a valid JWT access token.
     If the user exists and the approval data is valid, the user's approval status is updated and saved to the database.
+    ·Parameters:
+        id_usuario: int - The ID of the user whose approval status is to be updated.
+    ·Request Body:
+        JSON object with field 'aprobacion' (boolean).
+    ·Responses:
+        200: If the user's approval status was successfully updated.
+        400: If the 'aprobacion' field is missing or the value is not valid.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        /usuarios/<id_usuario>/aprobacion
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+        Body: {
+            "aprobacion": true
+        }
     """
     try:
         datos = request.get_json()
@@ -346,6 +468,15 @@ def eliminar_usuario(id_usuario):
     Endpoint to delete a specific user by their ID.
     Requires a valid JWT access token.
     If the user exists, they are deleted from the database.
+    ·Parameters:
+        id_usuario: int - The ID of the user to delete.
+    ·Responses:
+        200: If the user was successfully deleted.
+        404: If the user was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /usuarios/<id_usuario>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -365,8 +496,23 @@ def eliminar_usuario(id_usuario):
 def crear_medicamento():
     """
     Endpoint to create a new medication.
+    Requires a valid JWT access token.
     Expects a JSON with 'nombre_comercial', 'principio_activo', and 'presentacion'.
     If the data is valid, a new medication is created and saved to the database.
+    ·Request Body:
+        JSON object with fields 'nombre_comercial', 'principio_activo', and 'presentacion'.
+    ·Responses:
+        201: If the medication was successfully created.
+        400: If the required data is missing.
+        500: If an internal server error occurred.
+    ·Usage example:
+        POST /medicamentos
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+        Body: {
+            "nombre_comercial": "Medication Name",
+            "principio_activo": "Active Ingredient",
+            "presentacion": "Presentation"
+        }
     """
     try:
         datos = request.get_json()
@@ -392,6 +538,12 @@ def obtener_medicamentos():
     Endpoint to retrieve all medications.
     Requires a valid JWT access token.
     All medications are retrieved and returned.
+    ·Responses:
+        200: If the medications were successfully retrieved.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /medicamentos
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         medicamentos = Medicamento.query.all()
@@ -414,6 +566,15 @@ def obtener_medicamento_por_id(id_medicamento):
     Endpoint to retrieve a specific medication by their ID.
     Requires a valid JWT access token.
     The medication with the given ID is retrieved and returned.
+    ·Parameters:
+        id_medicamento: int - The ID of the medication to retrieve.
+    ·Responses:
+        200: If the medication was successfully retrieved.
+        404: If the medication was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /medicamentos/<id_medicamento>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         medicamento = Medicamento.query.get_or_404(id_medicamento)
@@ -435,6 +596,22 @@ def actualizar_medicamento(id_medicamento):
     Endpoint to update a specific medication by their ID.
     Requires a valid JWT access token.
     If the medication exists, their data is updated and saved to the database.
+    ·Parameters:
+        id_medicamento: int - The ID of the medication to update.
+    ·Request Body:
+        JSON object with fields 'nombre_comercial', 'principio_activo', and 'presentacion'.
+    ·Responses:
+        200: If the medication was successfully updated.
+        404: If the medication was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        PUT /medicamentos/<id_medic>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+        Body: {
+            "nombre_comercial": "Updated Medication Name",
+            "principio_activo": "Updated Active Ingredient",
+            "presentacion": "Updated Presentation"
+        }
     """
     try:
         medicamento = Medicamento.query.get_or_404(id_medicamento)
@@ -457,6 +634,15 @@ def eliminar_medicamento(id_medicamento):
     Endpoint to delete a specific medication by their ID.
     Requires a valid JWT access token.
     If the medication exists, they are deleted from the database.
+    ·Parameters:
+        id_medicamento: int - The ID of the medication to delete.
+    ·Responses:
+        200: If the medication was successfully deleted.
+        404: If the medication was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /medicamentos/<id_medicamento>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         medicamento = Medicamento.query.get_or_404(id_medicamento)
@@ -467,6 +653,49 @@ def eliminar_medicamento(id_medicamento):
     except Exception as e:
         db.session.rollback()
         logging.error('Error al eliminar el medicamento %s: %s', id_medicamento, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
+@app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
+@jwt_required()
+def obtener_medicamentos_por_paciente(id_paciente):
+    """
+    Endpoint to retrieve medication details for a specific patient.
+    Requires a valid JWT access token.
+    Provides detailed medication information for all sessions, including the psychologist's notes.
+    ·Parameters:
+        id_paciente: int - The ID of the patient for whom the medication details are being retrieved.
+    ·Responses:
+        200: If the medication details were successfully retrieved. Returns a list of medication details and psychologist's notes.
+        404: If the patient was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /pacientes/<id_paciente>/medicamentos
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    try:
+        # Making sure the patient exists
+        paciente = Paciente.query.get_or_404(id_paciente)
+        # Obtain all the sessions for the patient
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        # List to store the medications and the psychologist's notes
+        medicamentos_detalle = []
+        # Go through each session to extract the medications and notes for each one
+        for sesion in sesiones:
+            fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
+            notas_psicologo = sesion.notas_psicologo
+            for medicamento in sesion.medicamentos:
+                medicamentos_detalle.append({
+                    'id_medicamento': medicamento.id_medicamento,
+                    'nombre_comercial': medicamento.nombre_comercial,
+                    'principio_activo': medicamento.principio_activo,
+                    'presentacion': medicamento.presentacion,
+                    'fecha_sesion': fecha_sesion,
+                    'notas_psicologo': notas_psicologo
+                })
+        logging.info('Medicamentos obtenidos exitosamente para el paciente %s', id_paciente)
+        return jsonify(medicamentos_detalle), 200
+    except Exception as e:
+        logging.error('Error al obtener medicamentos para el paciente %s: %s', id_paciente, e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
@@ -480,6 +709,33 @@ def crear_paciente_para_usuario(id_usuario):
     Expects a JSON with patient details including 'nombre', 'apellido_paterno', 'apellido_materno', 
     'fecha_nacimiento', 'id_genero', 'id_estado_civil', 'id_escolaridad', 'id_lateralidad', and 'id_ocupacion'.
     Validates user existence and saves the new patient to the database with optional details like phone numbers, emails, and addresses.
+    ·Parameters:
+        id_usuario: int - The ID of the user for whom the patient is being created.
+    ·Request Body:
+        JSON object with fields 'nombre', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento', 'id_genero', 
+        'id_estado_civil', 'id_escolaridad', 'id_lateralidad', 'id_ocupacion', and optional fields 'telefonos', 
+        'correos_electronicos', and 'direcciones'.
+    ·Responses:
+        201: If the patient was successfully created.
+        404: If the user was not found.
+        400: If there was an error in the request.
+    ·Usage example:
+        POST /usuarios/<id_usuario>/pacientes
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+        Body: {
+            "nombre": "Patient Name",
+            "apellido_paterno": "Patient Last Name",
+            "apellido_materno": "Patient Second Last Name",
+            "fecha_nacimiento": "Patient Birthdate",
+            "id_genero": "Patient Gender ID",
+            "id_estado_civil": "Patient Civil Status ID",
+            "id_escolaridad": "Patient Education Level ID",
+            "id_lateralidad": "Patient Laterality ID",
+            "id_ocupacion": "Patient Occupation ID",
+            "telefonos": ["Patient Phone Number"],
+            "correos_electronicos": ["Patient Email"],
+            "direcciones": ["Patient Address"]
+        }
     """
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
@@ -527,6 +783,14 @@ def obtener_pacientes_por_usuario(id_usuario):
     Endpoint to retrieve all patients for a specific user.
     Requires a valid JWT access token.
     Retrieves detailed patient information including demographics, session count, and latest session notes.
+    ·Parameters:
+        id_usuario: int - The ID of the user for whom the patients are being retrieved.
+    ·Responses:
+        200: If the patients were successfully retrieved. Returns a list of patient objects.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /usuarios/<id_usuario>/pacientes
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         pacientes = Paciente.query.filter_by(id_usuario=id_usuario).all()
@@ -568,6 +832,15 @@ def obtener_detalles_paciente(id_paciente):
     Endpoint to retrieve detailed information for a specific patient.
     Requires a valid JWT access token.
     Returns comprehensive patient details including personal information, contacts (phone, email, address), and consent status.
+    ·Parameters:
+        id_paciente: int - The ID of the patient for whom the details are being retrieved.
+    ·Responses:
+        200: If the patient details were successfully retrieved. Returns a patient object.
+        404: If the patient was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /pacientes/<id_paciente>/detalles
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     try:
         paciente = Paciente.query.get_or_404(id_paciente)
@@ -607,121 +880,6 @@ def obtener_detalles_paciente(id_paciente):
         logging.error('Error al obtener detalles del paciente %s: %s', id_paciente, e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
-@app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
-@jwt_required()
-def obtener_eegs_por_sesion(id_sesion):
-    """
-    Endpoint to retrieve EEG data for a specific session.
-    Requires a valid JWT access token.
-    Fetches and returns raw and normalized EEG data along with session details and associated medications.
-    """
-    try:
-        # Search for the session for the given ID
-        sesion = Sesion.query.get_or_404(id_sesion)
-        # Search for the EEGs associated with the session
-        raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
-        normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
-        # Search for the medications associated with the session
-        medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
-        eegs_response = {
-            'detalle_sesion': {
-                'id_sesion': sesion.id_sesion,
-                'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
-                'estado_general': sesion.estado_general,
-                'estado_especifico': sesion.estado_especifico,
-                'resumen_sesion_actual': sesion.resumen_sesion_actual,
-                'notas_psicologo': sesion.notas_psicologo
-            },
-            'raw_eegs': [{
-                'id_eeg': eeg.id_eeg,
-                'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
-                'data': eeg.data
-            } for eeg in raw_eegs],
-            'normalized_eegs': [{
-                'id_eeg_procesado': eeg.id_eeg_procesado,
-                'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
-                'data_normalized': eeg.data_normalized,
-                'data_psd': eeg.data_psd
-            } for eeg in normalized_eegs]
-        }
-        logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
-        return jsonify(eegs_response), 200
-    except Exception as e:
-        logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
-        return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
-
-@app.route('/sesiones/<int:id_sesion>/paciente', methods=['GET'])
-@jwt_required()   
-def obtener_paciente_en_base_a_sesion(id_sesion):
-    """
-    Function to retrieve the patient associated with a specific session.
-    The function receives the session ID and returns the patient associated with that session.
-    """
-    sesion = Sesion.query.get_or_404(id_sesion)
-    paciente = Paciente.query.get_or_404(sesion.id_paciente)
-    return jsonify(paciente.id_paciente), 200
-
-@app.route('/sesiones/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
-@jwt_required()
-#@cross_origin()
-#@cross_origin(origins=['http://localhost:4200']) 
-def obtener_fechas_sesiones_por_paciente(id_paciente):
-    """
-    Endpoint to retrieve all session dates for a specific patient.
-    Requires a valid JWT access token.
-    Lists dates of all sessions conducted for the patient, ordered by the date of the session.
-    """
-    try:
-        # Making sure the patient exists
-        paciente = Paciente.query.get_or_404(id_paciente)
-        # Obtain all the sessions for the patient
-        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
-        # Extract the dates of the sessions
-        fechas_sesiones = [{
-            'id_sesion': sesion.id_sesion,
-            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
-        } for sesion in sesiones]
-        logging.info('Fechas de sesiones obtenidas exitosamente para el paciente %s', id_paciente)
-        # Return the dates of the sessions as a JSON response
-        return jsonify(fechas_sesiones), 200
-    except Exception as e:
-        logging.error('Error al obtener las fechas de las sesiones para el paciente %s: %s', id_paciente, e)
-        return jsonify({'mensaje': 'Error interno del servidor'}), 500
-
-@app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
-@jwt_required()
-def obtener_medicamentos_por_paciente(id_paciente):
-    """
-    Endpoint to retrieve medication details for a specific patient.
-    Requires a valid JWT access token.
-    Provides detailed medication information for all sessions, including the psychologist's notes.
-    """
-    try:
-        # Making sure the patient exists
-        paciente = Paciente.query.get_or_404(id_paciente)
-        # Obtain all the sessions for the patient
-        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
-        # List to store the medications and the psychologist's notes
-        medicamentos_detalle = []
-        # Go through each session to extract the medications and notes for each one
-        for sesion in sesiones:
-            fecha_sesion = sesion.fecha_consulta.strftime('%Y-%m-%d')
-            notas_psicologo = sesion.notas_psicologo
-            for medicamento in sesion.medicamentos:
-                medicamentos_detalle.append({
-                    'id_medicamento': medicamento.id_medicamento,
-                    'nombre_comercial': medicamento.nombre_comercial,
-                    'principio_activo': medicamento.principio_activo,
-                    'presentacion': medicamento.presentacion,
-                    'fecha_sesion': fecha_sesion,
-                    'notas_psicologo': notas_psicologo
-                })
-        logging.info('Medicamentos obtenidos exitosamente para el paciente %s', id_paciente)
-        return jsonify(medicamentos_detalle), 200
-    except Exception as e:
-        logging.error('Error al obtener medicamentos para el paciente %s: %s', id_paciente, e)
-        return jsonify({'mensaje': 'Error interno del servidor'}), 500
-
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
 @jwt_required()
 def actualizar_paciente_de_usuario(id_usuario, id_paciente):
@@ -730,6 +888,16 @@ def actualizar_paciente_de_usuario(id_usuario, id_paciente):
     Requires a valid JWT access token.
     Allows modification of patient's basic information and contacts (phone, email, address).
     Validates patient's existence and updates the information in the database.
+    ·Parameters:
+        id_usuario: int - The ID of the user who owns the patient record.
+        id_paciente: int - The ID of the patient whose details are being updated.
+    ·Responses:
+        200: If the patient details were successfully updated. Returns a success message.
+        400: If an error occurred while updating the patient details.
+        404: If the patient was not found or does not belong to the indicated user.
+    ·Usage example:
+        PUT /usuarios/<id_usuario>/pacientes/<id_paciente>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     # Verify if the user exists
     paciente = Paciente.query.filter_by(id_usuario=id_usuario, id_paciente=id_paciente).first()
@@ -865,6 +1033,16 @@ def actualizar_consentimiento(id_paciente):
     Endpoint to update consent status for a specific patient.
     Does not require JWT access as it might be used in contexts outside of user authentication.
     Expects a JSON with 'consentimiento' status. Updates or creates the patient's consent record.
+    ·Parameters:
+        id_paciente: int - The ID of the patient whose consent status is being updated.
+    ·Responses:
+        200: If the consent status was successfully updated. Returns a success message.
+        400: If consent data was not provided.
+        404: If the patient was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        PUT /pacientes/<id_paciente>/consentimiento
+        Headers: { "consentimiento": <CONSENT_STATUS> }
     """
     try:
         paciente = Paciente.query.get(id_paciente)
@@ -904,14 +1082,15 @@ def eliminar_paciente(id_usuario, id_paciente):
     Requires a valid JWT access token.
     Validates the patient's association with the user before deletion. Removes the patient and all related data from the database.
     ·Parameters:
-        id_usuario: int - The ID of the user.
-        id_paciente: int - The ID of the patient.
+        id_usuario: int - The ID of the user who owns the patient record.
+        id_paciente: int - The ID of the patient to be deleted.
     ·Responses:
-        200: If the patient was successfully deleted.
-        403: If the patient is not associated with the user.
+        200: If the patient was successfully deleted. Returns a success message.
+        403: If the patient is not associated with the user. Returns an error message.
         500: If an internal server error occurred.
     ·Usage example:
-        DELETE /usuarios/1/pacientes/2
+        DELETE /usuarios/<id_usuario>/pacientes/<id_paciente>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
     """
     paciente = Paciente.query.get_or_404(id_paciente)
     if paciente.id_usuario != id_usuario:
@@ -1086,6 +1265,114 @@ def crear_nueva_sesion():
             os.remove(path_temporal)
             logging.info('Archivo temporal eliminado')
 
+@app.route('/sesiones/<int:id_sesion>/eegs', methods=['GET'])
+@jwt_required()
+def obtener_eegs_por_sesion(id_sesion):
+    """
+    Endpoint to retrieve EEG data for a specific session.
+    Requires a valid JWT access token.
+    Fetches and returns raw and normalized EEG data along with session details and associated medications.
+    ·Parameters:
+        id_sesion: int - The ID of the session for which the EEG data is being retrieved.
+    ·Responses:
+        200: If the EEG data was successfully retrieved. Returns a dictionary containing session details and EEG data.
+        404: If the session was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /sesiones/<id_sesion>/eegs
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    try:
+        # Search for the session for the given ID
+        sesion = Sesion.query.get_or_404(id_sesion)
+        # Search for the EEGs associated with the session
+        raw_eegs = RawEEG.query.filter_by(id_sesion=id_sesion).all()
+        normalized_eegs = NormalizedEEG.query.filter_by(id_sesion=id_sesion).all()
+        # Search for the medications associated with the session
+        medicamentos = [medicamento.nombre_comercial for medicamento in sesion.medicamentos]
+        eegs_response = {
+            'detalle_sesion': {
+                'id_sesion': sesion.id_sesion,
+                'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
+                'estado_general': sesion.estado_general,
+                'estado_especifico': sesion.estado_especifico,
+                'resumen_sesion_actual': sesion.resumen_sesion_actual,
+                'notas_psicologo': sesion.notas_psicologo
+            },
+            'raw_eegs': [{
+                'id_eeg': eeg.id_eeg,
+                'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
+                'data': eeg.data
+            } for eeg in raw_eegs],
+            'normalized_eegs': [{
+                'id_eeg_procesado': eeg.id_eeg_procesado,
+                'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
+                'data_normalized': eeg.data_normalized,
+                'data_psd': eeg.data_psd
+            } for eeg in normalized_eegs]
+        }
+        logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
+        return jsonify(eegs_response), 200
+    except Exception as e:
+        logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
+        return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
+
+@app.route('/sesiones/<int:id_sesion>/paciente', methods=['GET'])
+@jwt_required()   
+def obtener_paciente_en_base_a_sesion(id_sesion):
+    """
+    Endpoint to retrieve the patient associated with a specific session.
+    Requires a valid JWT access token.
+    The function receives the session ID and returns the patient associated with that session.
+    ·Parameters:
+        id_sesion: int - The ID of the session for which the associated patient is being retrieved.
+    ·Responses:
+        200: If the patient was successfully retrieved. Returns the patient ID.
+        404: If the session or patient was not found.
+    ·Usage example:
+        GET /sesiones/<id_sesion>/paciente
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    sesion = Sesion.query.get_or_404(id_sesion)
+    paciente = Paciente.query.get_or_404(sesion.id_paciente)
+    return jsonify(paciente.id_paciente), 200
+
+@app.route('/sesiones/pacientes/<int:id_paciente>/sesiones/fechas', methods=['GET'])
+@jwt_required()
+#@cross_origin()
+#@cross_origin(origins=['http://localhost:4200']) 
+def obtener_fechas_sesiones_por_paciente(id_paciente):
+    """
+    Endpoint to retrieve all session dates for a specific patient.
+    Requires a valid JWT access token.
+    Lists dates of all sessions conducted for the patient, ordered by the date of the session.
+    ·Parameters:
+        id_paciente: int - The ID of the patient for whom the session dates are being retrieved.
+    ·Responses:
+        200: If the session dates were successfully retrieved. Returns a list of session IDs and dates.
+        404: If the patient was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        GET /sesiones/pacientes/<id_paciente>/sesiones/fechas
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    try:
+        # Making sure the patient exists
+        paciente = Paciente.query.get_or_404(id_paciente)
+        # Obtain all the sessions for the patient
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.asc()).all()
+        # Extract the dates of the sessions
+        fechas_sesiones = [{
+            'id_sesion': sesion.id_sesion,
+            'fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d')
+        } for sesion in sesiones]
+        logging.info('Fechas de sesiones obtenidas exitosamente para el paciente %s', id_paciente)
+        # Return the dates of the sessions as a JSON response
+        return jsonify(fechas_sesiones), 200
+    except Exception as e:
+        logging.error('Error al obtener las fechas de las sesiones para el paciente %s: %s', id_paciente, e)
+        return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
 @app.route('/sesiones/<int:id_sesion>/medicamentos', methods=['PUT'])
 @jwt_required()
 def actualizar_medicamentos_sesion(id_sesion):
@@ -1172,8 +1459,7 @@ def actualizar_notas_psicologo_sesion(id_sesion):
         return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
-
-
+################################################################### Errores #######################################################################
 # Handle the 404 error
 @app.errorhandler(Exception)
 def handle_exception(error):
