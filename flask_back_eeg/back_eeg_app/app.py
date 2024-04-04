@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, url_for
+from flask import Flask, jsonify, request, url_for, Response
 from flask_cors import CORS, cross_origin
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
@@ -1187,7 +1187,11 @@ def crear_nueva_sesion():
             nuevos_nombres = renombrar_canales(raw.ch_names)
             raw.rename_channels({old: new for old, new in zip(raw.ch_names, nuevos_nombres)})
             logging.info('Canales renombrados')
-            datos_eeg_crudos_json = json.dumps(raw.get_data().tolist())
+            data_eeg_with_channels = {
+                'names': nuevos_nombres,
+                'data': raw.get_data().tolist()
+                }
+            datos_eeg_crudos_json = json.dumps(data_eeg_with_channels)
             nuevo_raw_eeg = RawEEG(
                 id_sesion=nueva_sesion.id_sesion, 
                 fecha_hora_registro=datetime.now(timezone.utc), 
@@ -1233,7 +1237,12 @@ def crear_nueva_sesion():
                 for i, ch_name in enumerate(raw.ch_names)
             ]
             # At this point, the data is cleaned, filtered, ready for visualization and is ready to be stored in the database as a JSON object
-            datos_procesados_json = json.dumps(raw.get_data().tolist())  # Data cleaned and processed in JSON format
+            data_eeg_normalized_with_channels = {
+                'names': nuevos_nombres,
+                'data': raw.get_data().tolist()
+                }
+            
+            datos_procesados_json = json.dumps(data_eeg_normalized_with_channels)  # Data cleaned and processed in JSON format
             datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
             # When storing the data in the database, it is necessary to store the PSD data as well
             nuevo_normalized_eeg = NormalizedEEG(
@@ -1316,6 +1325,29 @@ def obtener_eegs_por_sesion(id_sesion):
     except Exception as e:
         logging.error('Error al obtener los EEGs de la sesión %s: %s', id_sesion, e)
         return jsonify({'error': 'Error al obtener los EEGs de la sesión'}), 500
+    
+def generar_datos_eeg(raw_eegs, normalized_eegs):
+    yield '{"detalle_sesion": {...},'  # Envía la parte inicial de tu JSON
+    yield '"raw_eegs": ['
+    for eeg in raw_eegs:
+        # Suponiendo que `eeg.data` es una cadena JSON de los datos EEG crudos
+        yield json.dumps({
+            'id_eeg': eeg.id_eeg,
+            'fecha_hora_registro': eeg.fecha_hora_registro.strftime('%Y-%m-%d %H:%M:%S'),
+            'data': eeg.data
+        }) + ','
+    yield '],'
+    yield '"normalized_eegs": ['
+    for eeg in normalized_eegs:
+        # Similar a raw_eegs, pero con los datos normalizados
+        yield json.dumps({
+            'id_eeg_procesado': eeg.id_eeg_procesado,
+            'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
+            'data_normalized': eeg.data_normalized,
+            'data_psd': eeg.data_psd
+        }) + ','
+    yield ']}'
+
 
 @app.route('/sesiones/<int:id_sesion>/paciente', methods=['GET'])
 @jwt_required()   
