@@ -28,8 +28,8 @@ const routes: Routes = [
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
-  { path: '**', redirectTo: '/login' },
   { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
+  { path: '**', redirectTo: '/login' },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 

@@ -30,23 +30,14 @@ export class UsuarioService {
   }
 
   obtenerUsuarios(): Observable<any[]> {
-    // Asegúrate de que 'Authorization' se agrega correctamente a los encabezados.
-    const access_token = localStorage.getItem('access_token');
-    if (!access_token) {
-      console.error('Error: Token de autenticación no encontrado.');
-      // Aquí podrías manejar el caso de que el token no exista,
-      // como redirigir al usuario a la página de inicio de sesión.
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${access_token}`
-    });
+    const headers = this.getHeaders();
     return this.http.get<any[]>(this.apiUrl, { headers });
   }
   
   cambiarAprobacionUsuario(idUsuario: number, aprobacion: boolean): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}/aprobacion`; // Asegúrate de que apiUrl esté definido correctamente
-    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
-    const body = { aprobacion }; // Cuerpo de la solicitud con la nueva aprobación
+    const url = `${this.apiUrl}/${idUsuario}/aprobacion`;
+    const headers = this.getHeaders();
+    const body = { aprobacion };
 
     // Realiza la solicitud PUT
     return this.http.put(url, body, { headers });
@@ -57,8 +48,8 @@ export class UsuarioService {
   }
 
   actualizarUsuario(idUsuario: number, usuario: any): Observable<any> {
-    const url = `${this.apiUrl}/${idUsuario}`; // Asegúrate de que apiUrl esté definido correctamente
-    const headers = this.getHeaders(); // Asegúrate de que los headers incluyan lo necesario (e.g., Content-Type, Authorization)
+    const url = `${this.apiUrl}/${idUsuario}`;
+    const headers = this.getHeaders();
 
     // Realiza la solicitud PUT
     return this.http.put(url, usuario, { headers });
