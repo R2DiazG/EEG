@@ -108,6 +108,7 @@ ngOnInit() {
     this.searchControl.valueChanges.subscribe((value) => {
       this.applyFilter(value || '');
     });
+    this.cargarMedicamentos();
   this.route.paramMap.subscribe(params => {
     console.log('ID de sesión:', params);
     this.idSesion = +params.get('id_sesion')!;
@@ -141,28 +142,39 @@ ngOnInit() {
   });
 }
 
-cargarMedicamentos() {
-  const idPaciente = this.idPaciente; 
-  if (idPaciente) {
-    this.medicamentoService.obtenerMedicamentosPorPaciente(idPaciente).subscribe({
-      next: (medicamentos) => {
-        console.log('Medicamentos para el paciente:', medicamentos);
-        this.dataSource.data = medicamentos;
-        this.dataSource.paginator = this.paginator; // Asegúrate de que esto se hace después de cargar los datos.
-        this.cdr.detectChanges(); // Informa a Angular para detectar los cambios y actualizar la vista.
-      },
-      error: (error) => {
-        console.error('Error al recuperar medicamentos para el paciente:', error);
-      }
-    });
-  } else {
-    console.error('ID de paciente no está disponible');
-  }
-}
-
 ngAfterViewInit() {
   this.dataSource.paginator = this.paginator;
 }
+
+/*
+cargarMedicamentos() {
+  this.medicamentoService.obtenerMedicamentos().subscribe({
+    next: (medicamentos) => {
+      this.dataSource.data = medicamentos;
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error al recuperar medicamentos:', error);
+    }
+  });
+}*/
+
+cargarMedicamentos() {
+  // Asumiendo que tienes un idPaciente disponible
+  const idPaciente = this.idPaciente; // Debes definir cómo obtienes este ID
+
+  this.medicamentoService.obtenerMedicamentosPorPaciente(idPaciente).subscribe({
+    next: (medicamentos) => {
+      console.log('Medicamentos para el paciente:', medicamentos);
+      this.dataSource.data = medicamentos;
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error al recuperar medicamentos para el paciente:', error);
+    }
+  });
+}
+
 
 applyFilter(value: string) {
   this.dataSource.filter = value.trim().toLowerCase();
@@ -170,6 +182,7 @@ applyFilter(value: string) {
     this.dataSource.paginator.firstPage();
   }
 }
+
 
 cargarDatosDeEeg(idSesion: number): void {
   this.eegService.obtenerEEGPorSesion(idSesion).subscribe({
