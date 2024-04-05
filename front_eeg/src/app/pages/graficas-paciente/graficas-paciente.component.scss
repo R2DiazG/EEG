@@ -1,3 +1,5 @@
+@import "@fortawesome/fontawesome-free/css/all.css";
+
 .container{
     display: flex;
     flex-direction: row;
@@ -17,6 +19,107 @@
       margin: 10px; // Margen reducido para pantallas pequeñas
       max-width: none;
     }
+
+    .headerButton{
+      display: flex !important;
+      justify-content: flex-end !important;
+      margin-left: 75%;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+  
+      input[type="search"] {
+        padding: 0.5rem;
+        margin-right: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.25rem;
+        width: 30%;
+      }
+    }
+
+    .fecha-consulta-seccion {
+      position: relative;
+      margin: 1rem;
+      select {
+        width: 100%;
+        padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
+        border: 1px solid #ddd; // Un borde gris claro
+        border-radius: 4px; // Bordes redondeados
+        appearance: none; // Esto elimina la flecha nativa del dropdown
+        background-color: #fff; // Fondo blanco
+        font-size: 16px; // Tamaño de la fuente a tu gusto
+    
+        // Ajusta el padding derecho para hacer espacio para el icono
+        padding-right: 40px; // Asegúrate de tener suficiente espacio para el icono
+    
+        &:focus {
+          outline: none;
+          border-color: #aaa; // Cambia el color del borde cuando está enfocado
+        }
+    
+        option {
+          color: #666; // Cambia el color del texto de las opciones
+        }
+        
+        option:disabled {
+          color: #999;
+        }
+      }
+    
+      // Agregar el icono de FontAwesome con una clase
+      .fa-sort-desc {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        pointer-events: none; // Asegura que el icono no interfiera con el clic en el select
+        transform: translateY(-50%);
+        font-size: 16px; // Ajusta el tamaño del icono según necesites
+        color: #333; // El color del icono
+      }
+    }    
+    
+    .search-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-radius: 20px; // Bordes redondeados para el contenedor de búsqueda
+      padding: 0.5rem 3rem; // Espaciado interno alrededor del input
+      margin-left: 2rem;
+      width: 100%; // Ancho completo para el contenedor de búsqueda
+    
+      .search-icon {
+        position: absolute;
+        left: 1rem; // Alinea el ícono de búsqueda dentro del padding del contenedor
+        color: #5F6368; // Color del ícono
+        font-size: 1rem; // Tamaño del ícono
+      }
+    
+      .search-input {
+        flex-grow: 1; // Permite que el input crezca para llenar el espacio
+        border: none; // Elimina el borde del input
+        outline: none; // Elimina el contorno cuando está enfocado
+        background-color: transparent; // Fondo transparente para el input
+        padding-left: 2.5rem; // Espacio para el ícono de búsqueda
+        height: 100%; // Altura para llenar el contenedor de búsqueda
+        border-radius: 20px; // Bordes redondeados para el input
+        border: solid #F1F3F4;
+        width: 100%;
+    
+        &::placeholder {
+          color: #5F6368; // Color para el placeholder
+        }
+    
+        &:focus {
+          // Estilos opcionales para cuando el input está enfocado
+          box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5); // Un sutil contorno azul alrededor del input
+        }
+      }
+    }
+
     .tab-menu {
       .tab {
         padding: 0.5rem 1rem;
@@ -37,60 +140,58 @@
         }
       }
     }
-  .search-box {
-  position: relative;
-  width: 100%; /* o la anchura que desees para tu barra de búsqueda */
-}
-
-input[type="search"] {
-  width: 100%;
-  padding: 10px;
-  padding-right: 40px; /* Hacer espacio para el ícono */
-}
 
 
-.space1{
-  height: .5rem;
-}
 
-.space{
-  height: 8rem;
-}
+// input[type="search"] {
+//   width: 100%;
+//   padding: 10px;
+//   padding-right: 40px; /* Hacer espacio para el ícono */
+// }
 
-.search-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  color: #aaa;
-}
 
-    .search-upload-section {
-      margin: 1rem 0;
+// .space1{
+//   height: .5rem;
+// }
+
+// .space{
+//   height: 8rem;
+// }
+
+// .search-icon {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   padding: 10px;
+//   color: #aaa;
+// }
+
+//     .search-upload-section {
+//       margin: 1rem 0;
   
-      input[type="search"] {
-        padding: 0.5rem;
-        margin-right: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 0.25rem;
-        width: 30%;
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+//       input[type="search"] {
+//         padding: 0.5rem;
+//         margin-right: 1rem;
+//         border: 1px solid #ccc;
+//         border-radius: 0.25rem;
+//         width: 30%;
+//       }
+//       .header {
+//         display: flex;
+//         justify-content: space-between;
+//         align-items: center;
+//         margin-bottom: 20px;
     
-        button {  
-          padding: 0.7rem;
-          border: 1px solid #ccc;
-          border-radius: 4px;      
-          &:hover {
-            background-color: #333;
-          }
-        }
-      }
-    }
+//         button {  
+//           padding: 0.7rem;
+//           border: 1px solid #ccc;
+//           border-radius: 4px;      
+//           &:hover {
+//             background-color: #333;
+//           }
+//         }
+//       }
+//     }
   
     .tab-content {
       border: 1px solid #ccc;

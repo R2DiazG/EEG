@@ -30,6 +30,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { DropMedicamentosDialogComponent } from './pages/drop-medicamentos-dialog/drop-medicamentos-dialog.component';
+import { CommonModule } from '@angular/common';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -47,7 +50,8 @@ import { MatInputModule } from '@angular/material/input';
     OlvideContraComponent,
     ListaPsicologosComponent,
     MedicamentosComponent,
-    CrearMedicamentoDialogComponent
+    CrearMedicamentoDialogComponent,
+    DropMedicamentosDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -62,7 +66,9 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    CommonModule,
+    NgSelectModule
   ],
   providers: [
     provideClientHydration(),

@@ -2,19 +2,19 @@
 <app-menu-lateral></app-menu-lateral>
 <div class="graphs-container">
     <h1>Visualizador de Electroencefalograma</h1>
-    <button (click)="regresar()">Regresar a lista de pacientes</button>
+    <button class="headerButton.regresar" (click)="regresar()">Regresar a lista de pacientes</button>
     <app-info-paciente [id_sesion]="idSesion"></app-info-paciente>
     <!--Consume crear_nueva_sesion()-->
-    <button (click)="addSession()">Agregar sesion</button>
-    <div class="search-upload-section">
-      <!-- Dropdown para seleccionar la fecha de sesión -->
+    <button class="headerButton.sesion" (click)="addSession()">Agregar sesion</button>
+    <div class="fecha-consulta-seccion">
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
         <option [value]="null" disabled selected>{{fechaSesion}}</option>
-          <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
-              {{ sesion.fecha_consulta }}
-          </option>
+        <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
+          {{ sesion.fecha_consulta }}
+        </option>
       </select>
-    </div>
+      <i class="fas fa-sort-desc" aria-hidden="true"></i>
+    </div>    
 
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('detailsSesion')" [class.active]="activeTab === 'detailsSesion'">Detalles de sesión</button>
@@ -41,7 +41,37 @@
         <div id="processed" style="width:100%; height:400px;"></div>
       </div>
       <div *ngIf="activeTab === 'meds'">
-        <h2>Medicamentos</h2>
+        <div class="header">
+            <h2>Medicamentos</h2>
+            <div class="search-container">
+              <i class="fas fa-search" aria-hidden="true"></i>
+              <input type="search" placeholder="Buscar medicamento" [formControl]="searchControl" class="search-input">
+            </div>
+        </div>
+            <br>
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            <!-- Columnas para medicamentos -->
+            <ng-container matColumnDef="nombre_comercial">
+              <th mat-header-cell *matHeaderCellDef> Nombre Comercial </th>
+              <td mat-cell *matCellDef="let element">{{element.nombre_comercial}}</td>
+            </ng-container>
+      
+            <ng-container matColumnDef="principio_activo">
+              <th mat-header-cell *matHeaderCellDef> Principio Activo </th>
+              <td mat-cell *matCellDef="let element">{{element.principio_activo}}</td>
+            </ng-container>
+      
+            <ng-container matColumnDef="presentacion">
+              <th mat-header-cell *matHeaderCellDef> Presentación </th>
+              <td mat-cell *matCellDef="let element">{{element.presentacion}}</td>
+            </ng-container>
+      
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          <br>
+          <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
         <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
       </div>
       <div *ngIf="activeTab === 'prob'">
