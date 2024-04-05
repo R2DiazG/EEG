@@ -418,10 +418,16 @@ onSesionChange() {
           console.log('Datos EEG:', response);
           // Asumiendo que quieres utilizar el primer EEG normalizado que encuentres:
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const primerEEGNormalizado = response.normalized_eegs[0];
+            const primerEEGNormalizado = response.normalized_eegs[0].data_normalized;
             // Aquí extraemos 'data_psd' del primer EEG normalizado encontrado
-            const dataPSD = primerEEGNormalizado.data_psd;
-            this.procesarYMostrarDatosPSD(dataPSD);
+            const dataPSDString = primerEEGNormalizado.data_psd;
+            try {
+              // Convierte la cadena JSON en un objeto/array JavaScript
+              const dataPSD = JSON.parse(dataPSDString);
+              this.procesarYMostrarDatosPSD(dataPSD);
+            } catch (error) {
+              console.error('Error al parsear los datos PSD:', error);
+            }
           } else {
             console.error('No se encontraron EEGs normalizados para esta sesión.');
           }
