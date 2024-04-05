@@ -49,6 +49,7 @@
             </div>
         </div>
             <br>
+           <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <!-- Columnas para medicamentos -->
             <ng-container matColumnDef="nombre_comercial">
@@ -76,8 +77,6 @@
           </table>
           <br>
           <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-
-        <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
       </div>
       <div *ngIf="activeTab === 'prob'">
         <h2>Contenido de Pre-diagnóstico</h2>
