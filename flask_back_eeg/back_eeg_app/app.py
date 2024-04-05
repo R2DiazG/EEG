@@ -655,7 +655,7 @@ def eliminar_medicamento(id_medicamento):
         logging.error('Error al eliminar el medicamento %s: %s', id_medicamento, e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
-@app.route('/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
+@app.route('/medicamentos/pacientes/<int:id_paciente>/medicamentos', methods=['GET'])
 @jwt_required()
 def obtener_medicamentos_por_paciente(id_paciente):
     """
