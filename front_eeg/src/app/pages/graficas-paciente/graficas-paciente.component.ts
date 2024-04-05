@@ -28,12 +28,22 @@ interface EEGData {
   data: number[][];
 }
 
-interface EEGDataPoints {
+interface EEGDataPoint {
+  x: number;
+  y: number;
+}
+
+interface EEGDataPSD {
   name: string;
-  data: number[];
+  data: EEGDataPoint[];
   pointStart: number;
   pointInterval: number;
 }
+
+interface EEGDataPSDArray {
+  channelsData: EEGDataPSD[];
+}
+
 
 @Component({
   selector: 'app-graficas-paciente',
@@ -418,7 +428,7 @@ onSesionChange() {
     }
   }
   
-  // Modificar la función cargarDatosEEG para que utilice la nueva interfaz EEGDataPSD
+  // Función para cargar los datos EEG y procesarlos para mostrarlos en Highcharts
   cargarDatosEEG(): void {
     console.log('cargarDatosEEG psd');
     if (this.idSesion) {
@@ -428,9 +438,9 @@ onSesionChange() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const dataPSDString = response.normalized_eegs[0].data_psd;
             try {
-              const dataPSD: EEGDataPoints = JSON.parse(dataPSDString);
-              console.log('Datos PSD en JSON:', dataPSD);
-              this.procesarYMostrarDatosPSD(dataPSD);
+              const dataPSDArray: EEGDataPSDArray = JSON.parse(dataPSDString);
+              console.log('Datos PSD en JSON:', dataPSDArray);
+              this.procesarYMostrarDatosPSD(dataPSDArray);
             } catch (error) {
               console.error('Error al parsear los datos PSD:', error);
             }
@@ -445,7 +455,8 @@ onSesionChange() {
     }
   }
 
-  procesarYMostrarDatosPSD(dataPSD: EEGDataPoints): void {
+  // Función para procesar los datos EEG y mostrarlos usando Highcharts
+  procesarYMostrarDatosPSD(dataPSDArray: EEGDataPSDArray): void {
     // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
     // [
     //   { name: "Canal 1", data: [...], pointStart: frecuenciaInicial, pointInterval: intervaloEntreFrecuencias },
@@ -453,12 +464,12 @@ onSesionChange() {
     //   ...
     // ]
     // Genera la serie de datos para Highcharts
-    const seriesData = dataPSD.data.map((value, index) => {
-      return [
-        dataPSD.pointStart + index * dataPSD.pointInterval, // x
-        value // y
-      ];
-    });
+    const series = dataPSDArray.channelsData.map(channelData => ({
+      name: channelData.name,
+      data: channelData.data.map(dp => [dp.x, dp.y]),
+      pointStart: channelData.pointStart,
+      pointInterval: channelData.pointInterval,
+    }));
     // Opciones para Highcharts
     const options: Options = {
       chart: {
@@ -499,10 +510,7 @@ onSesionChange() {
           }
         }
       },
-      series: [{
-        name: dataPSD.name,
-        data: seriesData
-      }]
+      series: series
     };
     Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
   }  
