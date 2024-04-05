@@ -459,20 +459,22 @@ onSesionChange() {
     // ]
     // Genera la serie de datos para Highcharts
     const series = dataPSDArray.channelsData.map(channelData => {
-      // Mapea los datos de cada canal para generar los puntos x e y
-      const dataWithXY = channelData.data.map((value, index) => {
-        return [
-          channelData.pointStart + index * channelData.pointInterval, // x
-          value // y
-        ];
+      // Convertir cada serie de datos EEG en un formato que Highcharts pueda entender
+      const series = dataPSDArray.channelsData.map((channelData) => {
+        // Convertir los datos en una serie de puntos x, y
+        const dataPoints = channelData.data.map((value, index) => {
+          return {
+            x: channelData.pointStart + index * channelData.pointInterval,
+            y: value
+          };
+        });
+        return {
+          name: channelData.name,
+          data: dataPoints,
+          pointStart: channelData.pointStart,
+          pointInterval: channelData.pointInterval
+        };
       });
-      return {
-        name: channelData.name,
-        data: dataWithXY,
-        pointStart: channelData.pointStart,
-        pointInterval: channelData.pointInterval,
-      };
-    });  
     // Opciones para Highcharts
     const options: Options = {
       chart: {
@@ -513,7 +515,7 @@ onSesionChange() {
           }
         }
       },
-      series: series
+      series: series as SeriesOptionsType[]
     };
     Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
   }  
