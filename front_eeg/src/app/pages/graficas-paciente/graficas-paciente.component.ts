@@ -432,7 +432,7 @@ onSesionChange() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const dataPSDString = response.normalized_eegs[0].data_psd;
             try {
-              const dataPSDArray: EEGDataPSDArray = JSON.parse(dataPSDString);
+              const dataPSDArray: EEGDataPSD[] = JSON.parse(dataPSDString);
               console.log('Datos PSD en JSON:', dataPSDArray);
               this.procesarYMostrarDatosPSD(dataPSDArray);
             } catch (error) {
@@ -450,31 +450,28 @@ onSesionChange() {
   }
 
   // Función para procesar los datos EEG y mostrarlos usando Highcharts
-  procesarYMostrarDatosPSD(dataPSDArray: EEGDataPSDArray): void {
+  procesarYMostrarDatosPSD(dataPSDArray: EEGDataPSD[]): void {
     // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
     // [
     //   { name: "Canal 1", data: [...], pointStart: frecuenciaInicial, pointInterval: intervaloEntreFrecuencias },
     //   { name: "Canal 2", data: [...], pointStart: frecuenciaInicial, pointInterval: intervaloEntreFrecuencias },
     //   ...
     // ]
-    // Genera la serie de datos para Highcharts
-    const series = dataPSDArray.channelsData.map(channelData => {
-      // Convertir cada serie de datos EEG en un formato que Highcharts pueda entender
-      const series = dataPSDArray.channelsData.map((channelData) => {
-        // Convertir los datos en una serie de puntos x, y
-        const dataPoints = channelData.data.map((value, index) => {
-          return {
-            x: channelData.pointStart + index * channelData.pointInterval,
-            y: value
-          };
-        });
-        return {
-          name: channelData.name,
-          data: dataPoints,
-          pointStart: channelData.pointStart,
-          pointInterval: channelData.pointInterval
-        };
-      });
+    // Transforma los datos PSD en series para Highcharts
+    const series = dataPSDArray.map((channelData) => {
+      // Mapea los datos de cada canal a un formato de puntos que Highcharts pueda entender
+      const dataPoints = channelData.data.map((value, index) => ({
+        x: channelData.pointStart + (index * channelData.pointInterval),
+        y: value
+      }));
+      // Devuelve un objeto que corresponde a la estructura de serie de Highcharts
+      return {
+        name: channelData.name,
+        data: dataPoints,
+        pointStart: channelData.pointStart, // Esto se coloca fuera del map de los datos
+        pointInterval: channelData.pointInterval // Esto también se coloca fuera
+      };
+    });
     // Opciones para Highcharts
     const options: Options = {
       chart: {
