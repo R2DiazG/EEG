@@ -266,10 +266,18 @@ this.route.paramMap.subscribe(params => {
     }
   }
 
+  
   procesarYMostrarDatosNormalizedEEG(dataNormalizedString: any): void {
     try {
+        interface EEGData {
+          names: string[];
+          data: number[][];
+        }
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
-        const dataNormalizedObj = JSON.parse(dataNormalizedString);
+        let dataNormalizedObj: EEGData = JSON.parse(dataNormalizedString);
+        console.log('Datos EEG normalizados:', dataNormalizedObj.names);
+        console.log('Datos EEG normalizados:', dataNormalizedObj.data);
+        //const dataNormalizedObj = JSON.parse(dataNormalizedString);
         const { names, data } = dataNormalizedObj;
         // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
         const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
