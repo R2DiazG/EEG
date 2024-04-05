@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
@@ -8,6 +8,14 @@ import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { Observable } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { FormControl } from '@angular/forms';
+import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component';
+import { id } from 'date-fns/locale';
+import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 
 interface SeriesOptions {
   name: string;
@@ -27,10 +35,11 @@ interface EEGData {
 })
 
 export class GraficasPacienteComponent implements OnInit {
+  //Sesion actual
   activeTab: string = 'detailsSesion'; // Tab activa por defecto
   idSesion!: number; // Declarar idSesion como propiedad del componente
   sesiones: any[] = []; // Almacenará las fechas de las sesiones
-  selectedSesionId: number | null = null;
+  selectedSesionId!: number;
   idPaciente!: number;
   fechaSesion!: string;
 
@@ -39,11 +48,22 @@ export class GraficasPacienteComponent implements OnInit {
   estado_especifico!: string;
   resumen_sesion_actual!: string;
 
+  //Medicamentos
+  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion'];
+  dataSource = new MatTableDataSource<any>([]);
+  searchControl = new FormControl('');
+  selectedMedicamentos: any[] = [];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   constructor(
     private eegService: EegService,
     private route: ActivatedRoute,
+    private medicamentoService: MedicamentoService,
     private pacienteService: PacienteService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    public dialog: MatDialog
   ) {}
 /*
   ngOnInit() {
@@ -77,8 +97,11 @@ export class GraficasPacienteComponent implements OnInit {
   }
 */
 
-
 ngOnInit() {
+  this.cargarMedicamentos();
+    this.searchControl.valueChanges.subscribe((value) => {
+      this.applyFilter(value || '');
+    });
   this.route.paramMap.subscribe(params => {
     console.log('ID de sesión:', params);
     this.idSesion = +params.get('id_sesion')!;
@@ -111,6 +134,30 @@ ngOnInit() {
   });
 }
 
+ngAfterViewInit() {
+  this.dataSource.paginator = this.paginator;
+}
+
+cargarMedicamentos() {
+  this.medicamentoService.obtenerMedicamentos().subscribe({
+    next: (medicamentos) => {
+      this.dataSource.data = medicamentos;
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error al recuperar medicamentos:', error);
+    }
+  });
+}
+
+applyFilter(value: string) {
+  this.dataSource.filter = value.trim().toLowerCase();
+  if (this.dataSource.paginator) {
+    this.dataSource.paginator.firstPage();
+  }
+}
+
+
 cargarDatosDeEeg(idSesion: number): void {
   this.eegService.obtenerEEGPorSesion(idSesion).subscribe({
     next: (datosEeg) => {
@@ -128,7 +175,6 @@ cargarDatosDeEeg(idSesion: number): void {
     error: (error) => console.error('Error al obtener datos de EEG:', error)
   });
 }
-
 
   obtenerPacienteEnBaseASesion(idSesion: number): Observable<any> {
     return this.eegService.obtener_paciente_en_base_a_sesion(idSesion);
@@ -179,11 +225,12 @@ this.route.paramMap.subscribe(params => {
     });
   }
 */
-  onSesionChange() {
-    // Aquí puedes hacer lo que necesites cuando el usuario cambie la selección del dropdown
-    console.log('Sesión seleccionada:', this.selectedSesionId);
-    // Por ejemplo, cargar datos de la sesión seleccionada
+onSesionChange() {
+  console.log('Sesión seleccionada:', this.selectedSesionId);
+  if (this.selectedSesionId != null) {
+    this.router.navigateByUrl(`/graficas-paciente/${this.selectedSesionId}`);
   }
+}
 
   addSession(): void {
     console.log('ID de paciente:', this.idPaciente);
@@ -195,6 +242,21 @@ this.route.paramMap.subscribe(params => {
     }
   }
 
+  addMedication(): void {
+    const dialogRef = this.dialog.open(DropMedicamentosDialogComponent, {
+      width: '500px',
+      data: { selectedMedicamentos: this.selectedMedicamentos }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Medicamentos seleccionados:', result);
+        this.selectedMedicamentos = result; // Asume que deseas actualizar la lista existente
+        this.cargarMedicamentos();
+      }
+    });
+  }
+  
   regresar(){
     this.router.navigate(['/lista-pacientes']);
   }
@@ -273,7 +335,7 @@ this.route.paramMap.subscribe(params => {
 
   procesarYMostrarDatosNormalizedEEG(dataNormalizedString: EEGData): void {
     try {
-        
+      console.log('Datos EEG normalizados:', dataNormalizedString);
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
         console.log('Datos EEG normalizados:', dataNormalizedString.names);
         console.log('Datos EEG normalizados:', dataNormalizedString.data);
@@ -415,6 +477,7 @@ this.route.paramMap.subscribe(params => {
     Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
   }  
 }
+
 
   /*
   activeTab: string = 'contentEEG'; // Default active tab

@@ -1,0 +1,44 @@
+:host {
+    display: block;
+    padding: 20px;
+  }
+  
+  ng-select {
+    width: 100%;
+    margin-bottom: 20px;
+  
+    .ng-select-container {
+      border-radius: 4px;
+    }
+  
+    .ng-value {
+      background-color: #e4e4e4;
+      display: inline-block;
+      margin: 0 10px 0 0;
+      padding: 3px 10px;
+      border-radius: 15px;
+    }
+  
+    .ng-input input {
+      width: 100%;
+      padding: 8px;
+    }
+  
+    .ng-option {
+      padding: 10px;
+      &:hover {
+        background-color: #f5f5f5;
+      }
+    }
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  
+    button {
+      margin-left: 20px;
+    }
+  }
+  
