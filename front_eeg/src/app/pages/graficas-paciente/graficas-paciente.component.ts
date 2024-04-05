@@ -49,7 +49,7 @@ export class GraficasPacienteComponent implements OnInit {
   resumen_sesion_actual!: string;
 
   //Medicamentos
-  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion'];
+  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion'];
   dataSource = new MatTableDataSource<any>([]);
   searchControl = new FormControl('');
   selectedMedicamentos: any[] = [];
@@ -157,6 +157,7 @@ cargarMedicamentos() {
 
   this.medicamentoService.obtenerMedicamentosPorPaciente(idPaciente).subscribe({
     next: (medicamentos) => {
+      console.log('Medicamentos para el paciente:', medicamentos);
       this.dataSource.data = medicamentos;
       this.cdr.detectChanges();
     },
@@ -327,27 +328,6 @@ onSesionChange() {
       console.error('ID de sesión es nulo');
     }
   }
-  
-  cargarDatosEEG(): void {
-    if (this.idSesion) { // Verifica que idSesion no sea null
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-        next: (response: { normalized_eegs: string | any[]; }) => {
-          // Asumiendo que quieres utilizar el primer EEG normalizado que encuentres:
-          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const primerEEGNormalizado = response.normalized_eegs[0];
-            // Aquí extraemos 'data_psd' del primer EEG normalizado encontrado
-            const dataPSD = primerEEGNormalizado.data_psd;
-            this.procesarYMostrarDatosPSD(dataPSD);
-          } else {
-            console.error('No se encontraron EEGs normalizados para esta sesión.');
-          }
-        },
-        error: (error: any) => console.error('Error al obtener datos de EEG:', error)
-      });
-    } else {
-      console.error('ID de sesión es nulo');
-    }
-  }
 
   procesarYMostrarDatosNormalizedEEG(dataNormalizedString: EEGData): void {
     try {
@@ -430,6 +410,29 @@ onSesionChange() {
     }
   }
   
+  cargarDatosEEG(): void {
+    console.log('cargarDatosEEG psd')
+    if (this.idSesion) { // Verifica que idSesion no sea null
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response: { normalized_eegs: string | any[]; }) => {
+          console.log('Datos EEG:', response);
+          // Asumiendo que quieres utilizar el primer EEG normalizado que encuentres:
+          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+            const primerEEGNormalizado = response.normalized_eegs[0];
+            // Aquí extraemos 'data_psd' del primer EEG normalizado encontrado
+            const dataPSD = primerEEGNormalizado.data_psd;
+            this.procesarYMostrarDatosPSD(dataPSD);
+          } else {
+            console.error('No se encontraron EEGs normalizados para esta sesión.');
+          }
+        },
+        error: (error: any) => console.error('Error al obtener datos de EEG:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
+  }
+
   procesarYMostrarDatosPSD(dataPSD: any): void {
     // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
     // [
