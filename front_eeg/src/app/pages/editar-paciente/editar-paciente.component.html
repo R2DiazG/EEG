@@ -14,7 +14,7 @@
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
       <button class="tab" id="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
-      <button class="tab" id="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Historial del paciente</button>
+      <button class="tab" id="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button>
       <button class="tab" id="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Información del familiar</button>
       <button class="tab" id="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
     </div>
@@ -195,7 +195,7 @@
       <!-- Historial del paciente -->
       <div *ngIf="activeTab === 'historyPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Historial del paciente</h2>
+          <h2>Informacion clinica</h2>
           <div class="form-actions">
             <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>

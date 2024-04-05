@@ -6,8 +6,7 @@
       <div class="tab-menu">
         <button class="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
         <button class="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
-        <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Historial del paciente</button>
-        <button class="tab" (click)="setActiveTab('consult')" [class.active]="activeTab === 'consult'">Consulta</button>
+        <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button>
         <button class="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Información del familiar</button>
         <button class="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
       </div>
@@ -179,9 +178,9 @@
 
 
         <!-- Historial del paciente -->
-        <!--<div *ngIf="activeTab === 'historyPatient'">
-          <form (ngSubmit)="onSubmit()" ngForm>
-            <h2>Historial del paciente</h2>
+        <div *ngIf="activeTab === 'historyPatient'">
+          <!--<form (ngSubmit)="onSubmit()" ngForm>-->
+            <h2>IUnformacion clinica</h2>
             <div class="form-section">
               <label for="medicalHistory">Historial médico:</label>
               <textarea id="medicalHistory" name="medicalHistory"></textarea>
@@ -193,8 +192,8 @@
               <button (click)="addMedication()">Agregar medicamentos</button>
             </div>
             <button type="save">Guardar</button>
-          </form>
-        </div>-->
+          <!--</form>-->
+        </div>
 
         <!-- Información del familiar -->
         <div *ngIf="activeTab === 'infoFamily'">
