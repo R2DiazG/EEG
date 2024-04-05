@@ -424,6 +424,7 @@ onSesionChange() {
             try {
               // Convierte la cadena JSON en un objeto/array JavaScript
               const dataPSD = JSON.parse(dataPSDString);
+              console.log('Datos PSD en JSON:', dataPSD);
               this.procesarYMostrarDatosPSD(dataPSD);
             } catch (error) {
               console.error('Error al parsear los datos PSD:', error);
