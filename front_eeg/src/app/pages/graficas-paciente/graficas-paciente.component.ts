@@ -15,6 +15,11 @@ interface SeriesOptions {
   yAxis: number;
 }
 
+interface EEGData {
+  names: string[];
+  data: number[][];
+}
+
 @Component({
   selector: 'app-graficas-paciente',
   templateUrl: './graficas-paciente.component.html',
@@ -266,13 +271,9 @@ this.route.paramMap.subscribe(params => {
     }
   }
 
-  
   procesarYMostrarDatosNormalizedEEG(dataNormalizedString: any): void {
     try {
-        interface EEGData {
-          names: string[];
-          data: number[][];
-        }
+        
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
         let dataNormalizedObj: EEGData = JSON.parse(dataNormalizedString);
         console.log('Datos EEG normalizados:', dataNormalizedObj.names);
