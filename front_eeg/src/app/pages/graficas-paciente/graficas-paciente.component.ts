@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
-import { Options } from 'highcharts';
+import { Options, SeriesOptionsType } from 'highcharts';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
@@ -271,23 +271,26 @@ this.route.paramMap.subscribe(params => {
     }
   }
 
-  procesarYMostrarDatosNormalizedEEG(dataNormalizedString: any): void {
+  procesarYMostrarDatosNormalizedEEG(dataNormalizedString: EEGData): void {
     try {
         
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
-        let dataNormalizedObj: EEGData = JSON.parse(dataNormalizedString);
-        console.log('Datos EEG normalizados:', dataNormalizedObj.names);
-        console.log('Datos EEG normalizados:', dataNormalizedObj.data);
+        console.log('Datos EEG normalizados:', dataNormalizedString.names);
+        console.log('Datos EEG normalizados:', dataNormalizedString.data);
         //const dataNormalizedObj = JSON.parse(dataNormalizedString);
-        const { names, data } = dataNormalizedObj;
+        const { names, data } = dataNormalizedString;
         // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
         const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
         // Aplica el offset a cada serie de datos
         // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
-        const series = names.map((name: string, index: number) => ({
-          name,
-          data: data[index].map((value: number, i: number) => [i, value + index * offset]) // Crea pares de [x, y] para Highcharts
-        }));
+        const series: SeriesOptionsType[] = names.map((name: string, index: number) => {
+          // Asegúrate de que data[index] es transformado a un formato que Highcharts pueda entender, es decir, un arreglo de [x, y]
+          return {
+            type: 'line', // O el tipo de serie que necesites
+            name,
+            data: data[index].map((value: number, i: number): [number, number] => [i, value + index * offset])
+          };
+        });
         const options: Options = {
           chart: {
             renderTo: 'eeg',
