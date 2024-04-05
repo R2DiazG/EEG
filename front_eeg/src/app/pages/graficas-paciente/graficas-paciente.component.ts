@@ -98,10 +98,10 @@ export class GraficasPacienteComponent implements OnInit {
 */
 
 ngOnInit() {
-  this.cargarMedicamentos();
     this.searchControl.valueChanges.subscribe((value) => {
       this.applyFilter(value || '');
     });
+    this.cargarMedicamentos();
   this.route.paramMap.subscribe(params => {
     console.log('ID de sesión:', params);
     this.idSesion = +params.get('id_sesion')!;
@@ -117,6 +117,7 @@ ngOnInit() {
               this.cargarFechasSesionesPorPaciente(this.idPaciente);
               this.cargarDatosNormalizedEEG();
               this.cargarDatosEEG();
+              this.cargarMedicamentos();
               // Cargar datos de la sesión de EEG directamente aquí
               this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
             } else {

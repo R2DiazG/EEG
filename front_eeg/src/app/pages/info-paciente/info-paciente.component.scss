@@ -1,9 +1,10 @@
 /* patient-info.component.scss */
 .patient-info-container {
-    border: 1px solid #000; // Un borde simple para delimitar el contenedor
     padding: 1rem; // Espaciado interno
     margin-bottom: 1rem;
     margin-top: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   
     .patient-basic-info {
       display: grid;
