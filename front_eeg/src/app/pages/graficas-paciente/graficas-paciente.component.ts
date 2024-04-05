@@ -138,6 +138,7 @@ ngAfterViewInit() {
   this.dataSource.paginator = this.paginator;
 }
 
+/*
 cargarMedicamentos() {
   this.medicamentoService.obtenerMedicamentos().subscribe({
     next: (medicamentos) => {
@@ -148,7 +149,23 @@ cargarMedicamentos() {
       console.error('Error al recuperar medicamentos:', error);
     }
   });
+}*/
+
+cargarMedicamentos() {
+  // Asumiendo que tienes un idPaciente disponible
+  const idPaciente = this.idPaciente; // Debes definir cómo obtienes este ID
+
+  this.medicamentoService.obtenerMedicamentosPorPaciente(idPaciente).subscribe({
+    next: (medicamentos) => {
+      this.dataSource.data = medicamentos;
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error al recuperar medicamentos para el paciente:', error);
+    }
+  });
 }
+
 
 applyFilter(value: string) {
   this.dataSource.filter = value.trim().toLowerCase();
@@ -311,7 +328,6 @@ onSesionChange() {
     }
   }
   
-  
   cargarDatosEEG(): void {
     if (this.idSesion) { // Verifica que idSesion no sea null
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
@@ -339,47 +355,26 @@ onSesionChange() {
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
         console.log('Datos EEG normalizados:', dataNormalizedString.names);
         console.log('Datos EEG normalizados:', dataNormalizedString.data);
-        //const dataNormalizedObj = JSON.parse(dataNormalizedString);
         const { names, data } = dataNormalizedString;
-        // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
-        /*const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
-        // Aplica el offset a cada serie de datos
-        // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
-        const series: SeriesOptionsType[] = names.map((name: string, index: number) => {
-          // Asegúrate de que data[index] es transformado a un formato que Highcharts pueda entender, es decir, un arreglo de [x, y] 
-          return {
-            type: 'line', // O el tipo de serie que necesites
-            name,
-            data: data[index].map((value: number, i: number): [number, number] => [i, value + index * offset])
-          };
-        });*/
         let maxAmplitude = Number.MIN_SAFE_INTEGER;
         let minAmplitude = Number.MAX_SAFE_INTEGER;
-
         data.forEach(channelData => {
           maxAmplitude = Math.max(maxAmplitude, ...channelData);
           minAmplitude = Math.min(minAmplitude, ...channelData);
-          /*
-          const channelMax = Math.max(...channelData);
-          const channelMin = Math.min(...channelData);
-          if (channelMax > maxAmplitude) maxAmplitude = channelMax;
-          if (channelMin < minAmplitude) minAmplitude = channelMin;
-          */
         });
-
         const amplitudeRange = maxAmplitude - minAmplitude;
-        const offset = amplitudeRange * 0.2; // Un 10% del rango como desplazamiento
-
+        const offset = amplitudeRange * 0.5; // Un 10% del rango como desplazamiento
+        const extraPadding = 0.2;
         // Transforma los datos en series para Highcharts
         const series = names.map((name, index) => {
           return {
-            //type: 'line',
-            //name,
             name: name,
-            //data: data[index].map((value, i) => [i, value]), // + index * offset]),
             data: data[index].map((point, i) => [i, point + offset * index]),
           };
         });
+        // Determina el rango mínimo y máximo para el eje Y basado en los desplazamientos aplicados
+        let minOffsetApplied = Math.min(...series.map(serie => Math.min(...serie.data.map(point => point[1]))));
+        let maxOffsetApplied = Math.max(...series.map(serie => Math.max(...serie.data.map(point => point[1]))));
         const options: Options = {
           chart: {
             renderTo: 'eeg',
@@ -400,25 +395,34 @@ onSesionChange() {
           yAxis: {
             title: {
               text: 'Amplitud (µV)'
-            },/*,
-            labels: {
+            },
+            labels: {/*
               formatter: function () {
                 const index = Math.floor((this.value as number) / offset);
                 return names[index] || '';
+              }*/
+              formatter: function () {
+                // Calcula el índice basado en la posición actual y el desplazamiento fijo
+                // Esto asume que los canales están igualmente espaciados y el primer canal está en '0'
+                const index = Math.round((this.value as number) / offset);
+                // Devuelve el nombre del canal o un string vacío si el índice es inválido
+                return names[index] || '';
               }
-            }*/
-            /*min: minAmplitude - offset,
-            max: maxAmplitude + offset * (names.length - 1),*/
-            //tickInterval: 1e-7, // Establece un intervalo de tick apropiado
-            //minRange: 1e-6, // Establece el rango mínimo del eje Y
+            },
+            /*
+            min: minOffsetApplied,
+            max: maxOffsetApplied,
             tickInterval: 1e-6, // Establece un intervalo de tick apropiado
+            */
+            tickInterval: offset, // Establece un intervalo de tick apropiado
+            min: -extraPadding,
+            max: offset * (names.length-1) + extraPadding, // Ajusta el rango máximo según la cantidad de canales
           },
           tooltip: {
             shared: true,
             valueDecimals: 8
           },
           series: series as Highcharts.SeriesOptionsType[]
-          //series: series
         };
         Highcharts.chart(options);
     } catch (error) {

@@ -34,6 +34,11 @@ export class MedicamentoService {
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
+  obtenerMedicamentosPorPaciente(idPaciente: number): Observable<any[]> {
+    const url = `${this.apiUrl}/pacientes/${idPaciente}/medicamentos`; // URL específica para el nuevo endpoint
+    return this.http.get<any[]>(url, { headers: this.getHeaders() });
+  }
+
   actualizarMedicamento(idMedicamento: number, medicamento: any): Observable<any> {
     const url = `${this.apiUrl}/${idMedicamento}`;
     return this.http.put(url, medicamento, { headers: this.getHeaders() });
