@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
-import { Options } from 'highcharts';
+import { Options, SeriesOptionsType } from 'highcharts';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
@@ -21,6 +21,11 @@ interface SeriesOptions {
   name: string;
   data: number[];
   yAxis: number;
+}
+
+interface EEGData {
+  names: string[];
+  data: number[][];
 }
 
 @Component({
@@ -328,20 +333,53 @@ onSesionChange() {
     }
   }
 
-  procesarYMostrarDatosNormalizedEEG(dataNormalizedString: any): void {
+  procesarYMostrarDatosNormalizedEEG(dataNormalizedString: EEGData): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalizedString);
         // Parsea la cadena JSON para convertirla en un objeto JavaScript
-        const dataNormalizedObj = JSON.parse(dataNormalizedString);
-        const { names, data } = dataNormalizedObj;
+        console.log('Datos EEG normalizados:', dataNormalizedString.names);
+        console.log('Datos EEG normalizados:', dataNormalizedString.data);
+        //const dataNormalizedObj = JSON.parse(dataNormalizedString);
+        const { names, data } = dataNormalizedString;
         // Asumiendo que 'data' es un array de series donde cada serie tiene { name, data }
-        const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
+        /*const offset = 50; // Se ajusta si es necesario separar los canales mas o menos visualmente.
         // Aplica el offset a cada serie de datos
         // Transforma los datos en series para Highcharts, aplicando un offset a cada canal
-        const series = names.map((name: string, index: number) => ({
-          name,
-          data: data[index].map((value: number, i: number) => [i, value + index * offset]) // Crea pares de [x, y] para Highcharts
-        }));
+        const series: SeriesOptionsType[] = names.map((name: string, index: number) => {
+          // Asegúrate de que data[index] es transformado a un formato que Highcharts pueda entender, es decir, un arreglo de [x, y] 
+          return {
+            type: 'line', // O el tipo de serie que necesites
+            name,
+            data: data[index].map((value: number, i: number): [number, number] => [i, value + index * offset])
+          };
+        });*/
+        let maxAmplitude = Number.MIN_SAFE_INTEGER;
+        let minAmplitude = Number.MAX_SAFE_INTEGER;
+
+        data.forEach(channelData => {
+          maxAmplitude = Math.max(maxAmplitude, ...channelData);
+          minAmplitude = Math.min(minAmplitude, ...channelData);
+          /*
+          const channelMax = Math.max(...channelData);
+          const channelMin = Math.min(...channelData);
+          if (channelMax > maxAmplitude) maxAmplitude = channelMax;
+          if (channelMin < minAmplitude) minAmplitude = channelMin;
+          */
+        });
+
+        const amplitudeRange = maxAmplitude - minAmplitude;
+        const offset = amplitudeRange * 0.2; // Un 10% del rango como desplazamiento
+
+        // Transforma los datos en series para Highcharts
+        const series = names.map((name, index) => {
+          return {
+            //type: 'line',
+            //name,
+            name: name,
+            //data: data[index].map((value, i) => [i, value]), // + index * offset]),
+            data: data[index].map((point, i) => [i, point + offset * index]),
+          };
+        });
         const options: Options = {
           chart: {
             renderTo: 'eeg',
@@ -349,7 +387,7 @@ onSesionChange() {
             zooming: {
               type: 'x'
             },
-            height: 800
+            height: 1000
           },
           title: {
             text: 'Visualización de Datos EEG Normalizados'
@@ -362,19 +400,25 @@ onSesionChange() {
           yAxis: {
             title: {
               text: 'Amplitud (µV)'
-            }/*,
+            },/*,
             labels: {
               formatter: function () {
                 const index = Math.floor((this.value as number) / offset);
-                return nombres_canales[index] || '';
+                return names[index] || '';
               }
-            } */
+            }*/
+            /*min: minAmplitude - offset,
+            max: maxAmplitude + offset * (names.length - 1),*/
+            //tickInterval: 1e-7, // Establece un intervalo de tick apropiado
+            //minRange: 1e-6, // Establece el rango mínimo del eje Y
+            tickInterval: 1e-6, // Establece un intervalo de tick apropiado
           },
           tooltip: {
-            shared: true
+            shared: true,
+            valueDecimals: 8
           },
-          //series: series as Highcharts.SeriesOptionsType[]
-          series: series
+          series: series as Highcharts.SeriesOptionsType[]
+          //series: series
         };
         Highcharts.chart(options);
     } catch (error) {

@@ -431,3 +431,9 @@ sub= sub[["eeg_id"]].copy()
 sub = sub.merge(egg_t, on="eeg_id", how="left")
 sub.to_csv("submission.csv", index=False)
 sub.head()
+
+# Guardar modelo XGBoost
+xgb_model.save_model('modelo_xgb.json')
+
+# Guardar modelo Keras
+model_x.save('modelo_keras.h5')
