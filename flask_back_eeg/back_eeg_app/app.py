@@ -1543,6 +1543,40 @@ def actualizar_notas_psicologo_sesion(id_sesion):
         db.session.rollback()
         logging.error('Error inesperado: %s', str(e))
         return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
+
+@app.route('/pacientes/<int:id_paciente>/sesiones/<int:id_sesion>', methods=['DELETE'])
+@jwt_required()
+def eliminar_sesion(id_paciente, id_sesion):
+    """
+    Endpoint to delete a specific session for a patient.
+    Requires a valid JWT access token.
+    Verifies the session's association with the patient before deletion. Removes the session and all related EEG data from the database.
+    ·Parameters:
+        id_paciente: int - The ID of the patient who owns the session record.
+        id_sesion: int - The ID of the session to be deleted.
+    ·Responses:
+        200: If the session was successfully deleted. Returns a success message.
+        403: If the session is not associated with the patient. Returns an error message.
+        404: If the session or patient does not exist.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /pacientes/<id_paciente>/sesiones/<id_sesion>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    # Verify if the session exists and belongs to the patient
+    sesion = Sesion.query.filter_by(id_paciente=id_paciente, id_sesion=id_sesion).first()
+    if sesion is None:
+        return jsonify({'error': 'La sesión no existe o no pertenece al paciente indicado.'}), 404
+    try:
+        # Delete the session and its related data
+        db.session.delete(sesion)
+        db.session.commit()
+        logging.info('Sesión %s eliminada exitosamente para el paciente %s', id_sesion, id_paciente)
+        return jsonify({'mensaje': 'Sesión eliminada exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al eliminar la sesión %s para el paciente %s: %s', id_sesion, id_paciente, e)
+        return jsonify({'error': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################### Errores #######################################################################
