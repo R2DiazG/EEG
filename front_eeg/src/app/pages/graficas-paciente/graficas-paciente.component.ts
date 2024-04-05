@@ -28,14 +28,9 @@ interface EEGData {
   data: number[][];
 }
 
-interface EEGDataPoint {
-  x: number;
-  y: number;
-}
-
 interface EEGDataPSD {
   name: string;
-  data: EEGDataPoint[];
+  data: number[];
   pointStart: number;
   pointInterval: number;
 }
@@ -43,7 +38,6 @@ interface EEGDataPSD {
 interface EEGDataPSDArray {
   channelsData: EEGDataPSD[];
 }
-
 
 @Component({
   selector: 'app-graficas-paciente',
@@ -464,12 +458,21 @@ onSesionChange() {
     //   ...
     // ]
     // Genera la serie de datos para Highcharts
-    const series = dataPSDArray.channelsData.map(channelData => ({
-      name: channelData.name,
-      data: channelData.data.map(dp => [dp.x, dp.y]),
-      pointStart: channelData.pointStart,
-      pointInterval: channelData.pointInterval,
-    }));
+    const series = dataPSDArray.channelsData.map(channelData => {
+      // Mapea los datos de cada canal para generar los puntos x e y
+      const dataWithXY = channelData.data.map((value, index) => {
+        return [
+          channelData.pointStart + index * channelData.pointInterval, // x
+          value // y
+        ];
+      });
+      return {
+        name: channelData.name,
+        data: dataWithXY,
+        pointStart: channelData.pointStart,
+        pointInterval: channelData.pointInterval,
+      };
+    });  
     // Opciones para Highcharts
     const options: Options = {
       chart: {
