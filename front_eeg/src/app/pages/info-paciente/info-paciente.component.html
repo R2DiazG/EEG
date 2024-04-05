@@ -2,6 +2,8 @@
 <div *ngIf="paciente" class="patient-info-container">
   <div class="patient-basic-info">
     <span><strong>Nombre:</strong> {{ paciente.nombre }}</span>
+    <span><strong>Apellido:</strong> {{ paciente.apellido_paterno }}</span>
+    <span><strong>Apellido:</strong> {{ paciente.apellido_materno }}</span>
     <span><strong>Edad:</strong> {{ paciente.edad}}</span>
   </div>
   <div class="patient-clinical-info">

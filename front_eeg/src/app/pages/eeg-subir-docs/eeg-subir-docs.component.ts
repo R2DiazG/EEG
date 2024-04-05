@@ -101,8 +101,6 @@ export class EegSubirDocsComponent {
     this.location.back();
   }
 
-
-
   onUpload(): void {
     if (!this.selectedFile) {
       alert('Por favor, selecciona un archivo para subir.');
