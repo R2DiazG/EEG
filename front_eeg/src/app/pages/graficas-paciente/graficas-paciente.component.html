@@ -15,7 +15,6 @@
       </select>
       <i class="fas fa-sort-desc" aria-hidden="true"></i>
     </div>    
-
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('detailsSesion')" [class.active]="activeTab === 'detailsSesion'">Detalles de sesión</button>
       <button class="tab" (click)="setActiveTab('meds')" [class.active]="activeTab === 'meds'">Historial de medicamentos</button>
@@ -24,7 +23,17 @@
     <div class="tab-content">
       <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'detailsSesion'">
-        <h2>Contenido de EEG</h2>
+        <div class="header">
+          <h2>Detalle de sesion</h2>
+        <div class="form-actions">
+          <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
+            <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
+            <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
+            <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
+            <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
+        </button> 
+        </div>
+        </div>
         <div class="info-eeg">
             <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
             <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
@@ -32,7 +41,14 @@
             <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
             <div>
               <button (click)="addMedication()">Agregar medicamentos</button>
-              <button>Agregar notas del psicologo</button>
+              <div class="nota-psicologo-container">
+                <button class="button-agregar" (click)="onAgregarNotasClick()">Agregar notas del psicologo</button>
+
+                <div *ngIf="isAddingNote" class="nota-editor">
+                  <textarea class="nota-textarea" [(ngModel)]="notasPsicologo" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
+                  <button class="button-guardar" (click)="guardarNotasPsicologo()">Guardar Notas</button>
+                </div>
+              </div>
             </div>
         </div>
         <div class="space1"></div>
@@ -49,29 +65,25 @@
             </div>
         </div>
             <br>
-           <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
+          <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <!-- Columnas para medicamentos -->
             <ng-container matColumnDef="nombre_comercial">
               <th mat-header-cell *matHeaderCellDef> Nombre Comercial </th>
               <td mat-cell *matCellDef="let element">{{element.nombre_comercial}}</td>
             </ng-container>
-      
             <ng-container matColumnDef="principio_activo">
               <th mat-header-cell *matHeaderCellDef> Principio Activo </th>
               <td mat-cell *matCellDef="let element">{{element.principio_activo}}</td>
             </ng-container>
-      
             <ng-container matColumnDef="presentacion">
               <th mat-header-cell *matHeaderCellDef> Presentación </th>
               <td mat-cell *matCellDef="let element">{{element.presentacion}}</td>
             </ng-container>
-
             <ng-container matColumnDef="fecha_sesion">
               <th mat-header-cell *matHeaderCellDef> Fecha de la sesión</th>
               <td mat-cell *matCellDef="let element">{{element.fecha_sesion}}</td>
             </ng-container>
-      
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>

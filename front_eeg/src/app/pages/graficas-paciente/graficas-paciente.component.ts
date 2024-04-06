@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import * as Highcharts from 'highcharts';
 import { Router } from '@angular/router';
 import { Options, SeriesOptionsType } from 'highcharts';
 import { InfoPaciente } from '../../models/info-paciente.model';
@@ -16,7 +15,30 @@ import { MatDialog } from '@angular/material/dialog';
 import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component';
 import { id } from 'date-fns/locale';
 import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
+import * as Highcharts from 'highcharts/highstock';
+import More from 'highcharts/highcharts-more';
+import HC_stock from 'highcharts/modules/stock';
+import HC_exporting from 'highcharts/modules/exporting';
+import HC_exportData from 'highcharts/modules/export-data';
+import IndicatorsCore from 'highcharts/indicators/indicators-all';
+import DragPanes from 'highcharts/modules/drag-panes';
+import AnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
+import PriceIndicator from 'highcharts/modules/price-indicator';
+import FullScreen from 'highcharts/modules/full-screen';
+import StockTools from 'highcharts/modules/stock-tools';
 
+// Initialize modules
+/* More(Highcharts);
+HC_stock(Highcharts);
+HC_exporting(Highcharts);
+HC_exportData(Highcharts);
+IndicatorsCore(Highcharts);
+DragPanes(Highcharts);
+AnnotationsAdvanced(Highcharts);
+PriceIndicator(Highcharts);
+FullScreen(Highcharts);
+StockTools(Highcharts);
+ */
 interface SeriesOptions {
   name: string;
   data: number[];
@@ -53,11 +75,18 @@ export class GraficasPacienteComponent implements OnInit {
   selectedSesionId!: number;
   idPaciente!: number;
   fechaSesion!: string;
-
   fecha_consulta!: string;
   estado_general!: string;
   estado_especifico!: string;
   resumen_sesion_actual!: string;
+
+  // Notas del psicólogo
+  isAddingNote: boolean = false;
+  notasPsicologo: string = '';
+  
+  // Eliminar sesion
+  isConfirmDelete: boolean = false;
+  isDeleted: boolean = false;
 
   //Medicamentos
   displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion'];
@@ -76,8 +105,12 @@ export class GraficasPacienteComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public dialog: MatDialog
   ) {}
-/*
-  ngOnInit() {
+
+ngOnInit() {
+    this.searchControl.valueChanges.subscribe((value) => {
+      this.applyFilter(value || '');
+    });
+    this.cargarMedicamentos();
     this.route.paramMap.subscribe(params => {
       console.log('ID de sesión:', params);
       this.idSesion = +params.get('id_sesion')!;
@@ -89,9 +122,13 @@ export class GraficasPacienteComponent implements OnInit {
             if (paciente) {
               this.idPaciente = paciente;
               if (this.idPaciente !== null) {
+                console.log('Datos eeg', this.idPaciente);
                 this.cargarFechasSesionesPorPaciente(this.idPaciente);
                 this.cargarDatosNormalizedEEG();
                 this.cargarDatosEEG();
+                this.cargarMedicamentos();
+                // Cargar datos de la sesión de EEG directamente aquí
+                this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
               } else {
                 console.error('ID de paciente no encontrado para la sesión proporcionada.');
               }
@@ -105,45 +142,6 @@ export class GraficasPacienteComponent implements OnInit {
         console.error('ID de sesión no proporcionado');
       }
     });
-  }
-*/
-
-ngOnInit() {
-    this.searchControl.valueChanges.subscribe((value) => {
-      this.applyFilter(value || '');
-    });
-    this.cargarMedicamentos();
-  this.route.paramMap.subscribe(params => {
-    console.log('ID de sesión:', params);
-    this.idSesion = +params.get('id_sesion')!;
-    console.log('ID de sesión:', this.idSesion);
-    if (this.idSesion) {
-      this.obtenerPacienteEnBaseASesion(this.idSesion).subscribe({
-        next: (paciente) => {
-          console.log('Paciente:', paciente);
-          if (paciente) {
-            this.idPaciente = paciente;
-            if (this.idPaciente !== null) {
-              console.log('Datos eeg', this.idPaciente);
-              this.cargarFechasSesionesPorPaciente(this.idPaciente);
-              this.cargarDatosNormalizedEEG();
-              this.cargarDatosEEG();
-              this.cargarMedicamentos();
-              // Cargar datos de la sesión de EEG directamente aquí
-              this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
-            } else {
-              console.error('ID de paciente no encontrado para la sesión proporcionada.');
-            }
-          } else {
-            console.error('ID de paciente no encontrado para la sesión proporcionada.');
-          }
-        },
-        error: (error) => console.error('Error al obtener ID de paciente:', error)
-      });
-    } else {
-      console.error('ID de sesión no proporcionado');
-    }
-  });
 }
 
 ngAfterViewInit() {
@@ -179,6 +177,83 @@ cargarMedicamentos() {
   });
 }
 
+onDeleteSesion(): void {
+  if (!this.isConfirmDelete) {
+    this.isConfirmDelete = true;
+    setTimeout(() => {
+      // Este timeout restablecerá el botón si el usuario no confirma la eliminación
+      this.isConfirmDelete = false;
+    }, 3000);
+  } else {
+    if (this.idPaciente && this.idSesion) {
+      this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
+        next: () => {
+          console.log('Sesion eliminada con éxito.');
+          this.isDeleted = true;
+          
+          // Establece un tiempo para que el estado 'eliminado' se muestre durante un tiempo antes de resetear
+          setTimeout(() => {
+            // Restablece los estados para volver al texto original del botón 'Eliminar'
+            this.isConfirmDelete = false;
+            this.isDeleted = false;
+            this.getLastSession(this.idPaciente); // Obtener la última sesión aquí o donde sea adecuado
+          }, 2000); // Ajusta este tiempo como sea necesario
+        },
+        error: (error) => {
+          console.error('Error al eliminar el paciente:', error);
+          this.isConfirmDelete = false;
+          // Si no deseas cambiar el botón en caso de error, no cambies isDeleted aquí
+        }
+      });
+    } else {
+      console.error('Faltan datos necesarios para la eliminación.');
+      // No es necesario cambiar el estado del botón aquí ya que no se confirmó la eliminación
+    }
+  }
+}
+
+getLastSession(idPaciente: number): void {
+  console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
+  this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
+    next: (sesion) => {
+      if (sesion) {
+        console.log('La última sesión es:', sesion);
+        // Navega a una página de detalles de la sesión o muestra la información como necesites
+        this.router.navigate(['/graficas-paciente', sesion.id_sesion]);
+      } else {
+        console.log('No se encontró la última sesión para este paciente.');
+        // Opcional: maneja el caso de que no haya más sesiones para mostrar
+        this.router.navigate(['/lista-pacientes']);
+      }
+    },
+    error: (error) => {
+      console.error('Error al obtener la última sesión:', error);
+      // Considera manejar este error o mostrar un mensaje al usuario
+    }
+  });
+}
+
+onAgregarNotasClick(): void {
+  this.isAddingNote = true; // Muestra el input de texto
+}
+
+// Método para guardar las notas del psicólogo
+guardarNotasPsicologo(): void {
+  if (this.idSesion && this.notasPsicologo.trim()) {
+    this.eegService.actualizarNotasPsicologoSesion(this.idSesion, this.notasPsicologo).subscribe({
+      next: (response) => {
+        console.log(response.mensaje);
+        this.isAddingNote = false; // Oculta el input de texto después de guardar
+        this.notasPsicologo = ''; // Limpia el input después de guardar
+      },
+      error: (error) => {
+        console.error('Error al actualizar las notas del psicólogo:', error);
+      }
+    });
+  } else {
+    console.error('Error: No se proporcionó el ID de la sesión o las notas del psicólogo.');
+  }
+}
 
 applyFilter(value: string) {
   this.dataSource.filter = value.trim().toLowerCase();
@@ -410,13 +485,37 @@ onSesionChange() {
             min: -extraPadding,
             max: offset * (names.length-1) + extraPadding, // Ajusta el rango máximo según la cantidad de canales
           },
+          accessibility: {
+            screenReaderSection: {
+                beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>'
+            }
+          },
+          exporting: { // Aquí se configura el botón de exportación
+            enabled: true // Habilita el botón de exportación
+          },
+          navigation: {
+            buttonOptions: {
+              enabled: true
+            }
+          },
+          navigator: {
+            maskInside: false
+          },
+          rangeSelector: {
+            selected: 1
+          },
+          stockTools: {
+            gui: {
+              enabled: true, // Deshabilita la GUI por defecto para usar la personalizada
+            }
+          },
           tooltip: {
             shared: true,
             valueDecimals: 8
           },
           series: series as Highcharts.SeriesOptionsType[]
         };
-        Highcharts.chart(options);
+        Highcharts.stockChart('eeg', options);
     } catch (error) {
       console.error('Error al procesar los datos EEG normalizados:', error);
     }

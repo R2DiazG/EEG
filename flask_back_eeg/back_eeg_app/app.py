@@ -54,7 +54,7 @@ jwt = JWTManager(app)
 mail = Mail(app)
 
 # Import the models
-from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, sesion_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG, Medicamento
+from models import Usuario, Rol, Genero, EstadoCivil, Escolaridad, Lateralidad, Ocupacion, Paciente, Telefono, CorreoElectronico, Direccion, HistorialMedico, sesion_medicamento, DiagnosticoPrevio, Sesion, Consentimiento, RawEEG, NormalizedEEG, Medicamento, ContactoEmergencia
 
 # Route to check if the server is up   
 @app.route('/health', methods=['GET'])
@@ -740,6 +740,7 @@ def crear_paciente_para_usuario(id_usuario):
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
+    print(datos)
     try:
         nuevo_paciente = Paciente(
             id_usuario=id_usuario,  # Use the ID of the user in the URL to create the patient for that user
@@ -754,26 +755,61 @@ def crear_paciente_para_usuario(id_usuario):
             id_ocupacion=datos['id_ocupacion']
         )
         db.session.add(nuevo_paciente)
+        print(nuevo_paciente)
         db.session.flush()  # For getting the ID of the new patient
+        # Manejar la creación del contacto de emergencia
+        if 'contacto_emergencia' in datos:
+            contacto_data = datos['contacto_emergencia']
+            contacto_emergencia = ContactoEmergencia(
+                id_paciente=nuevo_paciente.id_paciente,
+                nombre=contacto_data['nombre'],
+                apellido_paterno=contacto_data['apellido_paterno'],
+                apellido_materno=contacto_data.get('apellido_materno', ''),
+                parentesco=contacto_data['parentesco'],
+                telefono=contacto_data['telefono'],
+                correo_electronico=contacto_data.get('correo_electronico', ''),
+                direccion=contacto_data.get('direccion', ''),
+                ciudad=contacto_data.get('ciudad', ''),
+                estado=contacto_data.get('estado', ''),
+                codigo_postal=contacto_data.get('codigo_postal', ''),
+                pais=contacto_data.get('pais', ''),
+                notas=contacto_data.get('notas', '')
+            )
+            db.session.add(contacto_emergencia)
+            print(contacto_emergencia)
+        if 'consentimientos' in datos:
+            for consentimiento in datos['consentimientos']:
+                if consentimiento['consentimiento'] == '1': 
+                    print('soy true')
+                    nuevo_consentimiento = Consentimiento(consentimiento=1, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
+                else:
+                    print('soy false')
+                    nuevo_consentimiento = Consentimiento(consentimiento=0, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
+                db.session.add(nuevo_consentimiento)
         # Add the phone numbers, emails and addresses
         if 'telefonos' in datos:
             for num in datos['telefonos']:
-                nuevo_telefono = Telefono(telefono=num, id_paciente=nuevo_paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=num["telefono"], id_paciente=nuevo_paciente.id_paciente)
                 db.session.add(nuevo_telefono)
+                print(nuevo_telefono)
         if 'correos_electronicos' in datos:
             for email in datos['correos_electronicos']:
-                nuevo_correo = CorreoElectronico(correo_electronico=email, id_paciente=nuevo_paciente.id_paciente)
+                nuevo_correo = CorreoElectronico(correo_electronico=email["correo_electronico"], id_paciente=nuevo_paciente.id_paciente)
+                print(nuevo_correo.correo_electronico)
                 db.session.add(nuevo_correo)
+                print(nuevo_correo)
+                print(email)
         if 'direcciones' in datos:
             for direccion in datos['direcciones']:
                 nueva_direccion = Direccion(**direccion, id_paciente=nuevo_paciente.id_paciente)
                 db.session.add(nueva_direccion)
+                print(nueva_direccion)
         db.session.commit()
-        logging.info('Paciente creado exitosamente para el usuario %s', id_usuario)
-        return jsonify({'mensaje': 'Paciente creado exitosamente', 'id': nuevo_paciente.id_paciente}), 201
+        logging.info('Paciente y contacto de emergencia creados exitosamente para el usuario %s', id_usuario)
+        return jsonify({'mensaje': 'Paciente y contacto de emergencia creados exitosamente', 'id_paciente': nuevo_paciente.id_paciente}), 201
     except Exception as e:
         db.session.rollback()
-        logging.error('Error al crear el paciente para el usuario %s: %s', id_usuario, e)
+        logging.error('Error al crear el paciente y contacto de emergencia para el usuario %s: %s', id_usuario, e)
         return jsonify({'error': str(e)}), 400
 
 @app.route('/usuarios/<int:id_usuario>/pacientes', methods=['GET'])
@@ -831,7 +867,8 @@ def obtener_detalles_paciente(id_paciente):
     """
     Endpoint to retrieve detailed information for a specific patient.
     Requires a valid JWT access token.
-    Returns comprehensive patient details including personal information, contacts (phone, email, address), and consent status.
+    Returns comprehensive patient details including personal information, contacts (phone, email, address), 
+    and consent status, as well as emergency contact information.
     ·Parameters:
         id_paciente: int - The ID of the patient for whom the details are being retrieved.
     ·Responses:
@@ -844,9 +881,27 @@ def obtener_detalles_paciente(id_paciente):
     """
     try:
         paciente = Paciente.query.get_or_404(id_paciente)
-        print(paciente)
         today = datetime.today()
         edad = today.year - paciente.fecha_nacimiento.year - ((today.month, today.day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day))
+        
+        contacto_emergencia_info = {}
+        if paciente.contacto_emergencia:
+            ce = paciente.contacto_emergencia
+            contacto_emergencia_info = {
+                'nombre': ce.nombre,
+                'apellido_paterno': ce.apellido_paterno,
+                'apellido_materno': ce.apellido_materno or "",
+                'parentesco': ce.parentesco,
+                'telefono': ce.telefono,
+                'correo_electronico': ce.correo_electronico or "",
+                'direccion': ce.direccion or "",
+                'ciudad': ce.ciudad or "",
+                'estado': ce.estado or "",
+                'codigo_postal': ce.codigo_postal or "",
+                'pais': ce.pais or "",
+                'notas': ce.notas or ""
+            }
+        
         detalles_paciente = {
             'id_paciente': paciente.id_paciente,
             'nombre': paciente.nombre,
@@ -873,6 +928,7 @@ def obtener_detalles_paciente(id_paciente):
                 'consentimiento': consent.consentimiento, 
                 'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
             } for consent in paciente.consentimientos],
+            'contacto_emergencia': contacto_emergencia_info
         }
         logging.info('Detalles del paciente %s obtenidos exitosamente', id_paciente)
         return jsonify(detalles_paciente), 200
@@ -908,8 +964,10 @@ def actualizar_paciente_de_usuario(id_usuario, id_paciente):
         actualizar_datos_basicos_paciente(paciente, datos)
         # Update the phone numbers, emails and addresses
         actualizar_telefonos(paciente, datos.get('telefonos', []))
+        actualizar_consentimiento(paciente, datos.get('consentimientos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
+        actualizar_contacto_emergencia(paciente, datos.get('contacto_emergencia', {}))
         db.session.commit()
         logging.info('Paciente %s actualizado exitosamente para el usuario %s', id_paciente, id_usuario)
         return jsonify({'mensaje': 'Paciente actualizado exitosamente'}), 200
@@ -944,11 +1002,12 @@ def actualizar_telefonos(paciente, telefonos_nuevos):
         # Obtains the current phones of the patient
         telefonos_actuales = {tel.id_telefono: tel for tel in paciente.telefonos}
         for tel_data in telefonos_nuevos:
+            print(tel_data)
             if 'id_telefono' in tel_data and tel_data['id_telefono'] in telefonos_actuales:
                 telefono = telefonos_actuales.pop(tel_data['id_telefono'])
-                telefono.telefono = tel_data['numero']
+                telefono.telefono = tel_data['telefono']
             else:
-                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=tel_data['telefono'], id_paciente=paciente.id_paciente)
                 db.session.add(nuevo_telefono)
         # Delete any phone number not included in the update
         for tel in telefonos_actuales.values():
@@ -1026,53 +1085,58 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         # Eliminar cualquier dirección no incluida en la actualización
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
-
-@app.route('/pacientes/<int:id_paciente>/consentimiento', methods=['PUT'])
-def actualizar_consentimiento(id_paciente):
+            
+def actualizar_consentimiento(paciente, consentimiento_recibido):
     """
-    Endpoint to update consent status for a specific patient.
-    Does not require JWT access as it might be used in contexts outside of user authentication.
-    Expects a JSON with 'consentimiento' status. Updates or creates the patient's consent record.
-    ·Parameters:
-        id_paciente: int - The ID of the patient whose consent status is being updated.
-    ·Responses:
-        200: If the consent status was successfully updated. Returns a success message.
-        400: If consent data was not provided.
-        404: If the patient was not found.
-        500: If an internal server error occurred.
-    ·Usage example:
-        PUT /pacientes/<id_paciente>/consentimiento
-        Headers: { "consentimiento": <CONSENT_STATUS> }
+    Function to update the consent status for a patient.
     """
     try:
-        paciente = Paciente.query.get(id_paciente)
-        if not paciente:
-            os.abort(404, description="Paciente no encontrado")
-        datos = request.get_json()
-        consentimiento_recibido = datos.get('consentimiento', None)
-        if consentimiento_recibido is None:
-            os.abort(400, description="Datos de consentimiento no proporcionados")
         # Search for the consent of the patient
-        consentimiento = Consentimiento.query.filter_by(id_paciente=id_paciente).first()
+        consentimiento = Consentimiento.query.filter_by(id_paciente=paciente['id_paciente']).first()
         if consentimiento:
             # Update the consent if it already exists
-            consentimiento.consentimiento = consentimiento_recibido
-            consentimiento.fecha_registro = datetime.now(timezone.utc)
+            consentimiento.consentimiento = consentimiento_recibido['consentimiento']
+            consentimiento.fecha_registro = consentimiento_recibido['fecha_registro']
         else:
             # Create a new consent if it doesn't exist
             consentimiento_nuevo = Consentimiento(
-                id_paciente=id_paciente,
-                consentimiento=consentimiento_recibido,
-                fecha_registro=datetime.now(timezone.utc)
+                id_paciente=paciente['id_paciente'],
+                consentimiento=consentimiento_recibido['consentimiento'],
+                fecha_registro= consentimiento_recibido['fecha_registro']
             )
             db.session.add(consentimiento_nuevo)
         db.session.commit()
-        logging.info('Consentimiento actualizado exitosamente para el paciente %s', id_paciente)
+        logging.info('Consentimiento actualizado exitosamente para el paciente %s', paciente['id_paciente'])
         return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
     except Exception as e:
         db.session.rollback()
-        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', id_paciente, e)
+        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', paciente['id_paciente'], e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
+def actualizar_contacto_emergencia(paciente, datos_contacto):
+    """
+    Function to update emergency contact information for a patient.
+    """
+    contacto = paciente.contacto_emergencia
+    if contacto:
+        contacto.nombre = datos_contacto.get('nombre', contacto.nombre)
+        contacto.apellido_paterno = datos_contacto.get('apellido_paterno', contacto.apellido_paterno)
+        contacto.apellido_materno = datos_contacto.get('apellido_materno', contacto.apellido_materno)
+        contacto.parentesco = datos_contacto.get('parentesco', contacto.parentesco)
+        contacto.telefono = datos_contacto.get('telefono', contacto.telefono)
+        contacto.correo_electronico = datos_contacto.get('correo_electronico', contacto.correo_electronico)
+        contacto.direccion = datos_contacto.get('direccion', contacto.direccion)
+        contacto.ciudad = datos_contacto.get('ciudad', contacto.ciudad)
+        contacto.estado = datos_contacto.get('estado', contacto.estado)
+        contacto.codigo_postal = datos_contacto.get('codigo_postal', contacto.codigo_postal)
+        contacto.pais = datos_contacto.get('pais', contacto.pais)
+        contacto.notas = datos_contacto.get('notas', contacto.notas)
+    else:
+        nuevo_contacto = ContactoEmergencia(
+            id_paciente=paciente.id_paciente,
+            **datos_contacto
+        )
+        db.session.add(nuevo_contacto)
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
 @jwt_required()
@@ -1096,6 +1160,7 @@ def eliminar_paciente(id_usuario, id_paciente):
     if paciente.id_usuario != id_usuario:
         return jsonify({'error': 'Operación no permitida. Este paciente no pertenece al usuario.'}), 403
     try:
+        ContactoEmergencia.query.filter_by(id_paciente=id_paciente).delete()
         sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
         for sesion in sesiones:
             sesion.medicamentos = []
@@ -1489,6 +1554,40 @@ def actualizar_notas_psicologo_sesion(id_sesion):
         db.session.rollback()
         logging.error('Error inesperado: %s', str(e))
         return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
+
+@app.route('/pacientes/<int:id_paciente>/sesiones/<int:id_sesion>', methods=['DELETE'])
+@jwt_required()
+def eliminar_sesion(id_paciente, id_sesion):
+    """
+    Endpoint to delete a specific session for a patient.
+    Requires a valid JWT access token.
+    Verifies the session's association with the patient before deletion. Removes the session and all related EEG data from the database.
+    ·Parameters:
+        id_paciente: int - The ID of the patient who owns the session record.
+        id_sesion: int - The ID of the session to be deleted.
+    ·Responses:
+        200: If the session was successfully deleted. Returns a success message.
+        403: If the session is not associated with the patient. Returns an error message.
+        404: If the session or patient does not exist.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /pacientes/<id_paciente>/sesiones/<id_sesion>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    # Verify if the session exists and belongs to the patient
+    sesion = Sesion.query.filter_by(id_paciente=id_paciente, id_sesion=id_sesion).first()
+    if sesion is None:
+        return jsonify({'error': 'La sesión no existe o no pertenece al paciente indicado.'}), 404
+    try:
+        # Delete the session and its related data
+        db.session.delete(sesion)
+        db.session.commit()
+        logging.info('Sesión %s eliminada exitosamente para el paciente %s', id_sesion, id_paciente)
+        return jsonify({'mensaje': 'Sesión eliminada exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al eliminar la sesión %s para el paciente %s: %s', id_sesion, id_paciente, e)
+        return jsonify({'error': 'Error interno del servidor'}), 500
 ######################################################################################################################################################
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################### Errores #######################################################################

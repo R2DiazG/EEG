@@ -41,7 +41,10 @@
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/highcharts/highcharts.js",
+              "node_modules/highcharts/highstock.js"
+            ],
             "server": "src/main.server.ts",
             "prerender": true,
             "ssr": {
