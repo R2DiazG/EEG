@@ -19,19 +19,16 @@
       margin: 10px; // Margen reducido para pantallas pequeñas
       max-width: none;
     }
-
     .headerButton{
       display: flex !important;
       justify-content: flex-end !important;
       margin-left: 75%;
     }
-
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-  
       input[type="search"] {
         padding: 0.5rem;
         margin-right: 1rem;
@@ -40,7 +37,6 @@
         width: 30%;
       }
     }
-
     .fecha-consulta-seccion {
       position: relative;
       margin: 1rem;
@@ -52,15 +48,12 @@
         appearance: none; // Esto elimina la flecha nativa del dropdown
         background-color: #fff; // Fondo blanco
         font-size: 16px; // Tamaño de la fuente a tu gusto
-    
         // Ajusta el padding derecho para hacer espacio para el icono
         padding-right: 40px; // Asegúrate de tener suficiente espacio para el icono
-    
         &:focus {
           outline: none;
           border-color: #aaa; // Cambia el color del borde cuando está enfocado
         }
-    
         option {
           color: #666; // Cambia el color del texto de las opciones
         }
@@ -69,7 +62,6 @@
           color: #999;
         }
       }
-    
       // Agregar el icono de FontAwesome con una clase
       .fa-sort-desc {
         position: absolute;
@@ -81,7 +73,6 @@
         color: #333; // El color del icono
       }
     }    
-    
     .search-container {
       display: flex;
       align-items: center;
@@ -90,14 +81,12 @@
       padding: 0.5rem 3rem; // Espaciado interno alrededor del input
       margin-left: 2rem;
       width: 100%; // Ancho completo para el contenedor de búsqueda
-    
       .search-icon {
         position: absolute;
         left: 1.5rem; // Alinea el ícono de búsqueda dentro del padding del contenedor
         color: #5F6368; // Color del ícono
         font-size: 1rem; // Tamaño del ícono
       }
-    
       .search-input {
         flex-grow: 1; // Permite que el input crezca para llenar el espacio
         border: none; // Elimina el borde del input
@@ -108,22 +97,18 @@
         border-radius: 20px; // Bordes redondeados para el input
         border: solid #F1F3F4;
         width: 100%;
-    
         &::placeholder {
           color: #5F6368; // Color para el placeholder
         }
-    
         &:focus {
           // Estilos opcionales para cuando el input está enfocado
           box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5); // Un sutil contorno azul alrededor del input
         }
       }
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-  
       th, td {
         border: 1px solid #ddd;
         text-align: left;
@@ -136,12 +121,10 @@
           margin-bottom: 4px;
         }
       }
-  
       th {
         background-color: #f2f2f2;
       }
     }
-
     .tab-menu {
       .tab {
         padding: 0.5rem 1rem;
@@ -150,21 +133,16 @@
         border: none;
         border-bottom: 3px solid transparent;
         cursor: pointer;
-  
         &.active {
           border-bottom-color: #333;
           background-color: yellow;
           color: #333;
         }
-  
         &:hover {
           background-color: darken(#a2a2a2, 5%);
         }
       }
     }
-
-
-
 // input[type="search"] {
 //   width: 100%;
 //   padding: 10px;
@@ -214,11 +192,9 @@
 //         }
 //       }
 //     }
-  
     .tab-content {
       border: 1px solid #ccc;
       padding: 1rem;
       // Further styles for tab content based on your design
     }
   }
-  

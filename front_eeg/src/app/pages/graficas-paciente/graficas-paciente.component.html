@@ -15,7 +15,6 @@
       </select>
       <i class="fas fa-sort-desc" aria-hidden="true"></i>
     </div>    
-
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('detailsSesion')" [class.active]="activeTab === 'detailsSesion'">Detalles de sesión</button>
       <button class="tab" (click)="setActiveTab('meds')" [class.active]="activeTab === 'meds'">Historial de medicamentos</button>
@@ -49,29 +48,25 @@
             </div>
         </div>
             <br>
-           <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
+          <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <!-- Columnas para medicamentos -->
             <ng-container matColumnDef="nombre_comercial">
               <th mat-header-cell *matHeaderCellDef> Nombre Comercial </th>
               <td mat-cell *matCellDef="let element">{{element.nombre_comercial}}</td>
             </ng-container>
-      
             <ng-container matColumnDef="principio_activo">
               <th mat-header-cell *matHeaderCellDef> Principio Activo </th>
               <td mat-cell *matCellDef="let element">{{element.principio_activo}}</td>
             </ng-container>
-      
             <ng-container matColumnDef="presentacion">
               <th mat-header-cell *matHeaderCellDef> Presentación </th>
               <td mat-cell *matCellDef="let element">{{element.presentacion}}</td>
             </ng-container>
-
             <ng-container matColumnDef="fecha_sesion">
               <th mat-header-cell *matHeaderCellDef> Fecha de la sesión</th>
               <td mat-cell *matCellDef="let element">{{element.fecha_sesion}}</td>
             </ng-container>
-      
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
