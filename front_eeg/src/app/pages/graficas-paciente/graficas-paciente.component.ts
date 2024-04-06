@@ -463,10 +463,10 @@ onSesionChange() {
             title: {
               text: 'Amplitud (µV)'
             },
-            subtitle: {
+            /* subtitle: {
               text: 'Grafica creada en ...',
               align: 'left'
-            }, 
+            },  */
             labels: {
               formatter: function () {
                 // Calcula el índice basado en la posición actual y el desplazamiento fijo
@@ -490,7 +490,7 @@ onSesionChange() {
           },
           navigation: {
             buttonOptions: {
-              enabled: true
+              enabled: false
             }
           },
           navigator: {
@@ -508,6 +508,36 @@ onSesionChange() {
             shared: true,
             valueDecimals: 8
           },
+          plotOptions: {
+            series: {
+                animation: {
+                    duration: 1000
+                },
+                marker: {
+                    enabled: false
+                },
+                lineWidth: 2
+            }
+          },
+          legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+          },
+          responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        },
           series: series as Highcharts.SeriesOptionsType[]
         };
         Highcharts.stockChart('eeg', options);
