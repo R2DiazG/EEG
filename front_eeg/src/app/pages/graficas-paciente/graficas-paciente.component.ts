@@ -476,14 +476,6 @@ onSesionChange() {
                 return names[index] || '';
               }
             },
-            accessibility: {
-              screenReaderSection: {
-                  beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>'
-              }
-            },
-            exporting: { // Aquí se configura el botón de exportación
-              enabled: true // Habilita el botón de exportación
-            },
             /*
             min: minOffsetApplied,
             max: maxOffsetApplied,
@@ -492,6 +484,19 @@ onSesionChange() {
             tickInterval: offset, // Establece un intervalo de tick apropiado
             min: -extraPadding,
             max: offset * (names.length-1) + extraPadding, // Ajusta el rango máximo según la cantidad de canales
+          },
+          accessibility: {
+            screenReaderSection: {
+                beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>'
+            }
+          },
+          exporting: { // Aquí se configura el botón de exportación
+            enabled: true // Habilita el botón de exportación
+          },
+          navigation: {
+            buttonOptions: {
+              enabled: true
+            }
           },
           navigator: {
             maskInside: false
