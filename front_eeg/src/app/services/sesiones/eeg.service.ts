@@ -86,32 +86,17 @@ export class EegService {
     const url = `${this.apiUrl}/${idSesion}`;
     return this.http.delete(url, { headers: this.getHeaders() });
   }
-
-  /**
- * Actualiza los medicamentos de una sesión específica.
- * @param idSesion El ID de la sesión a actualizar.
- * @param medicamentosIds Un arreglo con los IDs de los nuevos medicamentos.
- * @returns Observable con la respuesta del servidor.
- */
-actualizarMedicamentosSesion(idSesion: number, medicamentosIds: number[]): Observable<any> {
-  const url = `${this.apiUrl}/${idSesion}/medicamentos`;
-  const datos = { medicamentos_ids: medicamentosIds };
-  return this.http.put(url, datos, { headers: this.getHeaders() });
-}
-
-/**
- * Actualiza las notas del psicólogo de una sesión específica.
- * @param idSesion El ID de la sesión a actualizar.
- * @param notasPsicologo Las nuevas notas del psicólogo.
- * @returns Observable con la respuesta del servidor.
- */
-actualizarNotasPsicologoSesion(idSesion: number, notasPsicologo: string): Observable<any> {
-  const url = `${this.apiUrl}/${idSesion}/notas_psicologo`;
-  const datos = { notas_psicologo: notasPsicologo };
-  return this.http.put(url, datos, { headers: this.getHeaders() });
-}
-
-
-
   
+  actualizarMedicamentosSesion(idSesion: number, medicamentosIds: number[]): Observable<any> {
+    const url = `${this.apiUrl}/${idSesion}/medicamentos`;
+    const datos = { medicamentos_ids: medicamentosIds };
+    return this.http.put(url, datos, { headers: this.getHeaders() });
+  }
+
+  actualizarNotasPsicologoSesion(idSesion: number, notasPsicologo: string): Observable<any> {
+    const url = `${this.apiUrl}/${idSesion}/notas_psicologo`;
+    const datos = { notas_psicologo: notasPsicologo };
+    return this.http.put(url, datos, { headers: this.getHeaders() });
+  }
+
 }

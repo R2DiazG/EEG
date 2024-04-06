@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-registrar-paciente',
@@ -10,9 +11,15 @@ import { AuthService } from '../../services/login/auth.service';
   styleUrls: ['./registrar-paciente.component.scss']
 })
 export class RegistrarPacienteComponent implements OnInit {
-  patient: InfoPaciente = new InfoPaciente(); // Asegura que el modelo está correctamente inicializado
+  patient: InfoPaciente = new InfoPaciente();
   activeTab: string = 'infoPatient';
-  id_usuario: number | undefined; // Ahora puede ser undefined hasta que se asigne
+  id_usuario: number | undefined;
+  fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+
+  consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
+    consentimiento: 0,
+    fecha_registro: this.fechaActual,
+  };
 
   constructor(
     private router: Router,
@@ -66,10 +73,6 @@ export class RegistrarPacienteComponent implements OnInit {
     }); // Agrega una dirección vacía al arreglo
   }
 
-  addMedication(): void {
-    this.patient.medicamentos_actuales.push(''); // Agrega un medicamento vacío al arreglo
-  }
-
   cancelButton(): void {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
   }
@@ -85,7 +88,16 @@ saveCurrentTabData(): void {
 
 // Método final para enviar todos los datos
 registerPatient(): void {
-  // Aquí envías todos los datos al servidor
+  // Recorre el arreglo de consentimientos y asigna la fecha actual formateada a cada entrada
+  //this.patient.consentimientos.forEach(consentimiento => {
+  //  consentimiento.fecha_registro = new Date(); // Directamente asigna el objeto Date
+  //});
+
+  this.patient.consentimientos.push(this.consentimientoTemporal); // Agrega el consentimiento temporal al arreglo
+
+  console.log('Datos finales a enviar:', this.patient);
+
+  // Procede con la lógica para enviar los datos al servidor
   if (this.id_usuario) {
     this.pacienteService.crearPaciente(this.id_usuario, this.patient).subscribe({
       next: (response) => {
@@ -94,14 +106,15 @@ registerPatient(): void {
       },
       error: (error) => {
         console.error('Error al registrar el paciente', error);
-        // Aquí deberías manejar el error, por ejemplo, mostrar un mensaje al usuario
+        // Aquí deberías manejar el error
       }
     });
   } else {
     console.error('ID de usuario no definido.');
-    // Maneja la falta del ID de usuario, por ejemplo, redirigir al login o mostrar un mensaje
+    // Manejo de la falta del ID de usuario
   }
 }
+
 
   /*onSubmit(): void {
     // Verifica si existe al menos un objeto de consentimiento con consentimiento === true

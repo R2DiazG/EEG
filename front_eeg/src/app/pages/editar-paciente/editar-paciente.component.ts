@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
 import { InfoPaciente } from '../../models/info-paciente.model';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-editar-paciente',
@@ -17,6 +18,12 @@ export class EditarPacienteComponent implements OnInit {
   id_usuario: number | null = null;
   isConfirmDelete: boolean = false;
   isDeleted: boolean = false;
+  fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+
+  consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
+    consentimiento: 0,
+    fecha_registro: this.fechaActual,
+  };
 
   constructor(
     private router: Router,
@@ -67,6 +74,7 @@ export class EditarPacienteComponent implements OnInit {
     if (this.id_usuario && this.id_paciente) {
       this.pacienteService.obtenerDetallesPaciente(this.id_paciente).subscribe({
         next: (data) => {
+          console.log("Respuesta del servidor:", data);
           // Suponiendo que 'data' es el objeto con los detalles del paciente.
           this.patient = this.mapToInfoPaciente(data); // Usamos la función de mapeo aquí.
           console.log('Datos del paciente completos:', this.patient);
@@ -98,13 +106,13 @@ export class EditarPacienteComponent implements OnInit {
     return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
 
-  getConsentimientoDisplay(consentimientos: string | undefined): string {
-    return consentimientos ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
-  }
+  getConsentimientoDisplay(consentimientos: any): string {
+    return this.patient.consentimientos[this.patient.consentimientos.length-1].consentimiento ? 'Sí dio su consentimiento' : 'No dio su consentimiento';
+   }
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
   private mapToInfoPaciente(data: any): InfoPaciente {
-    const mapped: InfoPaciente = {
+  const mapped: InfoPaciente = {
       id_paciente: data.id_paciente,
       nombre: data.nombre,
       apellido_paterno: data.apellido_paterno,
@@ -126,23 +134,22 @@ export class EditarPacienteComponent implements OnInit {
         pais: dir.pais,
         codigo_postal: dir.codigo_postal,
       })),
-      // Asumiendo que las demás propiedades tienen el mismo nombre y formato
-      historial_medico: data.historial_medico,
-      medicamentos_actuales: data.medicamentos_actuales,
       // Asume que hay datos de contacto de emergencia
-      nombre_contacto_emergencia: data.nombre_contacto_emergencia,
-      apellido_paterno_contacto_emergencia: data.apellido_paterno_contacto_emergencia,
-      apellido_materno_contacto_emergencia: data.apellido_materno_contacto_emergencia,
-      parentesco_contacto_emergencia: data.parentesco_contacto_emergencia,
-      telefono_contacto_emergencia: data.telefono_contacto_emergencia,
-      correo_electronico_contacto_emergencia: data.correo_electronico_contacto_emergencia,
-      direccion_contacto_emergencia: data.direccion_contacto_emergencia,
-      ciudad_contacto_emergencia: data.ciudad_contacto_emergencia,
-      estado_contacto_emergencia: data.estado_contacto_emergencia,
-      codigo_postal_contacto_emergencia: data.codigo_postal_contacto_emergencia,
-      pais_contacto_emergencia: data.pais_contacto_emergencia,
-      notas_contacto_emergencia: data.notas_contacto_emergencia,
-      // Para el consentimiento, debes revisar cómo se almacena y se recupera
+      contacto_emergencia: {
+        nombre: data.contacto_emergencia.nombre,
+        apellido_paterno: data.contacto_emergencia.apellido_paterno,
+        apellido_materno: data.contacto_emergencia.apellido_materno,
+        parentesco: data.contacto_emergencia.parentesco,
+        telefono: data.contacto_emergencia.telefono,
+        correo_electronico: data.contacto_emergencia.correo_electronico,
+        direccion: data.contacto_emergencia.direccion,
+        ciudad: data.contacto_emergencia.ciudad,
+        estado: data.contacto_emergencia.estado,
+        codigo_postal: data.contacto_emergencia.codigo_postal,
+        pais: data.contacto_emergencia.pais,
+        notas: data.contacto_emergencia.notas,
+      },
+    // Para el consentimiento, debes revisar cómo se almacena y se recupera
 
       consentimientos: data.consentimientos ? data.consentimientos.map((consent: any) => ({
         consentimiento: consent.consentimiento, 
@@ -239,15 +246,18 @@ export class EditarPacienteComponent implements OnInit {
   */
   
   onSubmit(): void {
+    console.log('actualizando paciente')
     if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {
       // Convertir valores de presentación a valores esperados por el backend si es necesario
       // Ejemplo: Si tu backend espera 'male' o 'female' para género, asegúrate de que esos sean los valores enviados.
       console.log('Datos del paciente actualizados:', this.patient);
+      console.log('Consentimiento actualizado:', this.consentimientoTemporal);
+      this.patient.consentimientos.push(this.consentimientoTemporal);
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
           console.log('Información del paciente actualizada');
           this.isEditMode = false;
-          this.router.navigate(['/ver-paciente', this.id_paciente]);
+          this.router.navigate(['/editar-paciente', this.id_paciente]);
         },
         error: (error) => console.error('Error al actualizar el paciente:', error)
       });
@@ -255,19 +265,4 @@ export class EditarPacienteComponent implements OnInit {
       console.error('No se puede actualizar: ID del paciente o usuario no definido.');
     }
   }
-
-  addMedication(): void {
-    if (!this.patient.medicamentos_actuales) {
-      this.patient.medicamentos_actuales = [];
-    }
-    this.patient.medicamentos_actuales.push('');
-  }
-
-  removeMedication(index: number): void {
-    if (this.patient.medicamentos_actuales) {
-      this.patient.medicamentos_actuales.splice(index, 1);
-    }
-  }
-
-  // Implementa confirmDelete y onCancel según sea necesario...
 }

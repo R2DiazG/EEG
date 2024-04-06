@@ -6,7 +6,7 @@
       <div class="tab-menu">
         <button class="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
         <button class="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
-        <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button>
+        <!-- <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button> -->
         <button class="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Información del familiar</button>
         <button class="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
       </div>
@@ -51,71 +51,71 @@
               <label for="gender">Género:</label>
               <div id="gender">
                 <label>
-                  <input type="radio" name="gender" value="Masculino" [(ngModel)]="patient.genero"> Masculino
+                  <input type="radio" name="gender" value="1" [(ngModel)]="patient.id_genero"> Masculino
                 </label>
                 <label>
-                  <input type="radio" name="gender" value="Femenino" [(ngModel)]="patient.genero"> Femenino
+                  <input type="radio" name="gender" value="2" [(ngModel)]="patient.id_genero"> Femenino
                 </label>
               </div>
 
               <label for="civilStatus">Estado civil:</label>
               <label>Estado civil:</label>
               <label>
-                <input type="radio" name="civilStatus" value="Soltero/a" [(ngModel)]="patient.estado_civil"> Soltero/a
+                <input type="radio" name="civilStatus" value="1" [(ngModel)]="patient.id_estado_civil"> Soltero/a
               </label>
               <label>
-                <input type="radio" name="civilStatus" value="Casado/a" [(ngModel)]="patient.estado_civil"> Casado/a
+                <input type="radio" name="civilStatus" value="2" [(ngModel)]="patient.id_estado_civil"> Casado/a
               </label>
               <label>
-                <input type="radio" name="civilStatus" value="Divorciado/a" [(ngModel)]="patient.estado_civil"> Divorciado/a
+                <input type="radio" name="civilStatus" value="3" [(ngModel)]="patient.id_estado_civil"> Divorciado/a
               </label>
               <label>
-                <input type="radio" name="civilStatus" value="Viudo/a" [(ngModel)]="patient.estado_civil"> Viudo/a
+                <input type="radio" name="civilStatus" value="4" [(ngModel)]="patient.id_estado_civil"> Viudo/a
               </label>
     
               <label for="laterality">Lateralidad:</label>
               <label>
-                <input type="radio" name="laterality" value="Zurdo" [(ngModel)]="patient.lateralidad"> Zurdo
+                <input type="radio" name="laterality" value="1" [(ngModel)]="patient.id_lateralidad"> Zurdo
               </label>
               <label>
-                <input type="radio" name="laterality" value="Diestro" [(ngModel)]="patient.lateralidad"> Diestro
+                <input type="radio" name="laterality" value="2" [(ngModel)]="patient.id_lateralidad"> Diestro
               </label>
               <label>
-                <input type="radio" name="laterality" value="Ambidiestro" [(ngModel)]="patient.lateralidad"> Ambidiestro
+                <input type="radio" name="laterality" value="3" [(ngModel)]="patient.id_lateralidad"> Ambidiestro
               </label>
               
               <label for="educationLevel">Escolaridad:</label>
               <label>
-                <input type="radio" name="educationLevel" value="Primaria" [(ngModel)]="patient.escolaridad"> Primaria
+                <input type="radio" name="educationLevel" value="1" [(ngModel)]="patient.id_escolaridad"> Primaria
               </label>
               <label>
-                <input type="radio" name="educationLevel" value="Secundaria" [(ngModel)]="patient.escolaridad"> Secundaria
+                <input type="radio" name="educationLevel" value="2" [(ngModel)]="patient.id_escolaridad"> Secundaria
               </label>
               <label>
-                <input type="radio" name="educationLevel" value="Preparatoria" [(ngModel)]="patient.escolaridad"> Preparatoria
+                <input type="radio" name="educationLevel" value="3" [(ngModel)]="patient.id_escolaridad"> Preparatoria
               </label>
               <label>
-                <input type="radio" name="educationLevel" value="Universidad" [(ngModel)]="patient.escolaridad"> Universidad
+                <input type="radio" name="educationLevel" value="4" [(ngModel)]="patient.id_escolaridad"> Universidad
               </label>
               <label>
-                <input type="radio" name="educationLevel" value="Maestría" [(ngModel)]="patient.escolaridad"> Maestría
+                <input type="radio" name="educationLevel" value="5" [(ngModel)]="patient.id_escolaridad"> Maestría
               </label>
               <label>
-                <input type="radio" name="educationLevel" value="Doctorado" [(ngModel)]="patient.escolaridad"> Doctorado
+                <input type="radio" name="educationLevel" value="6" [(ngModel)]="patient.id_escolaridad"> Doctorado
               </label>
 
               <label for="occupation">Ocupación:</label>
               <label>
-                <input type="radio" name="occupation" value="Estudiante" [(ngModel)]="patient.ocupacion"> Estudiante
+                <input type="radio" name="occupation" value="1" [(ngModel)]="patient.id_ocupacion"> Estudiante
               </label>
               <label>
-                <input type="radio" name="occupation" value="Empleado" [(ngModel)]="patient.ocupacion"> Empleado
+                <input type="radio" name="occupation" value="2" [(ngModel)]="patient.id_ocupacion"> Empleado
               </label>
               <label>
-                <input type="radio" name="occupation" value="Empresario" [(ngModel)]="patient.ocupacion"> Empresario
+                <input type="radio" name="occupation" value="3" [(ngModel)]="patient.id_ocupacion"> Empresario
               </label>
               <label>
-                <input type="radio" name="occupation" value="Independiente" [(ngModel)]="patient.ocupacion"> Independiente
+                <input type="radio" name="occupation" value="4" [(ngModel)]="patient.id_ocupacion"> Independiente
               </label>
             </div>
             <button type="button" (click)="saveCurrentTabData()">Guardar</button>
@@ -177,31 +177,25 @@
           </div>
 
 
-        <!-- Historial del paciente -->
+        <!-- Historial del paciente
         <div *ngIf="activeTab === 'historyPatient'">
-          <!--<form (ngSubmit)="onSubmit()" ngForm>-->
-            <h2>IUnformacion clinica</h2>
+          <form (ngSubmit)="onSubmit()" ngForm>
+            <h2>Informacion clinica</h2>
             <div class="form-section">
               <label for="medicalHistory">Historial médico:</label>
               <textarea id="medicalHistory" name="medicalHistory"></textarea>
-              
-              <label for="currentMedication">Medicamentos actuales:</label>
-              <div *ngFor="let medication of patient.medicamentos_actuales; let i = index">
-                <input type="text" name="medication-{{i}}">
-              </div>
-              <button (click)="addMedication()">Agregar medicamentos</button>
             </div>
             <button type="save">Guardar</button>
-          <!--</form>-->
-        </div>
+          </form>
+        </div> -->
 
         <!-- Información del familiar -->
         <div *ngIf="activeTab === 'infoFamily'">
           <!-- <form (ngSubmit)="onSubmit()" ngForm> -->
-            <h2>Información del familiar</h2>
+            <h2>Contacto de emergencia</h2>
             <div class="form-section">
               <label for="relativeFirstName">Nombre(s):</label>
-              <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.nombre_contacto_emergencia" required #relativeFirstName="ngModel">
+              <input type="text" id="relativeFirstName" placeholder="Nombre" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" required #relativeFirstName="ngModel">
               <div *ngIf="relativeFirstName.invalid && relativeFirstName.touched" class="error">
                 El nombre es obligatorio.
                 <br>
@@ -209,7 +203,7 @@
               </div>
               
               <label for="relativeLastName">Apellido paterno:</label>
-              <input type="text" id="relativeLastName" name="relativeLastName" [(ngModel)]="patient.apellido_paterno_contacto_emergencia" required #relativeLastName="ngModel">
+              <input type="text" id="relativeLastName" placeholder="Apellido paterno" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" required #relativeLastName="ngModel">
               <div *ngIf="relativeFirstName.invalid && relativeFirstName.touched" class="error">
                 El apellido paterno es obligatorio.
                 <br>
@@ -217,7 +211,7 @@
               </div>
               
               <label for="relativeSurname">Apellido materno:</label>
-              <input type="text" id="relativeSurname" name="relativeSurname" [(ngModel)]="patient.apellido_materno_contacto_emergencia" required #relativeSurname="ngModel">
+              <input type="text" id="relativeSurname" placeholder="Apellido materno" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" required #relativeSurname="ngModel">
               <div *ngIf="relativeSurname.invalid && relativeSurname.touched" class="error">
                 El apellido materno es obligatorio.
                 <br>
@@ -225,7 +219,7 @@
               </div>
 
               <label for="relationship">Parentesco:</label>
-              <input type="text" id="relationship" name="relationship" [(ngModel)]="patient.parentesco_contacto_emergencia" required #relationship="ngModel">
+              <input type="text" id="relationship" placeholder="Parentesco" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" required #relationship="ngModel">
               <div *ngIf="relationship.invalid && relationship.touched" class="error">
                 El parentesco es obligatorio.
                 <br>
@@ -233,7 +227,7 @@
               </div>
 
               <label for="relativePhone">Teléfono:</label>
-              <input type="text" id="relativePhone" name="relativePhone" [(ngModel)]="patient.telefono_contacto_emergencia" required #relativePhone="ngModel">
+              <input type="text" id="relativePhone" placeholder="Telefono" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" required #relativePhone="ngModel">
               <div *ngIf="relativePhone.invalid && relativePhone.touched" class="error">
                 El teléfono es obligatorio.
                 <br>
@@ -241,7 +235,7 @@
               </div>
 
               <label for="relativeEmail">Correo electrónico:</label>
-              <input type="email" id="relativeEmail" name="relativeEmail" [(ngModel)]="patient.correo_electronico_contacto_emergencia" required #relativeEmail="ngModel">
+              <input type="email" id="relativeEmail" placeholder="Correo electronico" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" required #relativeEmail="ngModel">
               <div *ngIf="relativeEmail.invalid && relativeEmail.touched" class="error">
                 El correo electrónico es obligatorio.
                 <br>
@@ -249,7 +243,7 @@
               </div>
 
               <label for="relativeAddress">Dirección:</label>
-              <input type="text" id="relativeAddress" name="relativeAddress" [(ngModel)]="patient.direccion_contacto_emergencia" required #relativeAddress="ngModel">
+              <input type="text" id="relativeAddress" placeholder="Direccion" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required #relativeAddress="ngModel">
               <div *ngIf="relativeAddress.invalid && relativeAddress.touched" class="error">
                 La dirección es obligatoria.
                 <br>
@@ -257,7 +251,7 @@
               </div>
 
               <label for="relativeCity">Ciudad:</label>
-              <input type="text" id="relativeCity" name="relativeCity" [(ngModel)]="patient.ciudad_contacto_emergencia" required #relativeCity="ngModel">
+              <input type="text" id="relativeCity" placeholder="Ciudad" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required #relativeCity="ngModel">
               <div *ngIf="relativeCity.invalid && relativeCity.touched" class="error">
                 La ciudad es obligatoria.
                 <br>
@@ -265,7 +259,7 @@
               </div>
 
               <label for="relativeState">Estado:</label>
-              <input type="text" id="relativeState" name="relativeState" [(ngModel)]="patient.estado_contacto_emergencia" required #relativeState="ngModel">
+              <input type="text" id="relativeState" placeholder="Estado" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" required #relativeState="ngModel">
               <div *ngIf="relativeState.invalid && relativeState.touched" class="error">
                 El estado es obligatorio.
                 <br>
@@ -273,7 +267,7 @@
               </div>
 
               <label for="relativeZipCode">Código postal:</label>
-              <input type="text" id="relativeZipCode" name="relativeZipCode" [(ngModel)]="patient.codigo_postal_contacto_emergencia" required #relativeZipCode="ngModel">
+              <input type="text" id="relativeZipCode" placeholder="Codigo Pais" name="relativeZipCode" [(ngModel)]="patient.contacto_emergencia.codigo_postal" required #relativeZipCode="ngModel">
               <div *ngIf="relativeZipCode.invalid && relativeZipCode.touched" class="error">
                 El código postal es obligatorio.
                 <br>
@@ -281,7 +275,7 @@
               </div>
 
               <label for="relativeCountry">Pais:</label>
-              <input type="text" id="relativeCountry" name="relativeCountry" [(ngModel)]="patient.pais_contacto_emergencia" required #relativeCountry="ngModel">
+              <input type="text" id="relativeCountry" placeholder="Pais" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" required #relativeCountry="ngModel">
               <div *ngIf="relativeCountry.invalid && relativeCountry.touched" class="error">
                 El país es obligatorio.
                 <br>
@@ -289,7 +283,7 @@
               </div>
 
               <label for="relativeNotes">Notas:</label>
-              <textarea id="relativeNotes" name="notas_contacto_emergencia"></textarea>
+              <textarea id="relativeNotes" name="notas_contacto_emergencia" [(ngModel)]="patient.contacto_emergencia.notas" required #relativeCountry="ngModel"></textarea>
             </div>
             <button type="button" (click)="saveCurrentTabData()">Guardar</button>
           <!-- </form> -->
@@ -301,12 +295,12 @@
             <h2>Consentimiento del paciente</h2>
             <div class="form-section">
               <label>
-                <input type="radio" name="gender" value="true" [(ngModel)]="patient.consentimientos"> Doy mi consentimiento para el tratamiento de mis datos personales.
+                <input type="radio" name="consentimiento" value="1" [(ngModel)]="consentimientoTemporal.consentimiento"> Doy mi consentimiento para el tratamiento de mis datos personales.
               </label>
               <label>
-                <input type="radio" name="gender" value="false" [(ngModel)]="patient.consentimientos"> No doy mi consentimiento para el tratamiento de mis datos personales.
+                <input type="radio" name="consentimiento" value="0" [(ngModel)]="consentimientoTemporal.consentimiento"> No doy mi consentimiento para el tratamiento de mis datos personales.
               </label>
-            </div>
+            </div>            
             <button type="button" (click)="registerPatient()">Registrar</button>
           <!-- </form> -->
         </div>
