@@ -506,7 +506,7 @@ onSesionChange() {
           },
           stockTools: {
             gui: {
-              enabled: false, // Deshabilita la GUI por defecto para usar la personalizada
+              enabled: true, // Deshabilita la GUI por defecto para usar la personalizada
             }
           },
           tooltip: {
@@ -515,7 +515,7 @@ onSesionChange() {
           },
           series: series as Highcharts.SeriesOptionsType[]
         };
-        Highcharts.chart(options);
+        Highcharts.stockChart('eeg', options);
     } catch (error) {
       console.error('Error al procesar los datos EEG normalizados:', error);
     }
