@@ -463,11 +463,11 @@ onSesionChange() {
             title: {
               text: 'Amplitud (µV)'
             },
-            labels: {/*
-              formatter: function () {
-                const index = Math.floor((this.value as number) / offset);
-                return names[index] || '';
-              }*/
+            subtitle: {
+              text: 'Grafica creada en ...',
+              align: 'left'
+            }, 
+            labels: {
               formatter: function () {
                 // Calcula el índice basado en la posición actual y el desplazamiento fijo
                 // Esto asume que los canales están igualmente espaciados y el primer canal está en '0'
@@ -476,11 +476,6 @@ onSesionChange() {
                 return names[index] || '';
               }
             },
-            /*
-            min: minOffsetApplied,
-            max: maxOffsetApplied,
-            tickInterval: 1e-6, // Establece un intervalo de tick apropiado
-            */
             tickInterval: offset, // Establece un intervalo de tick apropiado
             min: -extraPadding,
             max: offset * (names.length-1) + extraPadding, // Ajusta el rango máximo según la cantidad de canales
@@ -501,9 +496,9 @@ onSesionChange() {
           navigator: {
             maskInside: false
           },
-          rangeSelector: {
+          /* rangeSelector: {
             selected: 1
-          },
+          }, */
           stockTools: {
             gui: {
               enabled: true, // Deshabilita la GUI por defecto para usar la personalizada
