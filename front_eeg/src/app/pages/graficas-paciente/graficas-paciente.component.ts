@@ -540,7 +540,7 @@ onSesionChange() {
         },
           series: series as Highcharts.SeriesOptionsType[]
         };
-        Highcharts.stockChart('eeg', options);
+        Highcharts.chart('eeg', options);
     } catch (error) {
       console.error('Error al procesar los datos EEG normalizados:', error);
     }
