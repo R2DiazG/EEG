@@ -28,7 +28,7 @@ import FullScreen from 'highcharts/modules/full-screen';
 import StockTools from 'highcharts/modules/stock-tools';
 
 // Initialize modules
-More(Highcharts);
+/* More(Highcharts);
 HC_stock(Highcharts);
 HC_exporting(Highcharts);
 HC_exportData(Highcharts);
@@ -38,7 +38,7 @@ AnnotationsAdvanced(Highcharts);
 PriceIndicator(Highcharts);
 FullScreen(Highcharts);
 StockTools(Highcharts);
-
+ */
 interface SeriesOptions {
   name: string;
   data: number[];
@@ -476,6 +476,14 @@ onSesionChange() {
                 return names[index] || '';
               }
             },
+            accessibility: {
+              screenReaderSection: {
+                  beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>'
+              }
+            },
+            exporting: { // Aquí se configura el botón de exportación
+              enabled: true // Habilita el botón de exportación
+            },
             /*
             min: minOffsetApplied,
             max: maxOffsetApplied,
@@ -502,7 +510,7 @@ onSesionChange() {
           },
           series: series as Highcharts.SeriesOptionsType[]
         };
-        Highcharts.stockChart(options);
+        Highcharts.chart(options);
     } catch (error) {
       console.error('Error al procesar los datos EEG normalizados:', error);
     }
