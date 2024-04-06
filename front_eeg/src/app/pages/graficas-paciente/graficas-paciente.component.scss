@@ -1,4 +1,13 @@
+// Importaciones
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
+
+// Definición de colores y estilos base
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
 
 .container{
     display: flex;
@@ -139,6 +148,90 @@
   
       th {
         background-color: #f2f2f2;
+      }
+    }
+
+    .button-eliminar{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border: none;
+      background-color: $black;
+      cursor: pointer;
+    
+      .icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+      }
+    
+      .text {
+        display: block;
+        opacity: 1;
+      }
+
+      .nota-psicologo-container {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .button-agregar, .button-guardar {
+        background-color: #666; /* Un gris oscuro, ajusta al color deseado */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px 0;
+      }
+      
+      .button-agregar:hover, .button-guardar:hover {
+        background-color: #555; /* Un gris un poco más claro para el hover */
+      }
+      
+      .nota-editor {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .nota-textarea {
+        width: 100%; /* Ajusta al ancho deseado */
+        height: 10rem; /* Ajusta al alto deseado */
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc; /* Un borde ligero */
+        resize: none; /* Evita que el usuario cambie el tamaño */
+      }
+      
+      .nota-textarea:focus {
+        outline: none;
+        border-color: #999; /* Cambia el color del borde al hacer focus */
+      }
+    
+      // Estilos de confirmación y eliminación
+      &.confirm {
+        .icon.fas.fa-trash { display: none; }
+        .icon.fas.fa-question-circle { display: inline-block; }
+        .icon.fas.fa-check-circle { display: none; }
+        background-color: $blue;
+        .text { color: white; }
+      }
+    
+      &.done {
+        .icon.fas.fa-trash { display: none; }
+        .icon.fas.fa-question-circle { display: none; }
+        .icon.fas.fa-check-circle { display: inline-block; }
+        background-color: $green;
+        .text { color: white; }
+      }
+    
+      &:not(.confirm):not(.done):hover {
+        background-color: $red;
+        .text { color: white; }
       }
     }
 

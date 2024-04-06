@@ -740,6 +740,7 @@ def crear_paciente_para_usuario(id_usuario):
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
     datos = request.get_json()
+    print(datos)
     try:
         nuevo_paciente = Paciente(
             id_usuario=id_usuario,  # Use the ID of the user in the URL to create the patient for that user
@@ -754,6 +755,7 @@ def crear_paciente_para_usuario(id_usuario):
             id_ocupacion=datos['id_ocupacion']
         )
         db.session.add(nuevo_paciente)
+        print(nuevo_paciente)
         db.session.flush()  # For getting the ID of the new patient
         # Manejar la creación del contacto de emergencia
         if 'contacto_emergencia' in datos:
@@ -774,19 +776,34 @@ def crear_paciente_para_usuario(id_usuario):
                 notas=contacto_data.get('notas', '')
             )
             db.session.add(contacto_emergencia)
+            print(contacto_emergencia)
+        if 'consentimientos' in datos:
+            for consentimiento in datos['consentimientos']:
+                if consentimiento['consentimiento'] == '1': 
+                    print('soy true')
+                    nuevo_consentimiento = Consentimiento(consentimiento=1, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
+                else:
+                    print('soy false')
+                    nuevo_consentimiento = Consentimiento(consentimiento=0, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
+                db.session.add(nuevo_consentimiento)
         # Add the phone numbers, emails and addresses
         if 'telefonos' in datos:
             for num in datos['telefonos']:
-                nuevo_telefono = Telefono(telefono=num, id_paciente=nuevo_paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=num["telefono"], id_paciente=nuevo_paciente.id_paciente)
                 db.session.add(nuevo_telefono)
+                print(nuevo_telefono)
         if 'correos_electronicos' in datos:
             for email in datos['correos_electronicos']:
-                nuevo_correo = CorreoElectronico(correo_electronico=email, id_paciente=nuevo_paciente.id_paciente)
+                nuevo_correo = CorreoElectronico(correo_electronico=email["correo_electronico"], id_paciente=nuevo_paciente.id_paciente)
+                print(nuevo_correo.correo_electronico)
                 db.session.add(nuevo_correo)
+                print(nuevo_correo)
+                print(email)
         if 'direcciones' in datos:
             for direccion in datos['direcciones']:
                 nueva_direccion = Direccion(**direccion, id_paciente=nuevo_paciente.id_paciente)
                 db.session.add(nueva_direccion)
+                print(nueva_direccion)
         db.session.commit()
         logging.info('Paciente y contacto de emergencia creados exitosamente para el usuario %s', id_usuario)
         return jsonify({'mensaje': 'Paciente y contacto de emergencia creados exitosamente', 'id_paciente': nuevo_paciente.id_paciente}), 201
@@ -947,6 +964,7 @@ def actualizar_paciente_de_usuario(id_usuario, id_paciente):
         actualizar_datos_basicos_paciente(paciente, datos)
         # Update the phone numbers, emails and addresses
         actualizar_telefonos(paciente, datos.get('telefonos', []))
+        actualizar_consentimiento(paciente, datos.get('consentimientos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
         actualizar_contacto_emergencia(paciente, datos.get('contacto_emergencia', {}))
@@ -984,11 +1002,12 @@ def actualizar_telefonos(paciente, telefonos_nuevos):
         # Obtains the current phones of the patient
         telefonos_actuales = {tel.id_telefono: tel for tel in paciente.telefonos}
         for tel_data in telefonos_nuevos:
+            print(tel_data)
             if 'id_telefono' in tel_data and tel_data['id_telefono'] in telefonos_actuales:
                 telefono = telefonos_actuales.pop(tel_data['id_telefono'])
-                telefono.telefono = tel_data['numero']
+                telefono.telefono = tel_data['telefono']
             else:
-                nuevo_telefono = Telefono(telefono=tel_data['numero'], id_paciente=paciente.id_paciente)
+                nuevo_telefono = Telefono(telefono=tel_data['telefono'], id_paciente=paciente.id_paciente)
                 db.session.add(nuevo_telefono)
         # Delete any phone number not included in the update
         for tel in telefonos_actuales.values():
@@ -1066,40 +1085,32 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         # Eliminar cualquier dirección no incluida en la actualización
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
-
-@app.route('/pacientes/<int:id_paciente>/consentimiento', methods=['PUT'])
-def actualizar_consentimiento(id_paciente):
+            
+def actualizar_consentimiento(paciente, consentimiento_recibido):
     """
     Function to update the consent status for a patient.
     """
     try:
-        paciente = Paciente.query.get(id_paciente)
-        if not paciente:
-            os.abort(404, description="Paciente no encontrado")
-        datos = request.get_json()
-        consentimiento_recibido = datos.get('consentimiento', None)
-        if consentimiento_recibido is None:
-            os.abort(400, description="Datos de consentimiento no proporcionados")
         # Search for the consent of the patient
-        consentimiento = Consentimiento.query.filter_by(id_paciente=id_paciente).first()
+        consentimiento = Consentimiento.query.filter_by(id_paciente=paciente['id_paciente']).first()
         if consentimiento:
             # Update the consent if it already exists
-            consentimiento.consentimiento = consentimiento_recibido
-            consentimiento.fecha_registro = datetime.now(timezone.utc)
+            consentimiento.consentimiento = consentimiento_recibido['consentimiento']
+            consentimiento.fecha_registro = consentimiento_recibido['fecha_registro']
         else:
             # Create a new consent if it doesn't exist
             consentimiento_nuevo = Consentimiento(
-                id_paciente=id_paciente,
-                consentimiento=consentimiento_recibido,
-                fecha_registro=datetime.now(timezone.utc)
+                id_paciente=paciente['id_paciente'],
+                consentimiento=consentimiento_recibido['consentimiento'],
+                fecha_registro= consentimiento_recibido['fecha_registro']
             )
             db.session.add(consentimiento_nuevo)
         db.session.commit()
-        logging.info('Consentimiento actualizado exitosamente para el paciente %s', id_paciente)
+        logging.info('Consentimiento actualizado exitosamente para el paciente %s', paciente['id_paciente'])
         return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
     except Exception as e:
         db.session.rollback()
-        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', id_paciente, e)
+        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', paciente['id_paciente'], e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 def actualizar_contacto_emergencia(paciente, datos_contacto):

@@ -57,4 +57,9 @@ export class PacienteService {
     return this.http.get<any[]>(url, { headers: this.getHeaders() });
   }
 
+  eliminarSesionPorPaciente(idPaciente: number, idSesion: number): Observable<any> {
+    const url = `${this.apiUrl}/pacientes/${idPaciente}/sesiones/${idSesion}`;
+    return this.http.delete(url, { headers: this.getHeaders() });
+  }
+
 }

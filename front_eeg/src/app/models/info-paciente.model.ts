@@ -5,10 +5,16 @@ export class InfoPaciente {
     apellido_materno?: string;
     // Asegúrate de que la fecha de nacimiento pueda ser manejada consistentemente como Date o como string
     fecha_nacimiento?: Date | string;  
-    genero?: 'Masculino' | 'Femenino';
+    id_genero?: number;
+    id_estado_civil?: number;
+    id_escolaridad?: number;
+    id_ocupacion?: number;
+    id_lateralidad?: number;
+
     edad?: number;
     notas_ultima_sesion?: string;
 
+    genero?: 'Masculino' | 'Femenino';
     estado_civil?: 'Soltero/a' | 'Casado/a' | 'Divorciado/a' | 'Viudo/a';
     escolaridad?: 'Primaria' | 'Secundaria' | 'Preparatoria' | 'Universidad' | 'Posgrado' | 'Otro';
     ocupacion?: 'Estudiante' | 'Empleado' | 'Empresario' | 'Independiente';
@@ -25,26 +31,26 @@ export class InfoPaciente {
         pais: string;
         codigo_postal: string;
     }[] = [];
-    historial_medico?: string;
-    medicamentos_actuales: string[] = []; // Inicializado como vacío
 
     // Información de contacto de emergencia, opcional pero estructurada para claridad
-    nombre_contacto_emergencia?: string;
-    apellido_paterno_contacto_emergencia?: string;
-    apellido_materno_contacto_emergencia?: string;
-    parentesco_contacto_emergencia?: string;
-    telefono_contacto_emergencia?: string;
-    correo_electronico_contacto_emergencia?: string;
-    direccion_contacto_emergencia?: string;
-    ciudad_contacto_emergencia?: string;
-    estado_contacto_emergencia?: string;
-    codigo_postal_contacto_emergencia?: string;
-    pais_contacto_emergencia?: string;
-    notas_contacto_emergencia?: string;
+    contacto_emergencia: {
+        nombre?: string;
+        apellido_paterno?: string;
+        apellido_materno?: string;
+        ciudad?: string;
+        codigo_postal?: string;
+        correo_electronico: string;
+        direccion: string;
+        estado: string;
+        notas: string;
+        pais: string;
+        parentesco: string;
+        telefono: string;
+    } = {} as any;
 
     // Los consentimientos se manejan como un array de objetos con la estructura dada
     consentimientos: { 
-        consentimiento: boolean; 
-        fecha_registro: Date 
+        consentimiento: number; 
+        fecha_registro: string;
     }[] = [];
 }
