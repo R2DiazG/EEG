@@ -1,15 +1,21 @@
 <div class="container">
 <app-menu-lateral></app-menu-lateral>
 <div class="patient-edit-container">
-    <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
-    <button (click)="regresar()">Regresar a lista de pacientes</button>
+  <div class="header">
+    <div class="left">
+      <button (click)="regresar()" class="regresar">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+      </button>
+      <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
+    </div>
     <div class="form-actions">
       <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
         <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
         <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
         <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
         <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
-    </button> 
+    </button>
+  </div>
     </div>
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
@@ -27,7 +33,7 @@
           <!-- Dentro de <div *ngIf="activeTab === 'infoPatient'"> y otros tabs según corresponda -->
           <div class="form-actions">
             <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
-            <button type="button" id="edit" (click)="isEditMode ? onSubmit() : toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="edit" (click)="isEditMode ? onSubmit() : toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>
           <div class="form-section">              
             <label for="firstName">Nombre:</label>
@@ -167,7 +173,7 @@
         <form (ngSubmit)="onSubmit()" ngForm>
           <h2>Contacto del paciente</h2>
           <div class="form-actions">
-            <button type="button" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>
           <div class="form-section">
             <label>Teléfonos celulares:</label>
@@ -235,7 +241,7 @@
         <form (ngSubmit)="onSubmit()" ngForm>
           <h2>Información del familiar</h2>
           <div class="form-actions">
-            <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>
           <div class="form-section">
             <label for="relativeFirstName">Nombre(s):</label>
@@ -282,7 +288,7 @@
         <form (ngSubmit)="onSubmit()" ngForm>
           <h2>Consentimiento del paciente</h2>
           <div class="form-actions">
-            <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
           </div>
           <div *ngIf="!isEditMode">
             <label>Consentimiento:</label>

@@ -14,11 +14,11 @@ import { EegService } from '../../services/sesiones/eeg.service';
   styleUrls: ['./lista-pacientes.component.scss']
 })
 export class ListaPacientesComponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'apellido_paterno', 'apellido_materno', 'edad', 'numero_de_sesiones', 'notas_ultima_sesion', 'eliminar', 'acciones', 'sesion'];
+  displayedColumns: string[] = ['nombre', 'apellido_paterno', 'apellido_materno', 'edad', 'numero_de_sesiones', 'notas_ultima_sesion', 'acciones', 'sesion', 'eliminar'];
   dataSource = new MatTableDataSource<any>([]);
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
-  private idUsuarioActual: number | null = null; // Inicializa idUsuarioActual en null
+  idUsuarioActual!: number;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -55,6 +55,7 @@ export class ListaPacientesComponent implements OnInit {
     });
   }
 
+  /*
   loadUsers(idUsuario: number) {
     // Asegúrate de que idUsuario es un número antes de continuar
     if (typeof idUsuario === 'number') {
@@ -62,6 +63,29 @@ export class ListaPacientesComponent implements OnInit {
       this.pacienteService.obtenerPacientesPorUsuario(idUsuario).subscribe({
         next: (data) => {
           this.dataSource.data = data;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al recuperar pacientes:', error);
+        }
+      });
+    } else {
+      console.error('loadUsers fue llamado sin un idUsuario válido.');
+    }
+  }
+  */
+
+  loadUsers(idUsuario: number) {
+    if (typeof idUsuario === 'number') {
+      this.pacienteService.obtenerPacientesPorUsuario(idUsuario).subscribe({
+        next: (data) => {
+          // Asegurándonos de que cada paciente tenga la propiedad isDeleteInitiated
+          this.dataSource.data = data.map(patient => ({
+            ...patient,
+            isConfirm: false,
+            isDeleteInitiated: false,
+            isDeleted: false, // Asumiendo que también quieres tener esta propiedad
+          }));
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -84,6 +108,7 @@ export class ListaPacientesComponent implements OnInit {
     }
   }
 
+  /*
   onDeletePatient(patient: any) {
     if (this.idUsuarioActual === null) {
         console.error('Error: ID de usuario no disponible.');
@@ -112,6 +137,57 @@ export class ListaPacientesComponent implements OnInit {
             this.cdr.detectChanges();
         }, 3000);
     }
+}*/
+
+onDeletePatient(patient: any) {
+  if (this.idUsuarioActual === null) {
+    console.error('Error: ID de usuario no disponible.');
+    return; // Salir temprano si idUsuarioActual es null
+  }
+
+  // Inicializar el proceso de eliminación en el primer clic
+  if (!patient.isConfirm && !patient.isDeleteInitiated) {
+    patient.isDeleteInitiated = true;
+    this.cdr.detectChanges();
+    // Establece un timeout para revertir el estado si no hay confirmación
+    setTimeout(() => {
+      if (!patient.isConfirm) { // Si aún no está confirmado, revertir
+        patient.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+    return;
+  }
+
+  if (patient.isConfirm) {
+    this.pacienteService.eliminarPaciente(this.idUsuarioActual, patient.id_paciente).subscribe({
+      next: (resp) => {
+        console.log('Paciente eliminado:', resp);
+        patient.isDeleted = true;
+        patient.isDeleteInitiated = false;
+        this.loadUsers(this.idUsuarioActual);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al eliminar paciente:', error);
+        patient.isConfirm = false;
+        patient.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    });
+  } else {
+    // Solicitar confirmación en el segundo clic
+    patient.isConfirm = true;
+    this.cdr.detectChanges();
+    // Si el usuario no confirma dentro de 3 segundos, revertir
+    setTimeout(() => {
+      if (!patient.isDeleted) { // Si no se ha eliminado, revertir
+        patient.isConfirm = false;
+        patient.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+  }
 }
 
 // Dentro de tu componente ListaPacientesComponent

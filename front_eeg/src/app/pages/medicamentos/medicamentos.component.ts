@@ -39,7 +39,7 @@ export class MedicamentosComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  cargarMedicamentos() {
+  /*cargarMedicamentos() {
     this.medicamentoService.obtenerMedicamentos().subscribe({
       next: (medicamentos) => {
         this.dataSource.data = medicamentos;
@@ -49,7 +49,26 @@ export class MedicamentosComponent implements OnInit {
         console.error('Error al recuperar medicamentos:', error);
       }
     });
+  }*/
+
+  cargarMedicamentos() {
+    this.medicamentoService.obtenerMedicamentos().subscribe({
+      next: (medicamentos) => {
+        // Inicializa isConfirm, isDeleteInitiated, y isDeleted en false para cada medicamento
+        this.dataSource.data = medicamentos.map(medicamento => ({
+          ...medicamento,
+          isConfirm: false,
+          isDeleteInitiated: false,
+          isDeleted: false,
+        }));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al recuperar medicamentos:', error);
+      }
+    });
   }
+  
 
   applyFilter(value: string) {
     this.dataSource.filter = value.trim().toLowerCase();
@@ -58,7 +77,7 @@ export class MedicamentosComponent implements OnInit {
     }
   }
 
-  eliminarMedicamento(medicamento: any) {
+  /*eliminarMedicamento(medicamento: any) {
     // Verifica si ya se ha confirmado la intención de eliminar
     if (medicamento.isConfirm) {
       // Realiza la llamada al servicio para eliminar el medicamento
@@ -84,7 +103,45 @@ export class MedicamentosComponent implements OnInit {
         this.cdr.detectChanges(); // Actualiza la vista para reflejar el cambio
       }, 3000); // Ajusta el tiempo según sea necesario
     }
+  }*/
+
+  eliminarMedicamento(medicamento: any) {
+    if (!medicamento.isConfirm && !medicamento.isDeleteInitiated) {
+      // Si es la primera vez que se hace clic, solo se muestra el texto 'Eliminar'
+      medicamento.isDeleteInitiated = true;
+      this.cdr.detectChanges();
+      return; // Espera el próximo clic para confirmación
+    }
+  
+    if (medicamento.isConfirm) {
+      // Realiza la llamada al servicio para eliminar el medicamento
+      this.medicamentoService.eliminarMedicamento(medicamento.id_medicamento).subscribe({
+        next: () => {
+          console.log('Medicamento eliminado exitosamente');
+          medicamento.isDeleted = true; // Marcar el medicamento como eliminado
+          this.cargarMedicamentos(); // Recarga la lista de medicamentos
+        },
+        error: (error) => {
+          console.error('Error al eliminar el medicamento:', error);
+          medicamento.isConfirm = false;
+          medicamento.isDeleteInitiated = false; // Restablece también esta propiedad en caso de error
+          this.cdr.detectChanges(); // Actualiza la vista si es necesario
+        }
+      });
+    } else {
+      // Establece el estado de confirmación a true para pedir confirmación
+      medicamento.isConfirm = true;
+      this.cdr.detectChanges(); // Asegúrate de que el cambio se refleje en la vista
+  
+      // Restablece el estado de confirmación y isDeleteInitiated después de un tiempo si el usuario no confirma
+      setTimeout(() => {
+        medicamento.isConfirm = false;
+        medicamento.isDeleteInitiated = false;
+        this.cdr.detectChanges(); // Actualiza la vista para reflejar el cambio
+      }, 3000); // Ajusta el tiempo según sea necesario
+    }
   }
+  
   
   abrirDialogoCrearMedicamento() {
     const dialogRef = this.dialog.open(CrearMedicamentoDialogComponent, {

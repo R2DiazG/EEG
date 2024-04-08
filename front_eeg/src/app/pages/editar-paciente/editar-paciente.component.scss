@@ -1,18 +1,40 @@
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 .container {
   display: flex;
   flex-direction: row;
+}
+
+.header {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  width: 100%;
+  padding: 0;
+  align-items: baseline;
+}
+
+.left {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  width: 100%;
+  padding: 0;
+  align-items: baseline;
+}
+
+.header h1 {
+  margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
+  font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+  align-items: baseline;
 }
 
 .sidebar {
   flex: 0 0 200px;
   height: 100vh;
 }
-
-$bg: #313841;
-$red: #F34541;
-$black: #1D242B;
-$green: #38B87C;
-$blue: #2492FF;
 
 .patient-edit-container {
   flex: 1;
@@ -141,19 +163,34 @@ $blue: #2492FF;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-  
-    button {
-      background-color: #f44336; /* Red */
-      color: white;
-      padding: 6px 12px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-  
+  }
+
+  .regresar, .editar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1.5rem;
+    background-color: transparent;
+    margin: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+    .regresar {
+      color: $bg;
       &:hover {
-        background-color: #d32f2f; /* Darker red */
-      }
+      background-color: $blue;
+      color: white;
+      .text { color: white; }
+    }
+  }
+    .editar {
+      color: $bg;
+      &:hover {
+      background-color: $blue;
+      color: white;
+      .text { color: white; }
     }
   }
 
@@ -164,12 +201,16 @@ $blue: #2492FF;
   justify-content: center;
   padding: 0.5rem;
   border: none;
-  background-color: $black;
+  background-color: $red;
   margin: 0.5rem;
+  transition: 
+    background-color 0.3s ease-in-out,
+    color 0.3s ease-in-out;
   cursor: pointer;
 
   .icon {
-    font-size: 1.5rem;
+    font-size: 1rem;
+    margin-left: 0.25rem;
     margin-right: 0.5rem;
   }
 
