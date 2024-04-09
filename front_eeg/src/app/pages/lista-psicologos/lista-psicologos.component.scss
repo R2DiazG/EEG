@@ -186,6 +186,25 @@ body {
     align-items: center;
   }
 
+  :root {
+    --royal-purple: #7353BA;
+    --periwinkle: #BBBDF6;
+    --tropical-indigo: #9893DA;
+  }
+  
+  .mat-slide-toggle.mat-accent .mat-slide-toggle-thumb {
+    background-color: var(--royal-purple) !important;
+  }
+  
+  .mat-slide-toggle.mat-accent .mat-slide-toggle-bar {
+    background-color: var(--periwinkle) !important;
+  }
+  
+  .mat-slide-toggle.mat-accent.mat-checked .mat-slide-toggle-bar {
+    background-color: var(--tropical-indigo) !important;
+  }
+  
+/*
   .toggle-active {
     .mat-slide-toggle-thumb {
       background-color: var(--color-checked);
@@ -195,6 +214,7 @@ body {
       background-color: var(--color-unchecked);
     }
   }
+*/
 }
 
 // Botones de acción

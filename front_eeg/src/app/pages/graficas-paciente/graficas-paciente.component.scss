@@ -12,6 +12,7 @@ $blue: #2492FF;
 .container{
     display: flex;
     flex-direction: row;
+    max-width: max-content;
   }
 .graphs-container {
     flex: 1;
@@ -60,7 +61,7 @@ $blue: #2492FF;
       align-items: baseline;
     }
 
-    .regresar, .add{
+    .regresar, .add, .button-agregar{
       display: flex;
       align-items: center;
       justify-content: center;
@@ -89,6 +90,15 @@ $blue: #2492FF;
         .text { color: white; }
       }
     }
+    .button-agregar {
+      color: $bg;
+      margin-right: 10px;
+      &:hover {
+      background-color: $blue;
+      color: white;
+      .text { color: white; }
+    }
+  }
       input[type="search"] {
         padding: 0.5rem;
         margin-right: 1rem;
@@ -137,9 +147,22 @@ $blue: #2492FF;
      .seccion{
       margin-bottom: 20px;
       border-radius: 8px;
-      width: 98%;
       background-color: white;
       padding: 1rem;
+    }  
+    .botones-container {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem;
+    }
+    .seccionInicial{
+      margin-bottom: 20px;
+      border-radius: 8px;
+      width: 98%;
+      background-color: white;
+      padding-left: 2rem;
+      padding-top: 2rem;
+      padding-right: 1rem;
     }  
     .search-container {
       display: flex;
@@ -164,6 +187,7 @@ $blue: #2492FF;
         height: 100%; // Altura para llenar el contenedor de búsqueda
         border-radius: 20px; // Bordes redondeados para el input
         border: solid #F1F3F4;
+        background-color: white;
         width: 100%;
         &::placeholder {
           color: #5F6368; // Color para el placeholder
@@ -264,20 +288,6 @@ $blue: #2492FF;
         flex-direction: column;
         margin: 0;
         padding: 0;
-      }
-      
-      .button-agregar, .button-guardar {
-        background-color: #666; /* Un gris oscuro, ajusta al color deseado */
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 16px;
-        margin: 5px 0;
-      }
-      
-      .button-agregar:hover, .button-guardar:hover {
-        background-color: #555; /* Un gris un poco más claro para el hover */
       }
       
       .nota-editor {

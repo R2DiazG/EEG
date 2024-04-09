@@ -77,16 +77,6 @@ export class RegistrarPacienteComponent implements OnInit {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
   }
 
-  // En tu componente
-
-// Método temporal para guardar la información actualizada
-saveCurrentTabData(): void {
-  // Aquí puedes validar o procesar los datos antes de asignarlos al paciente
-  console.log('Datos guardados temporalmente:', this.patient);
-  // Puedes mostrar una notificación al usuario de que los datos se han guardado temporalmente
-}
-
-// Método final para enviar todos los datos
 registerPatient(): void {
   // Recorre el arreglo de consentimientos y asigna la fecha actual formateada a cada entrada
   //this.patient.consentimientos.forEach(consentimiento => {

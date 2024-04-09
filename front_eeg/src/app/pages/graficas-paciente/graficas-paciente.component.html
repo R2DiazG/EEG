@@ -36,22 +36,31 @@
       <div *ngIf="activeTab === 'detailsSesion'">
       <div class="header">
         <div class="left">
-          <div class="seccion">
+          <div class="seccionInicial">
           <div class="info-eeg">
               <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
               <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
               <p><strong>Estado general:</strong> {{estado_general}}</p>
               <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
               <div>
-                <button (click)="addMedication()">Agregar medicamentos</button>
+              <div class="botones-container">
+                <div>
+                  <button (click)="addMedication()" class="button-agregar">
+                    <i class="fas fa-medkit" aria-hidden="true"></i> 
+                  </button>
+                </div>
                 <div class="nota-psicologo-container">
-                  <button class="button-agregar" (click)="onAgregarNotasClick()">Agregar notas del psicologo</button>
-  
+                  <button class="button-agregar" (click)="onAgregarNotasClick()">
+                    <i class="fas fa-sticky-note" aria-hidden="true"></i> 
+                  </button>
                   <div *ngIf="isAddingNote" class="nota-editor">
                     <textarea class="nota-textarea" [(ngModel)]="notasPsicologo" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
-                    <button class="button-guardar" (click)="guardarNotasPsicologo()">Guardar Notas</button>
+                    <button class="button-guardar" (click)="guardarNotasPsicologo()">
+                      <i class="fas fa-save" aria-hidden="true"></i> 
+                    </button>
                   </div>
-                </div>
+              </div>
+              </div>
               </div>
           </div>
           </div>
@@ -78,7 +87,6 @@
       </div>
       <div *ngIf="activeTab === 'meds'">
         <div class="header">
-            <h2>Medicamentos</h2>
             <div class="search-container">
               <i class="fas fa-search" aria-hidden="true"></i>
               <input type="search" placeholder="Buscar medicamento" [formControl]="searchControl" class="search-input">
