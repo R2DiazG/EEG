@@ -22,8 +22,8 @@
       <!-- Actualizado para mostrar 'Delete' solo después del primer clic -->
       <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
     </button>
-  </div>
     </div>
+  </div>
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
       <button class="tab" id="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
@@ -44,7 +44,6 @@
           </div>
           <div class="form-section">
           <div class="informacionDelPaciente">
-          
           <div class="seccion" >
             <!-- Nombre -->
             <div *ngIf="!isEditMode; else editNombre" class="respuesta" >
@@ -320,7 +319,8 @@
               <input type="text" [id]="'zipCode' + i" [name]="'zipCode' + i" [(ngModel)]="patient.direcciones[i].codigo_postal" placeholder="Código postal" [readonly]="!isEditMode">
               <input type="text" [id]="'country' + i" [name]="'country' + i" [(ngModel)]="patient.direcciones[i].pais" placeholder="País" [readonly]="!isEditMode">
             </div> -->
-
+            </div>
+            <div class="seccion">
             <!-- Código Postal -->
             <div *ngIf="!isEditMode; else editCodigoPostal" class="respuesta">
               <label>Código Postal:</label>
@@ -606,8 +606,9 @@
               <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
             </button>
           </div>
+          <div class="seccion">
           <div *ngIf="!isEditMode">
-            <label>Consentimiento:</label>
+            <label>Consentimiento: </label>
             <span>{{ getConsentimientoDisplay(this.patient.consentimientos) }}</span>
           </div>
           <!-- <div *ngIf="isEditMode">
@@ -619,6 +620,7 @@
               <input type="radio" name="occupation" value="0" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente no ha dado su consentimiento
             </label>
           </div> -->
+        </div>
         </form>
 
 

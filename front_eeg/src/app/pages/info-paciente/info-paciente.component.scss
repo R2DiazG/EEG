@@ -1,19 +1,36 @@
 /* patient-info.component.scss */
 .patient-info-container {
-    padding: 1rem; // Espaciado interno
-    margin-bottom: 1rem;
-    margin-top: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    //padding: 1.5rem; // Espaciado interno
+    //margin-bottom: 1rem;
+    //margin-top: 1rem;
+    //border-radius: 8px;
+    //box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+      padding-top: 1.5rem;
+      padding-bottom: .5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+      justify-content: space-between;
+      background-color: #ebebfc;
+      /* text-align: center; */
+      display: flex;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      align-items: baseline;
+      flex-direction: row;
+      flex-wrap: nowrap;
   
     .patient-basic-info {
       display: grid;
       grid-template-columns: repeat(4, 1fr); // Divide el espacio en 4 columnas iguales
       gap: 1rem; // Espacio entre elementos
-      margin-bottom: 1rem; // Margen debajo de la sección de información básica
+      margin-bottom: 1rem; // Margen debajo de la sección de información básic
   
       span {
         display: block; // Asegura que cada elemento se muestre en su propia línea en pantallas pequeñas
+        font-size: 1.5rem;
       }
     }
   

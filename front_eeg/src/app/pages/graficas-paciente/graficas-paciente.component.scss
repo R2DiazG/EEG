@@ -28,16 +28,67 @@ $blue: #2492FF;
       margin: 10px; // Margen reducido para pantallas pequeñas
       max-width: none;
     }
-    .headerButton{
-      display: flex !important;
-      justify-content: flex-end !important;
-      margin-left: 75%;
-    }
+
     .header {
       display: flex;
-      justify-content: space-between;
+      align-items: center; // Keep this if you want to align items in the center vertically
+      width: 100%;
+      align-items: baseline;
+      padding: 0;
+    }
+    
+    .right {
+      display: flex;
+      align-items: center; // Align items vertically inside the .right div
+    }
+    
+    .left {
+      display: flex;
+      align-items: center; /* Alinea los elementos verticalmente */
+      width: 100%;
+      padding: 0;
+      align-items: baseline;
+    }
+
+    p{
+      font-size: 1.1rem;
+    }
+    
+    .header h1 {
+      margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
+      font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+      align-items: baseline;
+    }
+
+    .regresar, .add{
+      display: flex;
       align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border: none;
+      font-size: 1.5rem;
+      background-color: transparent;
+      margin: 0.5rem;
+      cursor: pointer;
       margin-bottom: 20px;
+    }
+      .regresar {
+        color: $bg;
+        &:hover {
+        background-color: $blue;
+        color: white;
+        .text { color: white; }
+      }
+    }
+      .add {
+        color: $bg;
+        margin-right: 10px;
+        &:hover {
+        background-color: $blue;
+        color: white;
+        .text { color: white; }
+      }
+    }
       input[type="search"] {
         padding: 0.5rem;
         margin-right: 1rem;
@@ -45,43 +96,51 @@ $blue: #2492FF;
         border-radius: 0.25rem;
         width: 30%;
       }
+
     }
     .fecha-consulta-seccion {
-      position: relative;
-      margin: 1rem;
-      select {
-        width: 100%;
-        padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
-        border: 1px solid #ddd; // Un borde gris claro
-        border-radius: 4px; // Bordes redondeados
-        appearance: none; // Esto elimina la flecha nativa del dropdown
-        background-color: #fff; // Fondo blanco
-        font-size: 16px; // Tamaño de la fuente a tu gusto
-        // Ajusta el padding derecho para hacer espacio para el icono
-        padding-right: 40px; // Asegúrate de tener suficiente espacio para el icono
-        &:focus {
-          outline: none;
-          border-color: #aaa; // Cambia el color del borde cuando está enfocado
-        }
-        option {
-          color: #666; // Cambia el color del texto de las opciones
-        }
+       position: relative;
+       margin: 1rem;
+       select {
+         width: 100%;
+         padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
+         border: 1px solid #ddd; // Un borde gris claro
+         border-radius: 4px; // Bordes redondeados
+         appearance: none; // Esto elimina la flecha nativa del dropdown
+         background-color: #fff; // Fondo blanco
+         font-size: 16px; // Tamaño de la fuente a tu gusto
+         // Ajusta el padding derecho para hacer espacio para el icono
+         padding-right: 40px; // Asegúrate de tener suficiente espacio para el icono
+         &:focus {
+           outline: none;
+           border-color: #aaa; // Cambia el color del borde cuando está enfocado
+         }
+         option {
+           color: #666; // Cambia el color del texto de las opciones
+         }
         
-        option:disabled {
-          color: #999;
-        }
-      }
-      // Agregar el icono de FontAwesome con una clase
-      .fa-sort-desc {
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        pointer-events: none; // Asegura que el icono no interfiera con el clic en el select
-        transform: translateY(-50%);
-        font-size: 16px; // Ajusta el tamaño del icono según necesites
-        color: #333; // El color del icono
-      }
-    }    
+         option:disabled {
+           color: #999;
+         }
+       }
+   // Agregar el icono de FontAwesome con una clase
+       .fa-sort-desc {
+         position: absolute;
+         top: 50%;
+         right: 15px;
+         pointer-events: none; // Asegura que el icono no interfiera con el clic en el select
+         transform: translateY(-50%);
+         font-size: 16px; // Ajusta el tamaño del icono según necesites
+         color: #333;  //El color del icono
+       }
+     }
+     .seccion{
+      margin-bottom: 20px;
+      border-radius: 8px;
+      width: 98%;
+      background-color: white;
+      padding: 1rem;
+    }  
     .search-container {
       display: flex;
       align-items: center;
@@ -135,25 +194,71 @@ $blue: #2492FF;
       }
     }
 
-    .button-eliminar{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5rem;
-      border: none;
-      background-color: $black;
-      cursor: pointer;
-    
-      .icon {
-        font-size: 1.5rem;
-        margin-right: 0.5rem;
-      }
-    
-      .text {
-        display: block;
-        opacity: 1;
-      }
+    // Botones de acción
+  .button-eliminar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  background-color: transparent;
+  margin: 0.5rem;
+  cursor: pointer;
 
+  .icon {
+    font-size: 1.5rem;
+    color: $bg; // Asegúrate de que $bg esté definido y sea el color deseado
+    margin-right: 0.5rem;
+    margin-left: 0.25rem;
+  }
+
+  .text {
+    display: block;
+    opacity: 1;
+  }
+
+  // Estilos de confirmación y eliminación
+  &.confirm {
+    .icon.fas.fa-trash { display: none; }
+    .icon.fas.fa-question-circle {
+      display: inline-block;
+      color: white;
+    }
+    .icon.fas.fa-check-circle { display: none; }
+    background-color: $blue;
+    .text { color: white; }
+  }
+
+  &.done {
+    .icon.fas.fa-trash { display: none; }
+    .icon.fas.fa-question-circle { display: none; }
+    .icon.fas.fa-check-circle {
+      display: inline-block;
+      color: white;
+    }
+    background-color: $green;
+    .text { color: white; }
+  }
+
+  // Nuevo estado para cuando isDeleteInitiated es true
+  &.delete-initiated:not(.confirm):not(.done) {
+    background-color: $red; // Asegúrate de que $red esté definido y sea el color deseado
+    .icon.fas.fa-trash {
+      display: inline-block;
+      color: white;
+    }
+    .text { color: white; }
+  }
+
+  &:not(.confirm):not(.done):hover {
+    background-color: $red;
+    .icon.fas.fa-trash {
+      display: inline-block;
+      color: white;
+    }
+    .text { color: white; }
+  }
+}
       .nota-psicologo-container {
         display: flex;
         flex-direction: column;
@@ -195,100 +300,30 @@ $blue: #2492FF;
         outline: none;
         border-color: #999; /* Cambia el color del borde al hacer focus */
       }
-    
-      // Estilos de confirmación y eliminación
-      &.confirm {
-        .icon.fas.fa-trash { display: none; }
-        .icon.fas.fa-question-circle { display: inline-block; }
-        .icon.fas.fa-check-circle { display: none; }
-        background-color: $blue;
-        .text { color: white; }
-      }
-    
-      &.done {
-        .icon.fas.fa-trash { display: none; }
-        .icon.fas.fa-question-circle { display: none; }
-        .icon.fas.fa-check-circle { display: inline-block; }
-        background-color: $green;
-        .text { color: white; }
-      }
-    
-      &:not(.confirm):not(.done):hover {
-        background-color: $red;
-        .text { color: white; }
-      }
-    }
 
     .tab-menu {
-      .tab {
+      .tab{
         padding: 0.5rem 1rem;
         margin-right: 0.5rem;
-        background-color: #333;
+        background-color: transparent;
         border: none;
-        border-bottom: 3px solid transparent;
+        color: #333;
         cursor: pointer;
+        font-size: medium;
+  
         &.active {
-          border-bottom-color: #333;
-          background-color: yellow;
+          border-bottom: 3px solid #7353ba;
           color: #333;
         }
+  
         &:hover {
-          background-color: darken(#a2a2a2, 5%);
+          background-color:#bbbdf6;
         }
       }
     }
-// input[type="search"] {
-//   width: 100%;
-//   padding: 10px;
-//   padding-right: 40px; /* Hacer espacio para el ícono */
-// }
-
-
-// .space1{
-//   height: .5rem;
-// }
-
-// .space{
-//   height: 8rem;
-// }
-
-// .search-icon {
-//   position: absolute;
-//   top: 0;
-//   right: 0;
-//   padding: 10px;
-//   color: #aaa;
-// }
-
-//     .search-upload-section {
-//       margin: 1rem 0;
   
-//       input[type="search"] {
-//         padding: 0.5rem;
-//         margin-right: 1rem;
-//         border: 1px solid #ccc;
-//         border-radius: 0.25rem;
-//         width: 30%;
-//       }
-//       .header {
-//         display: flex;
-//         justify-content: space-between;
-//         align-items: center;
-//         margin-bottom: 20px;
-    
-//         button {  
-//           padding: 0.7rem;
-//           border: 1px solid #ccc;
-//           border-radius: 4px;      
-//           &:hover {
-//             background-color: #333;
-//           }
-//         }
-//       }
-//     }
     .tab-content {
-      border: 1px solid #ccc;
+      background-color: #ebebfc;
+      border-radius: 8px;
       padding: 1rem;
-      // Further styles for tab content based on your design
     }
-  }

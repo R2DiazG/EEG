@@ -85,8 +85,9 @@ export class GraficasPacienteComponent implements OnInit {
   notasPsicologo: string = '';
   
   // Eliminar sesion
-  isConfirmDelete: boolean = false;
+  isConfirm: boolean = false;
   isDeleted: boolean = false;
+  isDeleteInitiated: boolean = false;
 
   //Medicamentos
   displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion'];
@@ -177,40 +178,96 @@ cargarMedicamentos() {
   });
 }
 
-onDeleteSesion(): void {
-  if (!this.isConfirmDelete) {
-    this.isConfirmDelete = true;
-    setTimeout(() => {
-      // Este timeout restablecerá el botón si el usuario no confirma la eliminación
-      this.isConfirmDelete = false;
-    }, 3000);
-  } else {
-    if (this.idPaciente && this.idSesion) {
-      this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
-        next: () => {
-          console.log('Sesion eliminada con éxito.');
-          this.isDeleted = true;
+// onDeleteSesion(): void {
+//   if (!this.isConfirm) {
+//     this.isConfirm = true;
+//     setTimeout(() => {
+//       // Este timeout restablecerá el botón si el usuario no confirma la eliminación
+//       this.isConfirm = false;
+//     }, 3000);
+//   } else {
+//     if (this.idPaciente && this.idSesion) {
+//       this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
+//         next: () => {
+//           console.log('Sesion eliminada con éxito.');
+//           this.isDeleted = true;
           
-          // Establece un tiempo para que el estado 'eliminado' se muestre durante un tiempo antes de resetear
-          setTimeout(() => {
-            // Restablece los estados para volver al texto original del botón 'Eliminar'
-            this.isConfirmDelete = false;
-            this.isDeleted = false;
-            this.getLastSession(this.idPaciente); // Obtener la última sesión aquí o donde sea adecuado
-          }, 2000); // Ajusta este tiempo como sea necesario
-        },
-        error: (error) => {
-          console.error('Error al eliminar el paciente:', error);
-          this.isConfirmDelete = false;
-          // Si no deseas cambiar el botón en caso de error, no cambies isDeleted aquí
-        }
-      });
-    } else {
-      console.error('Faltan datos necesarios para la eliminación.');
-      // No es necesario cambiar el estado del botón aquí ya que no se confirmó la eliminación
-    }
+//           // Establece un tiempo para que el estado 'eliminado' se muestre durante un tiempo antes de resetear
+//           setTimeout(() => {
+//             // Restablece los estados para volver al texto original del botón 'Eliminar'
+//             this.isConfirm = false;
+//             this.isDeleted = false;
+//             this.getLastSession(this.idPaciente); // Obtener la última sesión aquí o donde sea adecuado
+//           }, 2000); // Ajusta este tiempo como sea necesario
+//         },
+//         error: (error) => {
+//           console.error('Error al eliminar el paciente:', error);
+//           this.isConfirm = false;
+//           // Si no deseas cambiar el botón en caso de error, no cambies isDeleted aquí
+//         }
+//       });
+//     } else {
+//       console.error('Faltan datos necesarios para la eliminación.');
+//       // No es necesario cambiar el estado del botón aquí ya que no se confirmó la eliminación
+//     }
+//   }
+// }
+
+onDeleteSesion(): void {
+  // Asumiendo que this.idPaciente y this.idSesion están disponibles en el contexto
+  if (!this.idPaciente || this.idSesion === null) {
+    console.error('Error: ID de paciente o sesión no disponible.');
+    return; // Salir temprano si falta algún ID
+  }
+
+  // Verifica el estado de confirmación de eliminación almacenado en el componente
+  if (!this.isConfirm && !this.isDeleteInitiated) {
+    this.isDeleteInitiated = true;
+    this.cdr.detectChanges();
+    // Establece un timeout para revertir el estado si no hay confirmación
+    setTimeout(() => {
+      if (!this.isConfirm) { // Si aún no está confirmado, revertir
+        this.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+    return;
+  }
+
+  // Si el usuario ya confirmó la eliminación
+  if (this.isConfirm) {
+    this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
+      next: () => {
+        console.log('Sesion eliminada con éxito.');
+        this.isDeleted = true;
+        this.isConfirm = false; // Restablece el estado de confirmación
+        this.isDeleteInitiated = false; // Restablece el estado de inicio de eliminación
+        this.getLastSession(this.idPaciente); // Actualizar la vista para reflejar la eliminación
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al eliminar la sesion:', error);
+        this.isConfirm = false;
+        this.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    });
+  } else {
+    // Solicitar confirmación en el segundo clic
+    this.isConfirm = true;
+    this.cdr.detectChanges();
+    // Si el usuario no confirma dentro de 3 segundos, revertir
+    setTimeout(() => {
+      if (!this.isDeleted) { // Si no se ha eliminado, revertir
+        this.isConfirm = false;
+        this.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
   }
 }
+
+
 
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
