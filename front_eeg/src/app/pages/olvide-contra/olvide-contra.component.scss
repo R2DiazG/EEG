@@ -15,7 +15,6 @@
   }
   
   .header {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     width: 99%;
     padding: 1rem;
     text-align: right;
@@ -84,6 +83,7 @@
     }
   
     button {
+        background-color: #333333;
         width: 100%; // Full width buttons
         padding: 10px; // Padding for buttons
         margin-top: 10px; // Margin top for buttons

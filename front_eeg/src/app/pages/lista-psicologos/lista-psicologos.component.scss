@@ -87,25 +87,25 @@ body {
 }
 
 .editButton {
-  color: $blue;
+  color: $bg;
   &:hover {
-    background-color: darken($blue, 10%) !important;
+    background-color: $blue !important;
     color: white;
   }
 }
 
 .saveButton {
-  color: $green;
+  color: $bg;
   &:hover {
-    background-color: darken($green, 10%) !important;
+    background-color: $green !important;
     color: white;
   }
 }
 
 .cancelEditButton {
-  color: $red;
+  color: $bg;
   &:hover {
-    background-color: darken($red, 10%) !important;
+    background-color: $red !important;
     color: white;
   }
 }

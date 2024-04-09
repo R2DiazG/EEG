@@ -156,6 +156,13 @@ export class ListaPsicologosComponent implements OnInit {
     if (!user.isConfirm && !user.isDeleteInitiated) {
       user.isDeleteInitiated = true;
       this.cdr.detectChanges();
+          // Establece un timeout para revertir el estado si no hay confirmación
+    setTimeout(() => {
+      if (!user.isConfirm) { // Si aún no está confirmado, revertir
+        user.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
       // No continúes al estado de confirmación aún
       return;
     }
@@ -187,9 +194,11 @@ export class ListaPsicologosComponent implements OnInit {
       
       // Establecer un tiempo límite para restablecer el estado si el usuario no confirma
       setTimeout(() => {
-        user.isConfirm = false;
-        user.isDeleteInitiated = false; // Restablece esto también aquí
-        this.cdr.detectChanges(); // Volver a mostrar el icono de la papelera después de 3 segundos
+        if (!user.isDeleted) { // Si no se ha eliminado, revertir
+          user.isConfirm = false;
+          user.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+        }
       }, 3000);
     }
   }

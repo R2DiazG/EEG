@@ -110,7 +110,13 @@ export class MedicamentosComponent implements OnInit {
       // Si es la primera vez que se hace clic, solo se muestra el texto 'Eliminar'
       medicamento.isDeleteInitiated = true;
       this.cdr.detectChanges();
-      return; // Espera el próximo clic para confirmación
+      setTimeout(() => {
+        if (!medicamento.isConfirm) { // Si aún no está confirmado, revertir
+          medicamento.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+        }
+      }, 3000);
+    return;
     }
   
     if (medicamento.isConfirm) {
@@ -119,6 +125,8 @@ export class MedicamentosComponent implements OnInit {
         next: () => {
           console.log('Medicamento eliminado exitosamente');
           medicamento.isDeleted = true; // Marcar el medicamento como eliminado
+          medicamento.isDeleteInitiated = false; // Restablece esto para el próximo uso del botón
+          this.cdr.detectChanges(); // Actualiza la vista
           this.cargarMedicamentos(); // Recarga la lista de medicamentos
         },
         error: (error) => {
@@ -135,10 +143,12 @@ export class MedicamentosComponent implements OnInit {
   
       // Restablece el estado de confirmación y isDeleteInitiated después de un tiempo si el usuario no confirma
       setTimeout(() => {
-        medicamento.isConfirm = false;
-        medicamento.isDeleteInitiated = false;
-        this.cdr.detectChanges(); // Actualiza la vista para reflejar el cambio
-      }, 3000); // Ajusta el tiempo según sea necesario
+        if (!medicamento.isDeleted) { // Si no se ha eliminado, revertir
+          medicamento.isConfirm = false;
+          medicamento.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+        }
+      }, 3000);
     }
   }
   

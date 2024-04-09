@@ -16,8 +16,9 @@ export class EditarPacienteComponent implements OnInit {
   activeTab: string = 'infoPatient';
   id_paciente?: number;
   id_usuario: number | null = null;
-  isConfirmDelete: boolean = false;
+  isConfirm: boolean = false;
   isDeleted: boolean = false;
+  isDeleteInitiated: boolean = false;
   fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
@@ -173,10 +174,16 @@ export class EditarPacienteComponent implements OnInit {
 
   onDeletePatient(): void {
     // Verifica si ya se solicitó confirmación para eliminar
-    if (!this.isConfirmDelete) {
-      this.isConfirmDelete = true;
+    if (!this.isConfirm && !this.isDeleteInitiated) {
+      this.isConfirm = true;
+      this.isDeleteInitiated = true;
       // Establece un tiempo para revertir la solicitud de confirmación si el usuario no actúa
-      setTimeout(() => this.isConfirmDelete = false, 3000);
+      setTimeout(() => {
+        if (!this.isConfirm) { // Si aún no está confirmado, revertir
+          this.isDeleteInitiated = false;
+        }
+      }, 3000);
+      return;
     } else {
       // Verifica que tanto el ID del usuario como del paciente estén definidos
       if (this.id_usuario && this.id_paciente) {
@@ -184,19 +191,30 @@ export class EditarPacienteComponent implements OnInit {
           next: () => {
             console.log('Paciente eliminado con éxito.');
             this.isDeleted = true; // Marca el estado como eliminado
+            this.isDeleteInitiated = false; // Resetea la solicitud de eliminación
             // Redirige al usuario a la lista de pacientes o a una pantalla de confirmación
             this.router.navigate(['/lista-pacientes']);
           },
           error: (error) => {
             // Informa al usuario del error
             console.error('Error al eliminar el paciente:', error);
-            this.isConfirmDelete = false; // Resetea la solicitud de confirmación en caso de error
+            this.isConfirm = false; // Resetea la solicitud de confirmación en caso de error
+            this.isDeleteInitiated = false; // Resetea la solicitud de eliminación en caso de error
             // Considera mostrar un mensaje de error al usuario aquí
           }
         });
       } else {
+        this.isConfirm = true; // Resetea la solicitud de confirmación si falta información
         console.error('Faltan datos necesarios para la eliminación.');
         // Considera informar al usuario de que falta información
+      
+        setTimeout(() => {
+          if (!this.isDeleted) { // Si no se ha eliminado, revertir
+            this.isConfirm = false;
+            this.isDeleteInitiated = false;
+          }
+        }, 3000);
+      
       }
     }
   }
