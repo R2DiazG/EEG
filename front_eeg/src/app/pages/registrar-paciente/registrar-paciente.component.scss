@@ -14,6 +14,11 @@ $blue: #2492FF;
   }
 }
 
+p{
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
 .sidebar {
   flex: 0 0 200px;
   height: 100vh;
@@ -33,6 +38,20 @@ $blue: #2492FF;
   width: 100%;
   padding: 0;
   align-items: baseline;
+}
+
+button{
+  background-color: $bg;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: 5px;
+      cursor: pointer;
+      &:hover {
+      background-color: $bg;
+      color: white;
+      }
 }
 
 .header h1 {
@@ -87,7 +106,7 @@ $blue: #2492FF;
     color: red;
   }
 
-  .regresar, .registrar {
+  .regresar, .registrar, .audio{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,6 +133,22 @@ $blue: #2492FF;
     color: white;
     .text { color: white; }
   }
+}
+
+.botones-container {
+  width: 35%;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+}
+
+.audio {
+  color: $bg !important;
+  &:hover {
+  background-color: $blue;
+  color: white;
+  .text { color: white; }
+}
 }
 }
 .addressB , .emailB, .phoneB{
