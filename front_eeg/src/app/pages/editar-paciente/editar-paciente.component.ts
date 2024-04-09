@@ -262,6 +262,17 @@ export class EditarPacienteComponent implements OnInit {
     return consentimientos?.length ? consentimientos[consentimientos.length - 1] : { consentimiento: false, fecha_registro: new Date() };
   }
   */
+
+  /*
+  // Función para actualizar los teléfonos antes de enviar
+updateTelefonosBeforeSend() {
+  this.patient.telefonos.forEach((telefono, index) => {
+    if (telefono.telefono === '') {
+      this.patient.telefonos[index].telefono = null;
+    }
+  });
+}
+  */
   
   onSubmit(): void {
     console.log('actualizando paciente')
@@ -271,6 +282,7 @@ export class EditarPacienteComponent implements OnInit {
       console.log('Datos del paciente actualizados:', this.patient);
       console.log('Consentimiento actualizado:', this.consentimientoTemporal);
       this.patient.consentimientos.push(this.consentimientoTemporal);
+      //this.updateTelefonosBeforeSend()
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
           console.log('Información del paciente actualizada');
