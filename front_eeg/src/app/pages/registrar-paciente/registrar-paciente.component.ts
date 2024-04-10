@@ -4,6 +4,7 @@ import { InfoPaciente } from '../../models/info-paciente.model';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
 import { formatDate } from '@angular/common';
+import { CodigoPostalService } from '../../services/codigoPostal/codigo-postal.service';
 
 @Component({
   selector: 'app-registrar-paciente',
@@ -27,7 +28,8 @@ export class RegistrarPacienteComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService, // Servicio de autenticación
-    private pacienteService: PacienteService // Servicio de pacientes
+    private pacienteService: PacienteService, // Servicio de pacientes
+    private codigoPostalService: CodigoPostalService // Servicio de códigos postales
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +77,42 @@ export class RegistrarPacienteComponent implements OnInit {
       codigo_postal: '',
     }); // Agrega una dirección vacía al arreglo
   }
+
+  fillAddressData(index: number, section: 'patientAddress' | 'emergencyContact') {
+    // Usamos un tipo unión aquí para permitir strings y undefined.
+    let postalCode: string | undefined;
+  
+    if (section === 'patientAddress') {
+      postalCode = this.patient.direcciones[index]?.codigo_postal;
+    } else {
+      postalCode = this.patient.contacto_emergencia?.codigo_postal;
+      // Dado que index no se usa para contacto de emergencia, simplemente lo ignoramos en este bloque.
+    }
+  
+    // Verificamos si postalCode es undefined antes de continuar.
+    if (postalCode) {
+      this.codigoPostalService.getAddressByPostalCode(postalCode)
+        .subscribe({
+          next: (data) => {
+            if (data && data.places && data.places.length > 0) {
+              const place = data.places[0];
+              if (section === 'patientAddress') {
+                this.patient.direcciones[index].ciudad = place['place name'];
+                this.patient.direcciones[index].estado = place['state'];
+                this.patient.direcciones[index].pais = 'México';
+              } else {
+                this.patient.contacto_emergencia.ciudad = place['place name'];
+                this.patient.contacto_emergencia.estado = place['state'];
+                this.patient.contacto_emergencia.pais = 'México';
+              }
+            }
+          },
+          error: (error) => {
+            console.error('Error al obtener datos de dirección', error);
+          }
+        });
+    }
+  }  
 
   cancelButton(): void {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
