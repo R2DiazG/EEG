@@ -18,8 +18,16 @@
         
         <div class="form-group">
           <label for="contraseña">Contraseña</label>
-          <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña de portal udem">
-        </div>
+          <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña">
+      </div>
+      
+      <div class="form-group">
+          <label for="confirmarContrasena">Confirmar Contraseña</label>
+          <input type="password" id="confirmarContrasena" class="form-control" formControlName="confirmarContrasena" placeholder="Confirme su contraseña">
+          <div *ngIf="registrationForm.errors?.['notSame'] && (registrationForm.get('confirmarContrasena')?.touched || registrationForm.get('confirmarContrasena')?.dirty)" class="error">
+            Las contraseñas no coinciden.
+          </div>
+      </div>
       
         <div class="form-group">
             <label for="email">Correo UDEM</label>

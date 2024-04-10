@@ -1,7 +1,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <div class="container">
   <div class="header">
-    <img src="assets/img/logo.png">
+    <div class="left">
+      <img src="assets/img/logo.png"> <!--Agregar logo-->
+    </div>
+    <div class="right">
+      <label>¿Eres parte de la UDEM?</label>
+      <button type="button" (click)="registerUser()" class="registrar">Registrar aquí</button>
+    </div>
   </div>
   <div class="login-container">
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -26,7 +32,6 @@
       
       <button type="button" (click)="onForgotPassword()" class="btn btn-link">Olvidé la contraseña</button>
       <button type="submit" class="btn btn-primary" [disabled]="!loginForm.valid">Enviar</button>
-      <button type="button" (click)="registerUser()" class="btn btn-primary">Registrar nuevo usuario</button>
       
     </form>    
   </div> 

@@ -1,3 +1,4 @@
+$udem: #FFF500;
 .container {
     background-image: url("../../../assets/img/fondo.png");
     display: flex;
@@ -13,15 +14,16 @@
         justify-content: center;
     }
   }
-  
   .header {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     width: 99%;
     padding: 1rem;
     text-align: right;
-    background-color: yellow;
+    background-color: $udem;
     position: absolute;
     top: 0;
+    height: 3rem;
+    display: flex;
+    justify-content: flex-start;
   
     img {
         width: auto;
@@ -104,6 +106,38 @@
   
         &.btn-secondary {
             background-color: #6c757d;
+        }
+    }
+
+    ::placeholder {
+        color: #ccc;
+      }
+
+      button {
+        background-color: #333333;
+        width: 100%; // Full width buttons
+        padding: 10px; // Padding for buttons
+        margin-top: 10px; // Margin top for buttons
+        border: none; // Remove border from buttons
+        border-radius: 4px; // Border radius for buttons
+        font-size: 16px; // Font size for buttons
+        cursor: pointer; // Cursor pointer for buttons
+  
+        &.btn-primary {
+            background-color: #007bff;
+            color: white;
+  
+            &:disabled {
+                background-color: #007bff;
+                opacity: 0.5;
+            }
+        }
+  
+        &.btn-secondary {
+            background-color: #6c757d;
+        }
+        &.hover {
+            background-color: #0056b3;
         }
     }
   
