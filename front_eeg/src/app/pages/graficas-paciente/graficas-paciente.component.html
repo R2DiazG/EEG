@@ -17,8 +17,8 @@
   <app-info-paciente  [id_sesion]="idSesion"></app-info-paciente>
   <div class="search">
     <div class="fecha-consulta-seccion">
-      <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()" >
-        <option [value]="null" disabled selected>{{fechaSesion}}</option>
+      <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
+        <option disabled selected>{{fechaSesion}}</option>
         <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
           {{ sesion.fecha_consulta }}
         </option>

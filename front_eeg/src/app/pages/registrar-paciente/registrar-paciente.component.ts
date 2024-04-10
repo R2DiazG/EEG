@@ -20,7 +20,7 @@ export class RegistrarPacienteComponent implements OnInit {
   recording: boolean = false;
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
-    consentimiento: 0,
+    consentimiento: 1,
     fecha_registro: this.fechaActual,
   };
 

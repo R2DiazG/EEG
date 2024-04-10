@@ -49,8 +49,14 @@ export class InfoPaciente {
     } = {} as any;
 
     // Los consentimientos se manejan como un array de objetos con la estructura dada
-    consentimientos: { 
-        consentimiento: number; 
+    /*
+    consentimientos: {
+        audioUrl: string;
         fecha_registro: string;
+    } = { audioUrl: '', fecha_registro: '' };
+    */
+    consentimientos: {
+        consentimiento: number; 
+        fecha_registro: string
     }[] = [];
 }

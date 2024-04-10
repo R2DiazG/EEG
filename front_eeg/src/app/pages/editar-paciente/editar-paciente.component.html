@@ -600,8 +600,21 @@
 
       <!-- Consentimiento del paciente -->
       <div *ngIf="activeTab === 'consent'">
-        <form (ngSubmit)="onSubmit()" ngForm>
-          <div class="form-actions">
+        <div class="form-section">
+          <div class="seccion">
+            <div>
+              <label>Consentimiento:</label>
+              <span>{{ getConsentimientoDisplay() }}</span>
+              <!-- <audio *ngIf="patient.consentimientos.audioUrl" [src]="patient.consentimientos.audioUrl" controls></audio> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+        
+          <!-- 
+            <form (ngSubmit)="onSubmit()" ngForm>
+            <div class="form-actions">
             <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
               <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
             </button>
@@ -611,7 +624,7 @@
             <label>Consentimiento: </label>
             <span>{{ getConsentimientoDisplay(this.patient.consentimientos) }}</span>
           </div>
-          <!-- <div *ngIf="isEditMode">
+          <div *ngIf="isEditMode">
             <label for="consent">Consentimiento del paciente:</label>
             <label>
               <input type="radio" name="occupation" value="1" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente ha dado su consentimiento
@@ -620,11 +633,6 @@
               <input type="radio" name="occupation" value="0" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente no ha dado su consentimiento
             </label>
           </div> -->
-        </div>
-        </form>
-
-
-      </div>
     </div>
   </div>
 </div>

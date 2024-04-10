@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { InfoPaciente } from '../../models/info-paciente.model';
+import { UpdatePaciente } from '../../models/update-paciente.model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +38,9 @@ export class PacienteService {
     return this.http.get<InfoPaciente>(url, { headers: this.getHeaders() });
   }
 
-  actualizarPacienteDeUsuario(idUsuario: number, idPaciente: number, paciente: InfoPaciente): Observable<InfoPaciente> {
+  actualizarPacienteDeUsuario(idUsuario: number, idPaciente: number, paciente: UpdatePaciente): Observable<UpdatePaciente> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes/${idPaciente}`;
-    return this.http.put<InfoPaciente>(url, paciente, { headers: this.getHeaders() });
+    return this.http.put<UpdatePaciente>(url, paciente, { headers: this.getHeaders() });
   }
 
   eliminarPaciente(idUsuario: number, idPaciente: number): Observable<any> {

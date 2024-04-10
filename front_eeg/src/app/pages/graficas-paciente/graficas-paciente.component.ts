@@ -360,6 +360,7 @@ cargarDatosDeEeg(idSesion: number): void {
         console.log('Fechas de sesiones:', data);
         this.sesiones = data;
         this.fechaSesion = data[data.length-1.].fecha_consulta;
+        console.log('Fecha de la última sesión:', this.fechaSesion);
         // Opcionalmente, selecciona una sesión por defecto aquí
       },
       error: (error) => console.error('Error al obtener fechas de sesiones:', error)

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
-import { InfoPaciente } from '../../models/info-paciente.model';
+import { UpdatePaciente } from '../../models/update-paciente.model';
 import { formatDate } from '@angular/common';
 
 @Component({
@@ -12,7 +12,7 @@ import { formatDate } from '@angular/common';
 })
 export class EditarPacienteComponent implements OnInit {
   isEditMode: boolean = false;
-  patient: InfoPaciente = new InfoPaciente();
+  patient: UpdatePaciente = new UpdatePaciente();
   activeTab: string = 'infoPatient';
   id_paciente?: number;
   id_usuario: number | null = null;
@@ -21,10 +21,7 @@ export class EditarPacienteComponent implements OnInit {
   isDeleteInitiated: boolean = false;
   fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
 
-  consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
-    consentimiento: 0,
-    fecha_registro: this.fechaActual,
-  };
+  consentimientoDisplay: string = "Consentimiento grabado (haz clic para reproducir)";
 
   constructor(
     private router: Router,
@@ -77,7 +74,7 @@ export class EditarPacienteComponent implements OnInit {
         next: (data) => {
           console.log("Respuesta del servidor:", data);
           // Suponiendo que 'data' es el objeto con los detalles del paciente.
-          this.patient = this.mapToInfoPaciente(data); // Usamos la función de mapeo aquí.
+          this.patient = this.mapToUpdatePaciente(data); // Usamos la función de mapeo aquí.
           console.log('Datos del paciente completos:', this.patient);
         },
         error: (error) => console.error('Error al obtener detalles del paciente:', error)
@@ -106,14 +103,23 @@ export class EditarPacienteComponent implements OnInit {
   getOcupationDisplay(occupation: string | undefined): string {
     return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
+  getConsentimientoDisplay(): string { 
+    {
+        return 'Consentimiento dado';
+    }
+    return 'No se ha proporcionado consentimiento';
+  }
 
-  getConsentimientoDisplay(consentimientos: any): string {
-    return this.patient.consentimientos[this.patient.consentimientos.length-1].consentimiento ? 'Sí dio su consentimiento' : 'No dio su consentimiento';
-   }
+//   getConsentimientoDisplay(): string {
+//     if (this.patient.consentimientos && this.patient.consentimientos.audioUrl) {
+//         return 'Consentimiento grabado el ' + formatDate(this.patient.consentimientos.fecha_registro, 'longDate', 'en-US');
+//     }
+//     return 'No se ha proporcionado consentimiento';
+// }
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
-  private mapToInfoPaciente(data: any): InfoPaciente {
-  const mapped: InfoPaciente = {
+  private mapToUpdatePaciente(data: any): UpdatePaciente {
+  const mapped: UpdatePaciente = {
       id_paciente: data.id_paciente,
       nombre: data.nombre,
       apellido_paterno: data.apellido_paterno,
@@ -150,13 +156,6 @@ export class EditarPacienteComponent implements OnInit {
         pais: data.contacto_emergencia.pais,
         notas: data.contacto_emergencia.notas,
       },
-    // Para el consentimiento, debes revisar cómo se almacena y se recupera
-
-      consentimientos: data.consentimientos ? data.consentimientos.map((consent: any) => ({
-        consentimiento: consent.consentimiento, 
-        fecha_registro: new Date(consent.fecha_registro)
-      })) : []
-
     };
     return mapped;
   }
@@ -280,8 +279,6 @@ updateTelefonosBeforeSend() {
       // Convertir valores de presentación a valores esperados por el backend si es necesario
       // Ejemplo: Si tu backend espera 'male' o 'female' para género, asegúrate de que esos sean los valores enviados.
       console.log('Datos del paciente actualizados:', this.patient);
-      console.log('Consentimiento actualizado:', this.consentimientoTemporal);
-      this.patient.consentimientos.push(this.consentimientoTemporal);
       //this.updateTelefonosBeforeSend()
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
