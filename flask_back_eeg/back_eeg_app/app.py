@@ -961,14 +961,19 @@ def actualizar_paciente_de_usuario(id_usuario, id_paciente):
         return jsonify({'error': 'Paciente no encontrado o no pertenece al usuario indicado'}), 404
     datos = request.get_json()
     try:
+        print(datos)
         actualizar_datos_basicos_paciente(paciente, datos)
         # Update the phone numbers, emails and addresses
         actualizar_telefonos(paciente, datos.get('telefonos', []))
-        actualizar_consentimiento(paciente, datos.get('consentimientos', []))
+        print(datos.get('telefonos', []))
         actualizar_correos(paciente, datos.get('correos_electronicos', []))
+        print(datos.get('correos_electronicos', []))
         actualizar_direcciones(paciente, datos.get('direcciones', []))
+        print(datos.get('direcciones', []))
         actualizar_contacto_emergencia(paciente, datos.get('contacto_emergencia', {}))
+        print(datos.get('contacto_emergencia', {}))
         db.session.commit()
+        print(paciente)
         logging.info('Paciente %s actualizado exitosamente para el usuario %s', id_paciente, id_usuario)
         return jsonify({'mensaje': 'Paciente actualizado exitosamente'}), 200
     except Exception as e:
@@ -1085,33 +1090,6 @@ def actualizar_direcciones(paciente, direcciones_nuevas):
         # Eliminar cualquier dirección no incluida en la actualización
         for direccion in direcciones_actuales.values():
             db.session.delete(direccion)
-            
-def actualizar_consentimiento(paciente, consentimiento_recibido):
-    """
-    Function to update the consent status for a patient.
-    """
-    try:
-        # Search for the consent of the patient
-        consentimiento = Consentimiento.query.filter_by(id_paciente=paciente['id_paciente']).first()
-        if consentimiento:
-            # Update the consent if it already exists
-            consentimiento.consentimiento = consentimiento_recibido['consentimiento']
-            consentimiento.fecha_registro = consentimiento_recibido['fecha_registro']
-        else:
-            # Create a new consent if it doesn't exist
-            consentimiento_nuevo = Consentimiento(
-                id_paciente=paciente['id_paciente'],
-                consentimiento=consentimiento_recibido['consentimiento'],
-                fecha_registro= consentimiento_recibido['fecha_registro']
-            )
-            db.session.add(consentimiento_nuevo)
-        db.session.commit()
-        logging.info('Consentimiento actualizado exitosamente para el paciente %s', paciente['id_paciente'])
-        return jsonify({"mensaje": "Consentimiento actualizado exitosamente"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error('Error al actualizar el consentimiento para el paciente %s: %s', paciente['id_paciente'], e)
-        return jsonify({'mensaje': 'Error interno del servidor'}), 500
 
 def actualizar_contacto_emergencia(paciente, datos_contacto):
     """

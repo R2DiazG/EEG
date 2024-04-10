@@ -1,15 +1,63 @@
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 .container {
   display: flex;
   flex-direction: row;
+  font-family: Arial, Helvetica, sans-serif;
   @media (max-width: 768px) {
     flex-direction: column;
     justify-content: center;
   }
 }
 
+p{
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
 .sidebar {
   flex: 0 0 200px;
   height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  width: 100%;
+  padding: 0;
+  align-items: baseline;
+}
+
+.left {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  width: 100%;
+  padding: 0;
+  align-items: baseline;
+}
+
+button{
+  background-color: $bg;
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: 5px;
+      cursor: pointer;
+      &:hover {
+      background-color: $bg;
+      color: white;
+      }
+}
+
+.header h1 {
+  margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
+  font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+  align-items: baseline;
 }
 
 .patient-registration-container {
@@ -27,28 +75,29 @@
     max-width: none;
   }
   .tab-menu {
-    .tab {
+    .tab{
       padding: 0.5rem 1rem;
       margin-right: 0.5rem;
-      background-color: #333;
+      background-color: transparent;
       border: none;
-      border-bottom: 3px solid transparent;
+      color: #333;
       cursor: pointer;
+      font-size: medium;
 
       &.active {
-        border-bottom-color: #333;
-        background-color: yellow;
+        border-bottom: 3px solid #7353ba;
         color: #333;
       }
 
       &:hover {
-        background-color: darken(#a2a2a2, 5%);
+        background-color:#bbbdf6;
       }
     }
   }
 
   .tab-content {
-    border: 1px solid #ccc;
+    background-color: #ebebfc;
+    border-radius: 8px;
     padding: 1rem;
     // Further styles for tab content based on your design
   }
@@ -56,12 +105,80 @@
   .error{
     color: red;
   }
-}
-.container{
-  display: flex;
-  flex-direction: row;
+
+  .regresar, .registrar, .audio{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1.5rem;
+    background-color: transparent !important;
+    margin: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+    .regresar {
+      color: $bg !important;
+      &:hover {
+      background-color: $blue;
+      color: white;
+      .text { color: white; }
+    }
+  }
+  .registrar {
+    color: $bg !important;
+    &:hover {
+    background-color: $green;
+    color: white;
+    .text { color: white; }
+  }
 }
 
+.botones-container {
+  width: 35%;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+}
+
+.audio {
+  color: $bg !important;
+  &:hover {
+  background-color: $blue;
+  color: white;
+  .text { color: white; }
+}
+}
+}
+.addressB , .emailB, .phoneB{
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  background-color: $bg;
+  border: none;
+  border-radius: 5px;
+      cursor: pointer;
+      &:hover {
+      background-color: $bg;
+      color: white;
+      }
+}
+
+label{
+  color: #7353ba !important;
+}
+
+.respuesta, a{
+  color: #666;
+}
+
+.seccion{
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: white;
+  padding: 1rem;
+}
 
 .form-section {
   margin-bottom: 20px;
@@ -76,12 +193,11 @@
   input[type="email"],
   input[type="date"],
   select {
-    width: 100%;
     padding: .625rem;
     margin-bottom: .625rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
   }
   input[type="checkbox"] {
     margin-right: 1rem;
@@ -94,24 +210,11 @@
   }
 
   textarea {
-    width: 100%;
+    width: 90%;
     padding: .625rem;
     margin-bottom: .625rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  }
-  
-  button {  
-    padding: 0.7rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;      
-    &:hover {
-      background-color: #333;
-    }
-    &:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
+    font-family: Arial, Helvetica, sans-serif;
   }
 }

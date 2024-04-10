@@ -1,12 +1,7 @@
 <div class="sidebar" [class.active]="isSidebarActive">
   <div class="sidebar-header">
     <img src="assets/img/image 4.png">
-  </div>
-  <div class="user-info">
-    <!-- Utiliza el operador de navegación segura (?) para acceder a las propiedades del objeto userInfo -->
-    <p>{{ userInfo?.nombre }} {{ userInfo?.apellidos }}</p>
-  </div>
-  
+  </div> 
   <nav class="nav-menu">
     <a (click)="navigateTo('lista-pacientes')" routerLinkActive="active" class="nav-link">Pacientes</a>
     <!--<a routerLink="/editar-paciente" routerLinkActive="active" class="nav-link">Ver paciente</a>

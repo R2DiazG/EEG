@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
-import { InfoPaciente } from '../../models/info-paciente.model';
+import { UpdatePaciente } from '../../models/update-paciente.model';
 import { formatDate } from '@angular/common';
 
 @Component({
@@ -12,18 +12,16 @@ import { formatDate } from '@angular/common';
 })
 export class EditarPacienteComponent implements OnInit {
   isEditMode: boolean = false;
-  patient: InfoPaciente = new InfoPaciente();
+  patient: UpdatePaciente = new UpdatePaciente();
   activeTab: string = 'infoPatient';
   id_paciente?: number;
   id_usuario: number | null = null;
-  isConfirmDelete: boolean = false;
+  isConfirm: boolean = false;
   isDeleted: boolean = false;
+  isDeleteInitiated: boolean = false;
   fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
 
-  consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
-    consentimiento: 0,
-    fecha_registro: this.fechaActual,
-  };
+  consentimientoDisplay: string = "Consentimiento grabado (haz clic para reproducir)";
 
   constructor(
     private router: Router,
@@ -76,7 +74,7 @@ export class EditarPacienteComponent implements OnInit {
         next: (data) => {
           console.log("Respuesta del servidor:", data);
           // Suponiendo que 'data' es el objeto con los detalles del paciente.
-          this.patient = this.mapToInfoPaciente(data); // Usamos la función de mapeo aquí.
+          this.patient = this.mapToUpdatePaciente(data); // Usamos la función de mapeo aquí.
           console.log('Datos del paciente completos:', this.patient);
         },
         error: (error) => console.error('Error al obtener detalles del paciente:', error)
@@ -105,14 +103,23 @@ export class EditarPacienteComponent implements OnInit {
   getOcupationDisplay(occupation: string | undefined): string {
     return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
+  getConsentimientoDisplay(): string { 
+    {
+        return 'Consentimiento dado';
+    }
+    return 'No se ha proporcionado consentimiento';
+  }
 
-  getConsentimientoDisplay(consentimientos: any): string {
-    return this.patient.consentimientos[this.patient.consentimientos.length-1].consentimiento ? 'Sí dio su consentimiento' : 'No dio su consentimiento';
-   }
+//   getConsentimientoDisplay(): string {
+//     if (this.patient.consentimientos && this.patient.consentimientos.audioUrl) {
+//         return 'Consentimiento grabado el ' + formatDate(this.patient.consentimientos.fecha_registro, 'longDate', 'en-US');
+//     }
+//     return 'No se ha proporcionado consentimiento';
+// }
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
-  private mapToInfoPaciente(data: any): InfoPaciente {
-  const mapped: InfoPaciente = {
+  private mapToUpdatePaciente(data: any): UpdatePaciente {
+  const mapped: UpdatePaciente = {
       id_paciente: data.id_paciente,
       nombre: data.nombre,
       apellido_paterno: data.apellido_paterno,
@@ -149,13 +156,6 @@ export class EditarPacienteComponent implements OnInit {
         pais: data.contacto_emergencia.pais,
         notas: data.contacto_emergencia.notas,
       },
-    // Para el consentimiento, debes revisar cómo se almacena y se recupera
-
-      consentimientos: data.consentimientos ? data.consentimientos.map((consent: any) => ({
-        consentimiento: consent.consentimiento, 
-        fecha_registro: new Date(consent.fecha_registro)
-      })) : []
-
     };
     return mapped;
   }
@@ -173,10 +173,16 @@ export class EditarPacienteComponent implements OnInit {
 
   onDeletePatient(): void {
     // Verifica si ya se solicitó confirmación para eliminar
-    if (!this.isConfirmDelete) {
-      this.isConfirmDelete = true;
+    if (!this.isConfirm && !this.isDeleteInitiated) {
+      this.isConfirm = true;
+      this.isDeleteInitiated = true;
       // Establece un tiempo para revertir la solicitud de confirmación si el usuario no actúa
-      setTimeout(() => this.isConfirmDelete = false, 3000);
+      setTimeout(() => {
+        if (!this.isConfirm) { // Si aún no está confirmado, revertir
+          this.isDeleteInitiated = false;
+        }
+      }, 3000);
+      return;
     } else {
       // Verifica que tanto el ID del usuario como del paciente estén definidos
       if (this.id_usuario && this.id_paciente) {
@@ -184,19 +190,30 @@ export class EditarPacienteComponent implements OnInit {
           next: () => {
             console.log('Paciente eliminado con éxito.');
             this.isDeleted = true; // Marca el estado como eliminado
+            this.isDeleteInitiated = false; // Resetea la solicitud de eliminación
             // Redirige al usuario a la lista de pacientes o a una pantalla de confirmación
             this.router.navigate(['/lista-pacientes']);
           },
           error: (error) => {
             // Informa al usuario del error
             console.error('Error al eliminar el paciente:', error);
-            this.isConfirmDelete = false; // Resetea la solicitud de confirmación en caso de error
+            this.isConfirm = false; // Resetea la solicitud de confirmación en caso de error
+            this.isDeleteInitiated = false; // Resetea la solicitud de eliminación en caso de error
             // Considera mostrar un mensaje de error al usuario aquí
           }
         });
       } else {
+        this.isConfirm = true; // Resetea la solicitud de confirmación si falta información
         console.error('Faltan datos necesarios para la eliminación.');
         // Considera informar al usuario de que falta información
+      
+        setTimeout(() => {
+          if (!this.isDeleted) { // Si no se ha eliminado, revertir
+            this.isConfirm = false;
+            this.isDeleteInitiated = false;
+          }
+        }, 3000);
+      
       }
     }
   }
@@ -244,6 +261,17 @@ export class EditarPacienteComponent implements OnInit {
     return consentimientos?.length ? consentimientos[consentimientos.length - 1] : { consentimiento: false, fecha_registro: new Date() };
   }
   */
+
+  /*
+  // Función para actualizar los teléfonos antes de enviar
+updateTelefonosBeforeSend() {
+  this.patient.telefonos.forEach((telefono, index) => {
+    if (telefono.telefono === '') {
+      this.patient.telefonos[index].telefono = null;
+    }
+  });
+}
+  */
   
   onSubmit(): void {
     console.log('actualizando paciente')
@@ -251,8 +279,7 @@ export class EditarPacienteComponent implements OnInit {
       // Convertir valores de presentación a valores esperados por el backend si es necesario
       // Ejemplo: Si tu backend espera 'male' o 'female' para género, asegúrate de que esos sean los valores enviados.
       console.log('Datos del paciente actualizados:', this.patient);
-      console.log('Consentimiento actualizado:', this.consentimientoTemporal);
-      this.patient.consentimientos.push(this.consentimientoTemporal);
+      //this.updateTelefonosBeforeSend()
       this.pacienteService.actualizarPacienteDeUsuario(this.id_usuario, this.id_paciente, this.patient).subscribe({
         next: () => {
           console.log('Información del paciente actualizada');

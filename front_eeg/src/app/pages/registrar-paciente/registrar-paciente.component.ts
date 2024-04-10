@@ -15,9 +15,12 @@ export class RegistrarPacienteComponent implements OnInit {
   activeTab: string = 'infoPatient';
   id_usuario: number | undefined;
   fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+  mediaRecorder!: MediaRecorder;
+  audioUrl!: string;
+  recording: boolean = false;
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
-    consentimiento: 0,
+    consentimiento: 1,
     fecha_registro: this.fechaActual,
   };
 
@@ -77,16 +80,49 @@ export class RegistrarPacienteComponent implements OnInit {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
   }
 
-  // En tu componente
+  startRecording() {
+    if (this.recording) {
+      return; // Si ya se está grabando, no hacer nada
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.start();
+      const audioChunks: BlobPart[] | undefined = [];
+      this.mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+      };
+      this.mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks);
+        this.audioUrl = URL.createObjectURL(audioBlob);
+        // Limpia o reutiliza el stream según sea necesario
+        stream.getTracks().forEach(track => track.stop());
+      };
+      this.recording = true;
+    }).catch(e => {
+      console.error('Error al obtener acceso al micrófono: ', e);
+    });
+  }
 
-// Método temporal para guardar la información actualizada
-saveCurrentTabData(): void {
-  // Aquí puedes validar o procesar los datos antes de asignarlos al paciente
-  console.log('Datos guardados temporalmente:', this.patient);
-  // Puedes mostrar una notificación al usuario de que los datos se han guardado temporalmente
-}
+  stopRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+      this.recording = false;
+    }
+  }
 
-// Método final para enviar todos los datos
+  resetRecording() {
+    // Si hay una URL de audio previa, libera el recurso
+    if (this.audioUrl) {
+      URL.revokeObjectURL(this.audioUrl);
+    }
+    this.audioUrl = '';
+    this.recording = false;
+    // Si está grabando, detiene la grabación
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
+    }
+  }
+
 registerPatient(): void {
   // Recorre el arreglo de consentimientos y asigna la fecha actual formateada a cada entrada
   //this.patient.consentimientos.forEach(consentimiento => {

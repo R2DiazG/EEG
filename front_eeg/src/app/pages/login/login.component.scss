@@ -1,5 +1,5 @@
 .container {
-  background-image: url("../../../assets/img/fondo.png");
+  background-image: url("../../../assets/img/prueba.png");
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -84,6 +84,7 @@
   }
 
   button {
+    background-color: #333333;
       width: 100%; // Full width buttons
       padding: 10px 0; // Padding for buttons
       margin-top: 10px; // Margin top for buttons

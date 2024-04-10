@@ -15,7 +15,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./lista-psicologos.component.scss'],
 })
 export class ListaPsicologosComponent implements OnInit {
-  displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion','eliminar','acciones'];
+  displayedColumns: string[] = ['nombre', 'apellidos', 'username', 'correo', 'id_rol', 'aprobacion','acciones', 'eliminar'];
   dataSource = new MatTableDataSource<any>([]);
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
@@ -67,7 +67,8 @@ export class ListaPsicologosComponent implements OnInit {
           this.dataSource.data = data.map(user => ({
             ...user, // Mantenemos las propiedades existentes del usuario
             isConfirm: false, // Agregamos la propiedad isConfirm inicializada en false
-            isDeleted: false  // Agregamos la propiedad isDeleted inicializada en false
+            isDeleted: false,  // Agregamos la propiedad isDeleted inicializada en false
+            isDeleteInitiated: false // Agregamos la propiedad isDeleteInitiated inicializada en false
           }));
           this.dataSource.paginator = this.paginator; // Asigna el paginator a la nueva data
           this.cdr.detectChanges();
@@ -120,7 +121,52 @@ export class ListaPsicologosComponent implements OnInit {
     { id: 2, name: 'Psicólogo' },
   ];
 
+  // onDeleteUser(user: any) {
+  //   if (user.isConfirm) {
+  //     // Usuario ya confirmado, proceder a eliminar
+  //     console.log('Token from localStorage:', localStorage.getItem('access_token'));
+  //     console.log('Eliminando usuario', user.id_usuario);
+  //     this.usuarioService.eliminarUsuario(user.id_usuario).subscribe({
+  //       next: (resp) => {
+  //         console.log('Usuario eliminado', resp);
+  //         user.isDeleted = true; // Marcar como eliminado
+  //         console.log('User:', user.isDeleted);
+  //         this.cdr.detectChanges(); // Actualizar la vista
+  //         this.loadUsers(); // Cargar de nuevo los usuarios
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al eliminar usuario', error);
+  //         user.isConfirm = false; // Restablecer el estado
+  //         this.cdr.detectChanges(); // Actualizar la vista
+  //       }
+  //     });
+  //   } else {
+  //     // No confirmado, marcar como confirmado
+  //     user.isConfirm = true;
+  //     this.cdr.detectChanges(); // Actualizar la vista para mostrar "¿Estás seguro?"
+  //     setTimeout(() => {
+  //       user.isConfirm = false;
+  //       this.cdr.detectChanges(); // Volver a mostrar el icono de la papelera después de 3 segundos
+  //     }, 3000);
+  //   }
+  // }
+
   onDeleteUser(user: any) {
+    // Si es la primera vez que se hace clic, mostrar el mensaje 'Delete'
+    if (!user.isConfirm && !user.isDeleteInitiated) {
+      user.isDeleteInitiated = true;
+      this.cdr.detectChanges();
+          // Establece un timeout para revertir el estado si no hay confirmación
+    setTimeout(() => {
+      if (!user.isConfirm) { // Si aún no está confirmado, revertir
+        user.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+      // No continúes al estado de confirmación aún
+      return;
+    }
+  
     if (user.isConfirm) {
       // Usuario ya confirmado, proceder a eliminar
       console.log('Token from localStorage:', localStorage.getItem('access_token'));
@@ -129,6 +175,7 @@ export class ListaPsicologosComponent implements OnInit {
         next: (resp) => {
           console.log('Usuario eliminado', resp);
           user.isDeleted = true; // Marcar como eliminado
+          user.isDeleteInitiated = false; // Restablece esto para el próximo uso del botón
           console.log('User:', user.isDeleted);
           this.cdr.detectChanges(); // Actualizar la vista
           this.loadUsers(); // Cargar de nuevo los usuarios
@@ -136,19 +183,26 @@ export class ListaPsicologosComponent implements OnInit {
         error: (error) => {
           console.error('Error al eliminar usuario', error);
           user.isConfirm = false; // Restablecer el estado
+          user.isDeleteInitiated = false; // Restablece esto para manejar errores correctamente
           this.cdr.detectChanges(); // Actualizar la vista
         }
       });
     } else {
-      // No confirmado, marcar como confirmado
+      // Marcar como confirmado para el próximo clic
       user.isConfirm = true;
       this.cdr.detectChanges(); // Actualizar la vista para mostrar "¿Estás seguro?"
+      
+      // Establecer un tiempo límite para restablecer el estado si el usuario no confirma
       setTimeout(() => {
-        user.isConfirm = false;
-        this.cdr.detectChanges(); // Volver a mostrar el icono de la papelera después de 3 segundos
+        if (!user.isDeleted) { // Si no se ha eliminado, revertir
+          user.isConfirm = false;
+          user.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+        }
       }, 3000);
     }
   }
+  
 
   enableEditMode(user: any): void {
     this.editModeMap[user.id_usuario] = true;

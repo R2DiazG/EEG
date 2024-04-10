@@ -1,20 +1,31 @@
 <div class="container">
 <app-menu-lateral></app-menu-lateral>
 <div class="graphs-container">
-    <h1>Visualizador de Electroencefalograma</h1>
-    <button class="headerButton.regresar" (click)="regresar()">Regresar a lista de pacientes</button>
-    <app-info-paciente [id_sesion]="idSesion"></app-info-paciente>
-    <!--Consume crear_nueva_sesion()-->
-    <button class="headerButton.sesion" (click)="addSession()">Agregar sesion</button>
+  <div class="header">
+    <div class="left">
+      <button (click)="regresar()" class="regresar">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+      </button>
+      <h1>Visualizador de Electroencefalograma</h1>
+    </div>
+    <div class="right">
+      <button (click)="addSession()" class="add">
+        <i class="fas fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <app-info-paciente  [id_sesion]="idSesion"></app-info-paciente>
+  <div class="search">
     <div class="fecha-consulta-seccion">
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
-        <option [value]="null" disabled selected>{{fechaSesion}}</option>
+        <option disabled selected>{{fechaSesion}}</option>
         <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
           {{ sesion.fecha_consulta }}
         </option>
       </select>
       <i class="fas fa-sort-desc" aria-hidden="true"></i>
-    </div>    
+    </div>
+  </div>
     <div class="tab-menu">
       <button class="tab" (click)="setActiveTab('detailsSesion')" [class.active]="activeTab === 'detailsSesion'">Detalles de sesión</button>
       <button class="tab" (click)="setActiveTab('meds')" [class.active]="activeTab === 'meds'">Historial de medicamentos</button>
@@ -23,42 +34,59 @@
     <div class="tab-content">
       <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'detailsSesion'">
-        <div class="header">
-          <h2>Detalle de sesion</h2>
-        <div class="form-actions">
-          <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
-            <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
-            <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
-            <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
-            <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
-        </button> 
-        </div>
-        </div>
-        <div class="info-eeg">
-            <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
-            <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
-            <p><strong>Estado general:</strong> {{estado_general}}</p>
-            <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
-            <div>
-              <button (click)="addMedication()">Agregar medicamentos</button>
-              <div class="nota-psicologo-container">
-                <button class="button-agregar" (click)="onAgregarNotasClick()">Agregar notas del psicologo</button>
-
-                <div *ngIf="isAddingNote" class="nota-editor">
-                  <textarea class="nota-textarea" [(ngModel)]="notasPsicologo" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
-                  <button class="button-guardar" (click)="guardarNotasPsicologo()">Guardar Notas</button>
+      <div class="header">
+        <div class="left">
+          <div class="seccionInicial">
+          <div class="info-eeg">
+              <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
+              <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
+              <p><strong>Estado general:</strong> {{estado_general}}</p>
+              <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
+              <div>
+              <div class="botones-container">
+                <div>
+                  <button (click)="addMedication()" class="button-agregar">
+                    <i class="fas fa-medkit" aria-hidden="true"></i> 
+                  </button>
                 </div>
+                <div class="nota-psicologo-container">
+                  <button class="button-agregar" (click)="onAgregarNotasClick()">
+                    <i class="fas fa-sticky-note" aria-hidden="true"></i> 
+                  </button>
+                  <div *ngIf="isAddingNote" class="nota-editor">
+                    <textarea class="nota-textarea" [(ngModel)]="notasPsicologo" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
+                    <button class="button-guardar" (click)="guardarNotasPsicologo()">
+                      <i class="fas fa-save" aria-hidden="true"></i> 
+                    </button>
+                  </div>
               </div>
-            </div>
+              </div>
+              </div>
+          </div>
+          </div>
         </div>
+        <div class="right">
+          <div class="form-actions">
+            <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && isConfirm}">
+              <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
+              <i class="icon fas fa-question-circle" *ngIf="isConfirm && isDeleted"></i>
+              <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
+              <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
+            </button>
+          </div>
+        </div>
+  </div>
         <div class="space1"></div>
+        <div class="seccion">
         <div id="eeg" style="width:100%; height:1000px;"></div>
+        </div>
         <div class="space"></div>
+        <div class="seccion">
         <div id="processed" style="width:100%; height:400px;"></div>
+        </div>
       </div>
       <div *ngIf="activeTab === 'meds'">
         <div class="header">
-            <h2>Medicamentos</h2>
             <div class="search-container">
               <i class="fas fa-search" aria-hidden="true"></i>
               <input type="search" placeholder="Buscar medicamento" [formControl]="searchControl" class="search-input">

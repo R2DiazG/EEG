@@ -12,7 +12,6 @@ $blue: #2492FF;
 body {
   background: $bg;
   color: #fff;
-  font-family: "Roboto", sans-serif;
   font-size: 13px;
 }
 
@@ -47,7 +46,7 @@ body {
     position: absolute;
     left: 1rem; // Alinea el ícono de búsqueda dentro del padding del contenedor
     color: #5F6368; // Color del ícono
-    font-size: 1rem; // Tamaño del ícono
+    font-size: 1.5rem; // Tamaño del ícono
   }
 
   .search-input {
@@ -80,40 +79,42 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  background-color: transparent;
   margin-right: 0.5rem;
   gap: 0.5rem;
 }
 
 .editButton {
-  background-color: $blue;
-  color: white;
+  color: $bg;
   &:hover {
-    background-color: darken($blue, 10%) !important;
+    color: white;
+    background-color: $blue !important;
   }
 }
 
 .saveButton {
-  background-color: $green;
-  color: white;
+  color: $bg;
   &:hover {
-    background-color: darken($green, 10%) !important;
+    color: white;
+    background-color: $green !important;
   }
 }
 
 .cancelEditButton {
-  background-color: $red;
-  color: white;
+  color: $bg;
   &:hover {
-    background-color: darken($red, 10%) !important;
+    color: white;
+    background-color: $red !important;
   }
 }
 
 .registerButton {
-  background-color: $bg;
-  color: white;
+  background-color: transparent;
+  font-size: 1.5rem;
+  color: $bg;
   &:hover {
-    background-color: darken($black, 10%) !important;
+    color: white;
+    background-color: $bg !important;
   }
 }
 
@@ -188,7 +189,7 @@ body {
     }
 
     th {
-      background-color: #f2f2f2;
+      background-color: #bbbdf6;
     }
   }
 
@@ -213,19 +214,21 @@ body {
 }
 
 // Botones de acción
-button {
+.button-eliminar {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
   border: none;
-  background-color: $black;
+  background-color: transparent;
   margin: 0.5rem;
   cursor: pointer;
 
   .icon {
     font-size: 1.5rem;
+    color: $bg; // Asegúrate de que $bg esté definido y sea el color deseado
     margin-right: 0.5rem;
+    margin-left: 0.25rem;
   }
 
   .text {
@@ -236,7 +239,10 @@ button {
   // Estilos de confirmación y eliminación
   &.confirm {
     .icon.fas.fa-trash { display: none; }
-    .icon.fas.fa-question-circle { display: inline-block; }
+    .icon.fas.fa-question-circle {
+      display: inline-block;
+      color: white;
+    }
     .icon.fas.fa-check-circle { display: none; }
     background-color: $blue;
     .text { color: white; }
@@ -245,13 +251,30 @@ button {
   &.done {
     .icon.fas.fa-trash { display: none; }
     .icon.fas.fa-question-circle { display: none; }
-    .icon.fas.fa-check-circle { display: inline-block; }
+    .icon.fas.fa-check-circle {
+      display: inline-block;
+      color: white;
+    }
     background-color: $green;
+    .text { color: white; }
+  }
+
+  // Nuevo estado para cuando isDeleteInitiated es true
+  &.delete-initiated:not(.confirm):not(.done) {
+    background-color: $red; // Asegúrate de que $red esté definido y sea el color deseado
+    .icon.fas.fa-trash {
+      display: inline-block;
+      color: white;
+    }
     .text { color: white; }
   }
 
   &:not(.confirm):not(.done):hover {
     background-color: $red;
+    .icon.fas.fa-trash {
+      display: inline-block;
+      color: white;
+    }
     .text { color: white; }
   }
 }

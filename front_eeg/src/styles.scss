@@ -1,43 +1,41 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
+
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 .container{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
     h1 {
         color: #333;
         text-align: left;
         margin-bottom: 2rem;
+        font-size: large;
+    }
+    label{
+      font-size: medium;
+    }
+    th{
+      font-size: medium;
+    }
+    a{
+      font-size: medium;
     }
     button{
-        background-color: #333333;
         margin: 0.5rem;
         padding: 0.5rem 1rem;
         color: white;
         border: none;
         border-radius: 5px;
             cursor: pointer;
-            
             &:hover {
-            background-color: black;
+            background-color: $bg;
             color: white;
             }
     }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.toggle-active {
-    --color-checked: #5AAF45 !important; /* Color verde cuando está activo */
-    --color-unchecked: #bbb !important; /* Color gris cuando está desactivado */
-  }
-  
-  /* Estilos para cambiar el color de fondo del mat-slide-toggle cuando está activo */
-  .toggle-active .mat-slide-toggle-thumb {
-    background-color: var(--color-checked) !important;
-  }
-  
-  /* Estilos para cambiar el color de la barra cuando está activo */
-  .toggle-active .mat-slide-toggle-bar {
-    background-color: var(--color-unchecked) !important;
-  }
-  
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.icon{
+    font-size: 1.5rem;
+}

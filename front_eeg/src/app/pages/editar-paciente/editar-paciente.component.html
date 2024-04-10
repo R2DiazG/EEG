@@ -1,16 +1,29 @@
 <div class="container">
 <app-menu-lateral></app-menu-lateral>
 <div class="patient-edit-container">
-    <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
-    <button (click)="regresar()">Regresar a lista de pacientes</button>
+  <div class="header">
+    <div class="left">
+      <button (click)="regresar()" class="regresar">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+      </button>
+      <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
+    </div>
     <div class="form-actions">
-      <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
+      <!-- <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
         <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
         <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
         <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
         <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
-    </button> 
+    </button> -->
+    <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}">
+      <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
+      <i class="icon fas fa-question-circle" *ngIf="isConfirm && !isDeleted"></i>
+      <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
+      <!-- Actualizado para mostrar 'Delete' solo después del primer clic -->
+      <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
+    </button>
     </div>
+  </div>
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
       <button class="tab" id="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
@@ -22,28 +35,65 @@
       <!-- Información del paciente -->
       <div *ngIf="activeTab === 'infoPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Contacto de emergencia</h2>
-
           <!-- Dentro de <div *ngIf="activeTab === 'infoPatient'"> y otros tabs según corresponda -->
           <div class="form-actions">
             <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
-            <button type="button" id="edit" (click)="isEditMode ? onSubmit() : toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+            </button>
           </div>
-          <div class="form-section">              
-            <label for="firstName">Nombre:</label>
-            <input type="text" id="firstName" name="firstName" [(ngModel)]="patient.nombre" required [readonly]="!isEditMode">
-            
-            <label for="lastName">Apellido paterno:</label>
-            <input type="text" id="lastName" name="lastName" [(ngModel)]="patient.apellido_paterno" required [readonly]="!isEditMode">
-            
-            <label for="surname">Apellido materno:</label>
-            <input type="text" id="surname" name="surname"[(ngModel)]="patient.apellido_materno" required [readonly]="!isEditMode">
-            
+          <div class="form-section">
+          <div class="informacionDelPaciente">
+          <div class="seccion" >
+            <!-- Nombre -->
+            <div *ngIf="!isEditMode; else editNombre" class="respuesta" >
+              <label>Nombre:</label>
+              {{patient.nombre}}
+            </div>
+            <br>
+            <ng-template #editNombre>
+              <label for="firstName">Nombre:</label>
+              <input type="text" id="firstName" name="firstName" [(ngModel)]="patient.nombre" required>
+            </ng-template>
+
+            <!-- Apellido Paterno -->
+            <div *ngIf="!isEditMode; else editApellidoPaterno" class="respuesta" >
+              <label>Apellido paterno:</label>
+              {{patient.apellido_paterno}}
+            </div>
+            <br>
+            <ng-template #editApellidoPaterno>
+              <label for="lastName">Apellido paterno:</label>
+              <input type="text" id="lastName" name="lastName" [(ngModel)]="patient.apellido_paterno" required>
+            </ng-template>
+
+            <!-- Apellido Materno -->
+            <div *ngIf="!isEditMode; else editApellidoMaterno" class="respuesta" >
+              <label>Apellido materno:</label>
+              {{patient.apellido_materno}}
+            </div>
+            <br>
+            <ng-template #editApellidoMaterno>
+              <label for="surname">Apellido materno:</label>
+              <input type="text" id="surname" name="surname" [(ngModel)]="patient.apellido_materno" required>
+            </ng-template>
+          </div>              
+          </div>
+
+          <div class="seccion">
+            <!-- Fecha de Nacimiento -->
+          <div *ngIf="!isEditMode; else editFechaNacimiento" class="respuesta" >
+            <label>Fecha de nacimiento:</label>
+            {{patient.fecha_nacimiento | date:'yyyy-MM-dd'}}
+          </div>
+          <br>
+          <ng-template #editFechaNacimiento>
             <label for="birthDate">Fecha de nacimiento:</label>
-            <input type="date" id="birthDate" name="birthDate" [(ngModel)]="patient.fecha_nacimiento" required [readonly]="!isEditMode" [value]="patient.fecha_nacimiento | date:'yyyy-MM-dd'">
-            
+            <input type="date" id="birthDate" name="birthDate" [(ngModel)]="patient.fecha_nacimiento" required>
+          </ng-template>
+
             <!-- Género guardado -->
-            <div *ngIf="!isEditMode">
+            <div *ngIf="!isEditMode" class="respuesta" >
               <label>Género:</label>
               <span>{{ getGeneroDisplay(patient.genero)}}</span>
             </div>
@@ -52,42 +102,44 @@
             <div *ngIf="isEditMode">
               <label for="gender">Género:</label>
               <div id="gender">
-                <label>
+                <a>
                   <input type="radio" name="gender" value="Masculino" [(ngModel)]="patient.genero"> Masculino
-                </label>
-                <label>
+                </a>
+                <a>
                   <input type="radio" name="gender" value="Femenino" [(ngModel)]="patient.genero"> Femenino
-                </label>
+                </a>
               </div>
             </div>
             <br>
+          </div>
 
+          <div class="seccion">
             <!-- Estado civil guardado -->
-            <div *ngIf="!isEditMode">
+            <div *ngIf="!isEditMode" class="respuesta" >
               <label>Estado civil:</label>
               <span>{{ getEstadoCivil(patient.estado_civil) }}</span>
             </div>
 
             <!-- Botones de radio para editar -->
             <div *ngIf="isEditMode">
-              <label>Estado civil:</label>
-              <label>
+              <label for="civilStatus" >Estado civil:</label>
+              <a>
                 <input type="radio" name="civilStatus" value="Soltero/a" [(ngModel)]="patient.estado_civil"> Soltero/a
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="civilStatus" value="Casado/a" [(ngModel)]="patient.estado_civil"> Casado/a
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="civilStatus" value="3" [(ngModel)]="patient.estado_civil"> Divorciado/a
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="civilStatus" value="4" [(ngModel)]="patient.estado_civil"> Viudo/a
-              </label>
+              </a>
             </div>
             <br>
   
             <!-- Lateralidad guardada -->
-            <div *ngIf="!isEditMode">
+            <div *ngIf="!isEditMode" class="respuesta" >
               <label>Lateralidad:</label>
               <span>{{ getLateralidadDisplay(patient.lateralidad) }}</span>
             </div>
@@ -95,20 +147,20 @@
             <!-- Selector para editar Lateralidad -->
             <div *ngIf="isEditMode">
               <label for="laterality">Lateralidad:</label>
-              <label>
+              <a>
                 <input type="radio" name="laterality" value="Zurdo" [(ngModel)]="patient.lateralidad"> Zurdo
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="laterality" value="Diestro" [(ngModel)]="patient.lateralidad"> Diestro
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="laterality" value="Ambidiestro" [(ngModel)]="patient.lateralidad"> Ambidiestro
-              </label>
+              </a>
             </div>
             <br>
 
             <!-- Escolaridad guardada -->
-            <div *ngIf="!isEditMode">
+            <div *ngIf="!isEditMode" class="respuesta" >
               <label>Escolaridad:</label>
               <span>{{ getEscolaridadDisplay(patient.escolaridad) }}</span>
             </div>
@@ -116,48 +168,49 @@
             <!-- Selector para editar Escolaridad -->
             <div *ngIf="isEditMode">
               <label for="educationLevel">Escolaridad:</label>
-              <label>
+              <a>
                 <input type="radio" name="educationLevel" value="Primaria" [(ngModel)]="patient.escolaridad"> Primaria
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Secundaria" [(ngModel)]="patient.escolaridad"> Secundaria
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Preparatoria" [(ngModel)]="patient.escolaridad"> Preparatoria
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Universidad" [(ngModel)]="patient.escolaridad"> Universidad
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Maestría" [(ngModel)]="patient.escolaridad"> Maestría
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Doctorado" [(ngModel)]="patient.escolaridad"> Doctorado
-              </label>
+              </a>
             </div>
             <br>
 
-            <div *ngIf="!isEditMode">
+            <div *ngIf="!isEditMode" class="respuesta" >
               <label>Ocupación:</label>
               <span>{{ getOcupationDisplay(patient.ocupacion) }}</span>
             </div>
 
             <div *ngIf="isEditMode">
               <label for="occupation">Ocupación:</label>
-              <label>
+              <a>
                 <input type="radio" name="occupation" value="Estudiante" [(ngModel)]="patient.ocupacion"> Estudiante
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="occupation" value="Empleado" [(ngModel)]="patient.ocupacion"> Empleado
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="occupation" value="Empresario" [(ngModel)]="patient.ocupacion"> Empresario
-              </label>
-              <label>
+              </a>
+              <a>
                 <input type="radio" name="occupation" value="Independiente" [(ngModel)]="patient.ocupacion"> Independiente
-              </label>
+              </a>
             </div>
             <br>
+          </div>
       </div>
     </form>
   </div>
@@ -165,30 +218,165 @@
       <!-- Contacto del paciente-->:
       <div *ngIf="activeTab === 'contactPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Contacto del paciente</h2>
           <div class="form-actions">
-            <button type="button" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+            </button>
           </div>
           <div class="form-section">
+          <div class="seccion">
+            <!--
             <label>Teléfonos celulares:</label>
             <div *ngFor="let phone of patient.telefonos; let i = index">
               <input type="text" [id]="'phone' + i" [name]="'phone' + i" [(ngModel)]="patient.telefonos[i].telefono" [readonly]="!isEditMode">
-          </div>
+            -->
+            <!-- Teléfono de casa -->
+            <!-- Teléfono de casa -->
+            <ng-container *ngIf="isEditMode || patient.telefonos[0]?.telefono">
+              <div *ngIf="!isEditMode; else editTelefonoCasa" class="respuesta">
+                <label>Teléfono de casa:</label>
+                {{patient.telefonos[0].telefono}}
+              </div>
+              <br>
+              <ng-template #editTelefonoCasa>
+                <label for="phone0">Teléfono de casa:</label>
+                <input type="text" id="phone0" name="phone0" [(ngModel)]="patient.telefonos[0].telefono" required>
+              </ng-template>
+            </ng-container>
 
-            <label>Correos electrónicos:</label>
+            <!-- Teléfono móvil -->
+            <ng-container *ngIf="isEditMode || patient.telefonos[1]?.telefono">
+              <div *ngIf="!isEditMode; else editTelefonoMovil" class="respuesta">
+                <label>Teléfono móvil:</label>
+                {{patient.telefonos[1].telefono}}
+              </div>
+              <br>
+              <ng-template #editTelefonoMovil>
+                <label for="phone1">Teléfono móvil:</label>
+                <input type="text" id="phone1" name="phone1" [(ngModel)]="patient.telefonos[1].telefono" required>
+              </ng-template>
+            </ng-container>
+
+            <!-- Teléfono de trabajo -->
+            <ng-container *ngIf="isEditMode || patient.telefonos[2]?.telefono">
+              <div *ngIf="!isEditMode; else editTelefonoTrabajo" class="respuesta">
+                <label>Teléfono de trabajo:</label>
+                {{patient.telefonos[2].telefono}}
+              </div>
+              <br>
+              <ng-template #editTelefonoTrabajo>
+                <label for="phone2">Teléfono de trabajo:</label>
+                <input type="text" id="phone2" name="phone2" [(ngModel)]="patient.telefonos[2].telefono" required>
+              </ng-template>
+            </ng-container>
+
+            <!-- <label>Correos electrónicos:</label>
             <div *ngFor="let email of patient.correos_electronicos; let i = index">
               <input type="text" [id]="'email' + i" [name]="'email' + i" [(ngModel)]="patient.correos_electronicos[i].correo_electronico" [readonly]="!isEditMode">
-            </div>
+            </div> -->
 
-            <label>Direcciones:</label>
+            <ng-container *ngIf="isEditMode || patient.correos_electronicos[0]?.correo_electronico">
+              <div *ngIf="!isEditMode; else editEmailPersonal" class="respuesta">
+                <label>Correo electrónico personal:</label>
+                {{patient.correos_electronicos[0].correo_electronico}}
+              </div>
+              <br>
+              <ng-template #editEmailPersonal>
+                <label for="email0">Correo electrónico personal:</label>
+                <input type="email" id="email0" name="email0" [(ngModel)]="patient.correos_electronicos[0].correo_electronico" required>
+              </ng-template>
+            </ng-container>
+            
+            <ng-container *ngIf="isEditMode || patient.correos_electronicos[1]?.correo_electronico">
+              <div *ngIf="!isEditMode; else editEmailTrabajo" class="respuesta">
+                <label>Correo electrónico de trabajo:</label>
+                {{patient.correos_electronicos[1].correo_electronico}}
+              </div>
+              <br>
+              <ng-template #editEmailTrabajo>
+                <label for="email1">Correo electrónico de trabajo:</label>
+                <input type="email" id="email1" name="email1" [(ngModel)]="patient.correos_electronicos[1].correo_electronico" required>
+              </ng-template>
+            </ng-container>
+            
+            <ng-container *ngIf="isEditMode || patient.correos_electronicos[2]?.correo_electronico">
+              <div *ngIf="!isEditMode; else editEmailOtro" class="respuesta">
+                <label>Otro correo electrónico:</label>
+                {{patient.correos_electronicos[2].correo_electronico}}
+              </div>
+              <br>
+              <ng-template #editEmailOtro>
+                <label for="email2">Otro correo electrónico:</label>
+                <input type="email" id="email2" name="email2" [(ngModel)]="patient.correos_electronicos[2].correo_electronico" required>
+              </ng-template>
+            </ng-container>
+            
+            <!-- <label>Direcciones:</label>
             <div *ngFor="let address of patient.direcciones; let i = index">
               <input type="text" [id]="'address' + i" [name]="'address' + i" [(ngModel)]="patient.direcciones[i].calle_numero" placeholder="Calle y número" [readonly]="!isEditMode">
               <input type="text" [id]="'city' + i" [name]="'city' + i" [(ngModel)]="patient.direcciones[i].ciudad" placeholder="Ciudad" [readonly]="!isEditMode">
               <input type="text" [id]="'state' + i" [name]="'state' + i" [(ngModel)]="patient.direcciones[i].estado" placeholder="Estado" [readonly]="!isEditMode">
               <input type="text" [id]="'zipCode' + i" [name]="'zipCode' + i" [(ngModel)]="patient.direcciones[i].codigo_postal" placeholder="Código postal" [readonly]="!isEditMode">
               <input type="text" [id]="'country' + i" [name]="'country' + i" [(ngModel)]="patient.direcciones[i].pais" placeholder="País" [readonly]="!isEditMode">
+            </div> -->
             </div>
+            <div class="seccion">
+            <!-- Código Postal -->
+            <div *ngIf="!isEditMode; else editCodigoPostal" class="respuesta">
+              <label>Código Postal:</label>
+              {{patient.direcciones[0].codigo_postal}}
+            </div>
+            <br>
+            <ng-template #editCodigoPostal>
+              <label for="zipCode0">Código Postal:</label>
+              <input type="text" id="zipCode0" name="zipCode0" [(ngModel)]="patient.direcciones[0].codigo_postal" required>
+            </ng-template>
+            
+            <!-- Calle y Número -->
+            <div *ngIf="!isEditMode; else editCalleNumero" class="respuesta">
+              <label>Calle y número:</label>
+              {{patient.direcciones[0].calle_numero}}
+            </div>
+            <br>
+            <ng-template #editCalleNumero>
+              <label for="address0">Calle y número:</label>
+              <input type="text" id="address0" name="address0" [(ngModel)]="patient.direcciones[0].calle_numero" required>
+            </ng-template>
+
+            <!-- Ciudad -->
+            <div *ngIf="!isEditMode; else editCiudad" class="respuesta">
+              <label>Ciudad:</label>
+              {{patient.direcciones[0].ciudad}}
+            </div>
+            <br>
+            <ng-template #editCiudad>
+              <label for="city0">Ciudad:</label>
+              <input type="text" id="city0" name="city0" [(ngModel)]="patient.direcciones[0].ciudad" required>
+            </ng-template>
+
+            <!-- Estado -->
+            <div *ngIf="!isEditMode; else editEstado" class="respuesta">
+              <label>Estado:</label>
+              {{patient.direcciones[0].estado}}
+            </div>
+            <br>
+            <ng-template #editEstado>
+              <label for="state0">Estado:</label>
+              <input type="text" id="state0" name="state0" [(ngModel)]="patient.direcciones[0].estado" required>
+            </ng-template>
+
+            <!-- País -->
+            <div *ngIf="!isEditMode; else editPais" class="respuesta">
+              <label>País:</label>
+              {{patient.direcciones[0].pais}}
+            </div>
+            <br>
+            <ng-template #editPais>
+              <label for="country0">País:</label>
+              <input type="text" id="country0" name="country0" [(ngModel)]="patient.direcciones[0].pais" required>
+            </ng-template>
           </div>
+        </div>
         </form>
       </div>
 
@@ -233,12 +421,13 @@
       <!-- Información del familiar -->
       <div *ngIf="activeTab === 'infoFamily' && patient && patient.contacto_emergencia">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Información del familiar</h2>
           <div class="form-actions">
-            <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+            </button>
           </div>
           <div class="form-section">
-            <label for="relativeFirstName">Nombre(s):</label>
+            <!-- <label for="relativeFirstName">Nombre(s):</label>
             <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" [readOnly]="!isEditMode">
       
             <label for="relativeLastName">Apellido paterno:</label>
@@ -272,23 +461,169 @@
             <input type="text" id="relativeCountry" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" [readOnly]="!isEditMode">
       
             <label for="relativeNotes">Notas:</label>
-            <textarea id="relativeNotes" name="relativeNotes" [(ngModel)]="patient.contacto_emergencia.notas" [readOnly]="!isEditMode"></textarea>
+            <textarea id="relativeNotes" name="relativeNotes" [(ngModel)]="patient.contacto_emergencia.notas" [readOnly]="!isEditMode"></textarea> -->
+          
+            <div class="seccion">            
+            <div *ngIf="!isEditMode; else editRelativeFirstName" class="respuesta">
+              <label>Nombre(s):</label>
+              {{patient.contacto_emergencia.nombre}}
+            </div>
+            <br>
+            <ng-template #editRelativeFirstName>
+              <label for="relativeFirstName">Nombre(s):</label>
+              <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" required>
+            </ng-template>
+            
+            <div *ngIf="!isEditMode; else editRelativeLastName" class="respuesta">
+              <label>Apellido paterno:</label>
+              {{patient.contacto_emergencia.apellido_paterno}}
+            </div>
+            <br>
+            <ng-template #editRelativeLastName>
+              <label for="relativeLastName">Apellido paterno:</label>
+              <input type="text" id="relativeLastName" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" required>
+            </ng-template>
+            
+            <div *ngIf="!isEditMode; else editRelativeSurname" class="respuesta">
+              <label>Apellido materno:</label>
+              {{patient.contacto_emergencia.apellido_materno}}
+            </div>
+            <br>
+            <ng-template #editRelativeSurname>
+              <label for="relativeSurname">Apellido materno:</label>
+              <input type="text" id="relativeSurname" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelationship" class="respuesta">
+              <label>Parentesco:</label>
+              {{patient.contacto_emergencia.parentesco}}
+            </div>
+            <br>
+            <ng-template #editRelationship>
+              <label for="relationship">Parentesco:</label>
+              <input type="text" id="relationship" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" required>
+            </ng-template>
+
           </div>
+
+          <div class="seccion">
+
+            <div *ngIf="!isEditMode; else editRelativePhone" class="respuesta">
+              <label>Telefono:</label>
+              {{patient.contacto_emergencia.telefono}}
+            </div>
+            <br>
+            <ng-template #editRelativePhone>
+              <label for="relativePhone">Telefono:</label>
+              <input type="text" id="relativePhone" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelativeEmail" class="respuesta">
+              <label>Correo electronico:</label>
+              {{patient.contacto_emergencia.correo_electronico}}
+            </div>
+            <br>
+            <ng-template #editRelativeEmail>
+              <label for="relativeEmail">Correo electronico:</label>
+              <input type="email" id="relativeEmail" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" required>
+            </ng-template>
+
+          </div>
+          <div class="seccion">
+
+            <div *ngIf="!isEditMode; else editRelativeZipCode" class="respuesta">
+              <label>Código postal:</label>
+              {{patient.contacto_emergencia.codigo_postal}}
+            </div>
+            <br>
+            <ng-template #editRelativeZipCode>
+              <label for="relativeZipCode">Código postal:</label>
+              <input type="text" id="relativeZipCode" name="relativeZipCode" [(ngModel)]="patient.contacto_emergencia.codigo_postal" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelativeAddress" class="respuesta">
+              <label>Dirección:</label>
+              {{patient.contacto_emergencia.direccion}}
+            </div>
+            <br>
+            <ng-template #editRelativeAddress>
+              <label for="relativeAddress">Dirección:</label>
+              <input type="text" id="relativeAddress" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelativeCity" class="respuesta">
+              <label>Ciudad:</label>
+              {{patient.contacto_emergencia.ciudad}}
+            </div>
+            <br>
+            <ng-template #editRelativeCity>
+              <label for="relativeCity">Ciudad:</label>
+              <input type="text" id="relativeCity" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelativeState" class="respuesta">
+              <label>Estado:</label>
+              {{patient.contacto_emergencia.estado}}
+            </div> 
+            <br>
+            <ng-template #editRelativeState>
+              <label for="relativeState">Estado:</label>
+              <input type="text" id="relativeState" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" required>
+            </ng-template>
+
+            <div *ngIf="!isEditMode; else editRelativeCountry" class="respuesta">
+              <label>País:</label>
+              {{patient.contacto_emergencia.pais}}
+            </div>
+            <br>
+            <ng-template #editRelativeCountry>
+              <label for="relativeCountry">País:</label>
+              <input type="text" id="relativeCountry" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" required>
+            </ng-template>
+            
+          </div>
+          <div class="seccion">
+
+            <div *ngIf="!isEditMode; else editRelativeNotes" class="respuesta">
+              <label>Notas:</label>
+              {{patient.contacto_emergencia.notas}}
+            </div>
+            <br>
+            <ng-template #editRelativeNotes>
+              <label for="relativeNotes">Notas:</label>
+              <textarea id="relativeNotes" name="relativeNotes" [(ngModel)]="patient.contacto_emergencia.notas" required></textarea>
+            </ng-template>  
+          </div>
+        </div>
         </form>
       </div>
 
       <!-- Consentimiento del paciente -->
       <div *ngIf="activeTab === 'consent'">
-        <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Consentimiento del paciente</h2>
-          <div class="form-actions">
-            <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
+        <div class="form-section">
+          <div class="seccion">
+            <div>
+              <label>Consentimiento:</label>
+              <span>{{ getConsentimientoDisplay() }}</span>
+              <!-- <audio *ngIf="patient.consentimientos.audioUrl" [src]="patient.consentimientos.audioUrl" controls></audio> -->
+            </div>
           </div>
+        </div>
+      </div>
+      
+        
+          <!-- 
+            <form (ngSubmit)="onSubmit()" ngForm>
+            <div class="form-actions">
+            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+            </button>
+          </div>
+          <div class="seccion">
           <div *ngIf="!isEditMode">
-            <label>Consentimiento:</label>
+            <label>Consentimiento: </label>
             <span>{{ getConsentimientoDisplay(this.patient.consentimientos) }}</span>
           </div>
-
           <div *ngIf="isEditMode">
             <label for="consent">Consentimiento del paciente:</label>
             <label>
@@ -297,11 +632,7 @@
             <label>
               <input type="radio" name="occupation" value="0" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente no ha dado su consentimiento
             </label>
-          </div>
-        </form>
-
-
-      </div>
+          </div> -->
     </div>
   </div>
 </div>
