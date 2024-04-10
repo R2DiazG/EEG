@@ -8,22 +8,22 @@
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="name">Nombre</label>
-          <input type="text" id="nombre" class="form-control" formControlName="nombre" placeholder="Ingrese su nombre">
+          <input type="text" id="nombre" class="form-control" formControlName="nombre" placeholder="Dr. Psicologo">
         </div>
 
         <div class="form-group">
           <label for="name">Apellidos</label>
-          <input type="text" id="apellidos" class="form-control" formControlName="apellidos" placeholder="Ingrese sus apellidos">
+          <input type="text" id="apellidos" class="form-control" formControlName="apellidos" placeholder="Leon Garza">
         </div>
         
         <div class="form-group">
           <label for="contraseña">Contraseña</label>
-          <input type="contraseña" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña de portal udem">
+          <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña de portal udem">
         </div>
       
         <div class="form-group">
             <label for="email">Correo UDEM</label>
-            <input type="email" id="email" class="form-control" formControlName="email" placeholder="Ponga su correo UDEM">
+            <input type="email" id="email" class="form-control" formControlName="email" placeholder="ejemplo@udem.edu">
         </div>
         
         <button type="submit" class="btn btn-primary" [disabled]="!registrationForm.valid">Enviar</button>
