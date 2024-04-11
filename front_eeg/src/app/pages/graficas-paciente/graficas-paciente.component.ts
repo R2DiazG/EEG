@@ -267,8 +267,6 @@ onDeleteSesion(): void {
   }
 }
 
-
-
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
   this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
