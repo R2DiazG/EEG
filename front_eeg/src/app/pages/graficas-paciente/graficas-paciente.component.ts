@@ -90,7 +90,7 @@ export class GraficasPacienteComponent implements OnInit {
   isDeleteInitiated: boolean = false;
 
   //Medicamentos
-  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion'];
+  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion', 'notas_psicologo'];
   dataSource = new MatTableDataSource<any>([]);
   searchControl = new FormControl('');
   selectedMedicamentos: any[] = [];
@@ -316,7 +316,6 @@ applyFilter(value: string) {
     this.dataSource.paginator.firstPage();
   }
 }
-
 
 cargarDatosDeEeg(idSesion: number): void {
   this.eegService.obtenerEEGPorSesion(idSesion).subscribe({
