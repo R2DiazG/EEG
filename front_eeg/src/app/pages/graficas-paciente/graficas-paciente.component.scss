@@ -214,7 +214,7 @@ $blue: #2492FF;
         }
       }
       th {
-        background-color: #f2f2f2;
+        background-color: #bbbdf6;
       }
     }
 
@@ -323,6 +323,7 @@ $blue: #2492FF;
   
         &.active {
           border-bottom: 3px solid #7353ba;
+          font-weight: bold;
           color: #333;
         }
   

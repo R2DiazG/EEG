@@ -59,8 +59,8 @@ button{
 }
 
 .header h1 {
-  margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
-  font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+  margin: 0;
+  font-size: 1.5rem;
   align-items: baseline;
 }
 
@@ -90,6 +90,7 @@ button{
 
       &.active {
         border-bottom: 3px solid #7353ba;
+        font-weight: bold;
         color: #333;
       }
 
@@ -171,10 +172,12 @@ button{
 
 label{
   color: #7353ba !important;
+  font-size: 1.15rem;
 }
 
 .respuesta, a{
   color: #666;
+  font-size: .9rem;
 }
 
 .seccion{
