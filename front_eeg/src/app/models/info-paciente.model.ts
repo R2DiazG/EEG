@@ -16,8 +16,8 @@ export class InfoPaciente {
 
     genero?: 'Masculino' | 'Femenino';
     estado_civil?: 'Soltero/a' | 'Casado/a' | 'Divorciado/a' | 'Viudo/a';
-    escolaridad?: 'Primaria' | 'Secundaria' | 'Preparatoria' | 'Universidad' | 'Posgrado' | 'Otro';
-    ocupacion?: 'Estudiante' | 'Empleado' | 'Empresario' | 'Independiente';
+    escolaridad?: 'Primaria' | 'Secundaria' | 'Preparatoria' | 'Universidad' | 'Maestria' | 'Doctorado' | 'Sin estudios';
+    ocupacion?: 'Estudiante' | 'Empleado' | 'Empresario' | 'Independiente' | 'Desempleado';
     lateralidad?: 'Izquierda' | 'Derecha' | 'ambidextrous';
 
     // Arrays inicializados para evitar problemas de "Object is possibly 'undefined'."

@@ -162,47 +162,55 @@
               <div class="seccion">
                 <!-- Gestión de múltiples teléfonos, siempre muestra al menos un campo -->
                 <div *ngFor="let phone of patient.telefonos; let i = index" class="phone">
-                  <label for="phone{{i}}">Teléfono celular:</label>
+                  <label for="phone{{i}}">Teléfono {{ i === 0 ? 'Celular' : i === 1 ? 'Casa' : 'Trabajo'}}:</label>
                   <input type="text" id="phone{{i}}" name="phone{{i}}" placeholder="5551234567" [(ngModel)]="phone.telefono">
-                  <label for="phoneType{{i}}">Tipo:</label>
-                  <select id="phoneType{{i}}" name="phoneType{{i}}">
-                    <option value="1">Celular</option>
-                    <option value="2">Casa</option>
-                    <option value="3">Trabajo</option>
-                  </select>
                 </div>
+                
                 <div>
-                  <button type="button" (click)="addPhone()" class="phoneB" >Agregar teléfono</button>
+                  <button type="button" (click)="addPhone()" class="phoneB">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                  </button>
                 </div>
 
-                <!-- Gestión de múltiples correos electrónicos, siempre muestra al menos un campo -->
                 <div *ngFor="let email of patient.correos_electronicos; let i = index" class="email">
                   <label for="email{{i}}">Correo electrónico:</label>
                   <input type="email" id="email{{i}}" name="email{{i}}" placeholder="juan.perez@gmail.com" [(ngModel)]="email.correo_electronico">
                 </div>
                 <div>
-                  <button type="button" (click)="addEmail()" class="emailB" >Agregar correo electrónico</button>
+                  <button type="button" (click)="addEmail()" class="emailB">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
               <div class="seccion">
                 <!-- Gestión de múltiples direcciones, siempre muestra al menos un campo -->
-                <div *ngFor="let address of patient.direcciones; let i = index" class="address">
-                  <label for="postalCode{{i}}">Código postal:</label>
-                  <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" (change)="fillAddressData(i, 'patientAddress')" placeholder="12345">
-                  <label for="streetNumber{{i}}">Calle y número:</label>
-                  <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Av. Siempre Viva 742" [(ngModel)]="address.calle_numero">
-                  <label for="suburb{{i}}">Colonia:</label>
-                  <input type="text" id="suburb{{i}}" name="suburb{{i}}" placeholder="Springfield" [(ngModel)]="address.colonia">
-                  <label for="city{{i}}">Ciudad:</label>
-                  <input type="text" id="city{{i}}" name="city{{i}}" placeholder="Springfield" [(ngModel)]="address.ciudad">
-                  <label for="state{{i}}">Estado:</label>
-                  <input type="text" id="state{{i}}" name="state{{i}}" placeholder="Springfield" [(ngModel)]="address.estado">
-                  <label for="country{{i}}">País:</label>
-                  <input type="text" id="country{{i}}" name="country{{i}}" placeholder="México" [(ngModel)]="address.pais">
-                </div>
-                <div>
-                  <button type="button" (click)="addAddress()" class="addressB" >Agregar dirección</button>
-                </div>
+                <!-- Este div contiene la lista de direcciones del paciente -->
+              <div *ngFor="let address of patient.direcciones; let i = index" class="address">
+                <label for="postalCode{{i}}">Código postal:</label>
+                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345">
+                
+                <label for="streetNumber{{i}}">Calle y número:</label>
+                <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Av. Siempre Viva 742" [(ngModel)]="address.calle_numero">
+                
+                <label for="suburb{{i}}">Colonia:</label>
+                <input type="text" id="suburb{{i}}" name="suburb{{i}}" placeholder="Springfield" [(ngModel)]="address.colonia">
+                
+                <label for="city{{i}}">Ciudad:</label>
+                <input type="text" id="city{{i}}" name="city{{i}}" placeholder="Springfield" [(ngModel)]="address.ciudad">
+                
+                <label for="state{{i}}">Estado:</label>
+                <input type="text" id="state{{i}}" name="state{{i}}" placeholder="Springfield" [(ngModel)]="address.estado">
+                
+                <label for="country{{i}}">País:</label>
+                <input type="text" id="country{{i}}" name="country{{i}}" placeholder="México" [(ngModel)]="address.pais">
+              </div>
+
+              <!-- Este botón permite agregar direcciones adicionales a la lista -->
+              <div>
+                <button type="button" (click)="addAddress()" class="addressB">
+                  <i class="fas fa-plus" aria-hidden="true"></i>
+                </button>
+              </div>
               </div>
             </div>
             <div class="tab-navigation-buttons">

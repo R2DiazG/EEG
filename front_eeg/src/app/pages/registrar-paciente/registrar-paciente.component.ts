@@ -21,6 +21,7 @@ export class RegistrarPacienteComponent implements OnInit {
   recording: boolean = false;
   tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
+
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
     consentimiento: 1,
     fecha_registro: this.fechaActual,
@@ -35,6 +36,24 @@ export class RegistrarPacienteComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentUser(); // Llamada al método para obtener el usuario actual
+    this.initDefaultContactInfo();
+  }
+
+  initDefaultContactInfo(): void {
+    // Asegura que haya al menos tres teléfonos por defecto: Celular, Casa y Trabajo
+    while (this.patient.telefonos.length < 3) {
+      this.patient.telefonos.push({ telefono: '' });
+    }
+  
+    // Asegura que haya al menos un campo para el correo electrónico
+    if (this.patient.correos_electronicos.length === 0) {
+      this.addEmail();
+    }
+  
+    // Asegura que haya al menos una dirección
+    if (this.patient.direcciones.length === 0) {
+      this.addAddress();
+    }
   }
 
   // Método para obtener el ID del usuario actual
@@ -61,17 +80,18 @@ export class RegistrarPacienteComponent implements OnInit {
   }
 
   addPhone(): void {
-    this.patient.telefonos.push({ telefono: '' }); // Agrega un teléfono vacío al arreglo
+    this.patient.telefonos.push({ telefono: '' });
   }
+  
 
   addEmail(): void {
-    this.patient.correos_electronicos.push({ correo_electronico: '' }); // Agrega un correo electrónico vacío al arreglo
+    this.patient.correos_electronicos.push({ correo_electronico: '' });
   }
 
   addAddress(): void {
     this.patient.direcciones.push({
       calle_numero: '',
-      colonia: '', // Opcional, puede ser cadena vacía
+      colonia: '',
       ciudad: '',
       estado: '',
       pais: '',
@@ -180,7 +200,7 @@ registerPatient(): void {
   //});
 
   this.patient.consentimientos.push(this.consentimientoTemporal); // Agrega el consentimiento temporal al arreglo
-
+  this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
   console.log('Datos finales a enviar:', this.patient);
 
   // Procede con la lógica para enviar los datos al servidor
