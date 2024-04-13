@@ -146,6 +146,14 @@
               </div>
               <br>
           </div>
+          <div class="tab-navigation-buttons">
+            <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+            <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+            <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            <button (click)="cancelButton()" class="cancelar">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
           <!-- </form> -->
   </div>
           <!-- Contacto del paciente -->
@@ -196,6 +204,14 @@
                   <button type="button" (click)="addAddress()" class="addressB" >Agregar dirección</button>
                 </div>
               </div>
+            </div>
+            <div class="tab-navigation-buttons">
+              <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+              <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+              <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+              <button (click)="cancelButton()" class="cancelar">
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
             </div>
           </div>          
 
@@ -311,6 +327,14 @@
               <textarea id="relativeNotes" name="notas_contacto_emergencia" placeholder="Alergias a la penicilina" [(ngModel)]="patient.contacto_emergencia.notas" required #relativeCountry="ngModel"></textarea>
       </div>
     </div>
+    <div class="tab-navigation-buttons">
+      <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+      <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+      <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+      <button (click)="cancelButton()" class="cancelar">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    </div>
   </div>
 
         <!-- Consentimiento del paciente -->
@@ -341,6 +365,14 @@
       <button type="button" (click)="registerPatient()" class="registrar">
          <i class="icon fas fa-save" aria-hidden="true"></i>
       </button>
+      <div class="tab-navigation-buttons">
+        <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+        <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+        <!-- <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button> -->
+        <button (click)="cancelButton()" class="cancelar">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
   </div>
         
 </div>

@@ -19,6 +19,7 @@ export class RegistrarPacienteComponent implements OnInit {
   mediaRecorder!: MediaRecorder;
   audioUrl!: string;
   recording: boolean = false;
+  tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
     consentimiento: 1,
@@ -158,6 +159,17 @@ export class RegistrarPacienteComponent implements OnInit {
     // Si está grabando, detiene la grabación
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
+    }
+  }
+
+  changeTab(direction: 'next' | 'back') {
+    const currentIndex = this.tabsOrder.indexOf(this.activeTab);
+    if (direction === 'next' && currentIndex < this.tabsOrder.length - 1) {
+      // Mueve a la siguiente pestaña
+      this.activeTab = this.tabsOrder[currentIndex + 1];
+    } else if (direction === 'back' && currentIndex > 0) {
+      // Mueve a la pestaña anterior
+      this.activeTab = this.tabsOrder[currentIndex - 1];
     }
   }
 
