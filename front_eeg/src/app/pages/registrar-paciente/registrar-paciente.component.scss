@@ -7,7 +7,7 @@ $blue: #2492FF;
 .container {
   display: flex;
   flex-direction: row;
-  font-family: Arial, Helvetica, sans-serif;
+  position: relative;
   @media (max-width: 768px) {
     flex-direction: column;
     justify-content: center;
