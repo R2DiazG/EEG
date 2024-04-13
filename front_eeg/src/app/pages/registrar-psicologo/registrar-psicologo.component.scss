@@ -83,6 +83,35 @@ $udem: #FFF500;
                 width: 100%;
             }
         }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            //width: 100%;
+        }
+        
+        .form-control {
+            flex: 1; /* Ensure input field takes up the available space */
+            margin-right: 0.5rem; /* Optional: add some space between input and button */
+        }
+        
+        .toggle-password {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 5%;
+        }
+        
+        /* Adjust the button styles as needed */
+        .toggle-password i {
+            color: #777; /* Example color, adjust as needed */
+        }
+        
     }
   
     button {
@@ -157,6 +186,7 @@ $udem: #FFF500;
         display: none; // Hide by default, can be shown with JS if needed
     }
   }
+
   
   // Responsive typography adjustments
   @media (max-width: 768px) {

@@ -11,6 +11,7 @@ import { UsuarioService } from '../../services/usuarios/usuario.service';
 export class RegistrarPsicologoComponent {
 
   registrationForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder, 
@@ -32,6 +33,11 @@ export class RegistrarPsicologoComponent {
     let pass = group.get('contraseña')!.value; // Aserción no nula
     let confirmPass = group.get('confirmarContrasena')!.value; // Aserción no nula
     return pass === confirmPass ? null : { notSame: true };
+}
+
+// Agregada función para alternar la visibilidad de la contraseña
+toggleShowPassword() {
+  this.showPassword = !this.showPassword;
 }
 
   onSubmit() {

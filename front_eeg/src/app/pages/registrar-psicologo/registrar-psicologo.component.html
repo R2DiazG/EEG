@@ -18,16 +18,21 @@
         
         <div class="form-group">
           <label for="contraseña">Contraseña</label>
-          <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña">
-      </div>
-      
-      <div class="form-group">
-          <label for="confirmarContrasena">Confirmar Contraseña</label>
-          <input type="password" id="confirmarContrasena" class="form-control" formControlName="confirmarContrasena" placeholder="Confirme su contraseña">
-          <div *ngIf="registrationForm.errors?.['notSame'] && (registrationForm.get('confirmarContrasena')?.touched || registrationForm.get('confirmarContrasena')?.dirty)" class="error">
-            Las contraseñas no coinciden.
+          <div class="input-group">
+            <input [type]="showPassword ? 'text' : 'password'" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ponga su contraseña">
+            <button type="button" class="toggle-password" (click)="toggleShowPassword()"><i class="fas fa-eye" aria-hidden="true"></i></button>
           </div>
-      </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmarContrasena">Confirmar Contraseña</label>
+          <div class="input-group">
+            <input [type]="showPassword ? 'text' : 'password'" id="confirmarContrasena" class="form-control" formControlName="confirmarContrasena" placeholder="Confirme su contraseña">
+            <button type="button" class="toggle-password" (click)="toggleShowPassword()"><i class="fas fa-eye" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        
+        
       
         <div class="form-group">
             <label for="email">Correo UDEM</label>

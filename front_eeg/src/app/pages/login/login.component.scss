@@ -16,7 +16,6 @@ $udem: #FFF500;
   }
 }
 label {
-    padding-left: 1rem;
     margin: 10px;
     font-size: .9rem;
   }
@@ -33,7 +32,9 @@ label {
         cursor: pointer;
         padding: 10px 0;
         margin-top: 10px;
-        color: #333;
+        font-size: .9rem;
+        color: black;
+        text-decoration: underline;
       }
 
   }
@@ -98,7 +99,7 @@ label {
       margin-bottom: 15px;
       label {
           display: block;
-          margin-bottom: 5px;
+          //margin-bottom: 5px;
       }
       input {
           width: 100%;
