@@ -1,3 +1,5 @@
+$udem: #FFF500;
+
 .container {
   background-image: url("../../../assets/img/prueba.png");
   display: flex;
@@ -13,26 +15,57 @@
       justify-content: center;
   }
 }
-
-.header {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  width: 99%;
-  padding: 1rem;
-  text-align: right;
-  background-color: yellow;
-  position: absolute;
-  top: 0;
-
-  img {
-      width: auto;
-      height: 58px;
+label {
+    padding-left: 1rem;
+    margin: 10px;
+    font-size: .9rem;
   }
+  
+  .right {
+    display: flex;
+    align-items: center; // Align items vertically inside the .right div
 
-  @media (max-width: 768px) {
-      text-align: center;
-      width: 100%;
+    .registrar{
+        background-color: $udem;
+        border: none;
+        border-radius: 4px;
+        font-size: small;
+        cursor: pointer;
+        padding: 10px 0;
+        margin-top: 10px;
+        color: #333;
+      }
+
   }
-}
+  
+  .left {
+    display: flex;
+    align-items: center; /* Alinea los elementos verticalmente */
+    width: 75%;
+    padding: 0;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center; // Keep this if you want to align items in the center vertically
+    width: 100%;
+    padding: 0;
+    background-color: $udem;
+    position: absolute;
+    top: 0;
+    height: 5rem;
+  
+    img {
+        width: auto;
+        height: 58px;
+        margin-top: 10px;
+    }
+  
+    @media (max-width: 768px) {
+        text-align: center;
+        width: 100%;
+    }
+  }
 
 .login-container {
   max-width: 25rem;

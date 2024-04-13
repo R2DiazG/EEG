@@ -33,6 +33,7 @@ import { MatInputModule } from '@angular/material/input';
 import { DropMedicamentosDialogComponent } from './pages/drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { UsuarioComponent } from './pages/usuario/usuario.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     ListaPsicologosComponent,
     MedicamentosComponent,
     CrearMedicamentoDialogComponent,
-    DropMedicamentosDialogComponent
+    DropMedicamentosDialogComponent,
+    UsuarioComponent
   ],
   imports: [
     BrowserModule,

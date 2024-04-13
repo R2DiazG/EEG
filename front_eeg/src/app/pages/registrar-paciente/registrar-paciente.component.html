@@ -23,7 +23,7 @@
           <div class="seccion">
             <div class="form-section">              
               <label for="firstName">Nombre:</label>
-              <input type="text" id="firstName" placeholder="Nombre"  name="firstName" [(ngModel)]="patient.nombre" required #firstName="ngModel">
+              <input type="text" id="firstName" placeholder="Juan"  name="firstName" [(ngModel)]="patient.nombre" required #firstName="ngModel">
               <div *ngIf="firstName.invalid && firstName.touched" class="error">
                 El nombre es obligatorio.
                 <br>
@@ -31,7 +31,7 @@
               </div>
               
               <label for="lastName">Apellido paterno:</label>
-              <input type="text" id="lastName" placeholder="Apellido paterno"  name="lastName" [(ngModel)]="patient.apellido_paterno" required #lastName="ngModel">
+              <input type="text" id="lastName" placeholder="Pérez"  name="lastName" [(ngModel)]="patient.apellido_paterno" required #lastName="ngModel">
               <div *ngIf="lastName.invalid && lastName.touched" class="error">
                 El apellido paterno es obligatorio.
                 <br>
@@ -39,7 +39,7 @@
               </div>
               
               <label for="surname">Apellido materno:</label>
-              <input type="text" id="surname" placeholder="Apellido materno"  name="surname"[(ngModel)]="patient.apellido_materno" required #surname="ngModel">
+              <input type="text" id="surname" placeholder="López"  name="surname"[(ngModel)]="patient.apellido_materno" required #surname="ngModel">
               <div *ngIf="surname.invalid && surname.touched" class="error">
                 El apellido materno es obligatorio.
                 <br>
@@ -146,6 +146,14 @@
               </div>
               <br>
           </div>
+          <div class="tab-navigation-buttons">
+            <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+            <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+            <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            <button (click)="cancelButton()" class="cancelar">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
           <!-- </form> -->
   </div>
           <!-- Contacto del paciente -->
@@ -154,48 +162,64 @@
               <div class="seccion">
                 <!-- Gestión de múltiples teléfonos, siempre muestra al menos un campo -->
                 <div *ngFor="let phone of patient.telefonos; let i = index" class="phone">
-                  <label for="phone{{i}}">Teléfono celular:</label>
-                  <input type="text" id="phone{{i}}" name="phone{{i}}" placeholder="Teléfono" [(ngModel)]="phone.telefono">
-                  <label for="phoneType{{i}}">Tipo:</label>
-                  <select id="phoneType{{i}}" name="phoneType{{i}}">
-                    <option value="1">Celular</option>
-                    <option value="2">Casa</option>
-                    <option value="3">Trabajo</option>
-                  </select>
+                  <label for="phone{{i}}">Teléfono {{ i === 0 ? 'Celular' : i === 1 ? 'Casa' : 'Trabajo'}}:</label>
+                  <input type="text" id="phone{{i}}" name="phone{{i}}" placeholder="5551234567" [(ngModel)]="phone.telefono">
                 </div>
+                
                 <div>
-                  <button type="button" (click)="addPhone()" class="phoneB" >Agregar teléfono</button>
+                  <button type="button" (click)="addPhone()" class="phoneB">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                  </button>
                 </div>
 
-                <!-- Gestión de múltiples correos electrónicos, siempre muestra al menos un campo -->
                 <div *ngFor="let email of patient.correos_electronicos; let i = index" class="email">
                   <label for="email{{i}}">Correo electrónico:</label>
-                  <input type="email" id="email{{i}}" name="email{{i}}" placeholder="Correo electrónico" [(ngModel)]="email.correo_electronico">
+                  <input type="email" id="email{{i}}" name="email{{i}}" placeholder="juan.perez@gmail.com" [(ngModel)]="email.correo_electronico">
                 </div>
                 <div>
-                  <button type="button" (click)="addEmail()" class="emailB" >Agregar correo electrónico</button>
+                  <button type="button" (click)="addEmail()" class="emailB">
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
               <div class="seccion">
                 <!-- Gestión de múltiples direcciones, siempre muestra al menos un campo -->
-                <div *ngFor="let address of patient.direcciones; let i = index" class="address">
-                  <label for="postalCode{{i}}">Código postal:</label>
-                  <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" placeholder="Código Postal" [(ngModel)]="address.codigo_postal">
-                  <label for="streetNumber{{i}}">Calle y número:</label>
-                  <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Calle y número" [(ngModel)]="address.calle_numero">
-                  <label for="suburb{{i}}">Colonia:</label>
-                  <input type="text" id="suburb{{i}}" name="suburb{{i}}" placeholder="Colonia" [(ngModel)]="address.colonia">
-                  <label for="city{{i}}">Ciudad:</label>
-                  <input type="text" id="city{{i}}" name="city{{i}}" placeholder="Ciudad" [(ngModel)]="address.ciudad">
-                  <label for="state{{i}}">Estado:</label>
-                  <input type="text" id="state{{i}}" name="state{{i}}" placeholder="Estado" [(ngModel)]="address.estado">
-                  <label for="country{{i}}">País:</label>
-                  <input type="text" id="country{{i}}" name="country{{i}}" placeholder="País" [(ngModel)]="address.pais">
-                </div>
-                <div>
-                  <button type="button" (click)="addAddress()" class="addressB" >Agregar dirección</button>
-                </div>
+                <!-- Este div contiene la lista de direcciones del paciente -->
+              <div *ngFor="let address of patient.direcciones; let i = index" class="address">
+                <label for="postalCode{{i}}">Código postal:</label>
+                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345">
+                
+                <label for="streetNumber{{i}}">Calle y número:</label>
+                <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Av. Siempre Viva 742" [(ngModel)]="address.calle_numero">
+                
+                <label for="suburb{{i}}">Colonia:</label>
+                <input type="text" id="suburb{{i}}" name="suburb{{i}}" placeholder="Springfield" [(ngModel)]="address.colonia">
+                
+                <label for="city{{i}}">Ciudad:</label>
+                <input type="text" id="city{{i}}" name="city{{i}}" placeholder="Springfield" [(ngModel)]="address.ciudad">
+                
+                <label for="state{{i}}">Estado:</label>
+                <input type="text" id="state{{i}}" name="state{{i}}" placeholder="Springfield" [(ngModel)]="address.estado">
+                
+                <label for="country{{i}}">País:</label>
+                <input type="text" id="country{{i}}" name="country{{i}}" placeholder="México" [(ngModel)]="address.pais">
               </div>
+
+              <!-- Este botón permite agregar direcciones adicionales a la lista -->
+              <div>
+                <button type="button" (click)="addAddress()" class="addressB">
+                  <i class="fas fa-plus" aria-hidden="true"></i>
+                </button>
+              </div>
+              </div>
+            </div>
+            <div class="tab-navigation-buttons">
+              <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+              <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+              <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+              <button (click)="cancelButton()" class="cancelar">
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
             </div>
           </div>          
 
@@ -216,7 +240,7 @@
     <div class="form-section">
       <div class="seccion">
               <label for="relativeFirstName">Nombre(s):</label>
-              <input type="text" id="relativeFirstName" placeholder="Nombre" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" required #relativeFirstName="ngModel">
+              <input type="text" id="relativeFirstName" placeholder="Marta" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" required #relativeFirstName="ngModel">
               <div *ngIf="relativeFirstName.invalid && relativeFirstName.touched" class="error">
                 El nombre es obligatorio.
                 <br>
@@ -224,7 +248,7 @@
               </div>
               
               <label for="relativeLastName">Apellido paterno:</label>
-              <input type="text" id="relativeLastName" placeholder="Apellido paterno" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" required #relativeLastName="ngModel">
+              <input type="text" id="relativeLastName" placeholder="Ramos" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" required #relativeLastName="ngModel">
               <div *ngIf="relativeFirstName.invalid && relativeFirstName.touched" class="error">
                 El apellido paterno es obligatorio.
                 <br>
@@ -232,7 +256,7 @@
               </div>
               
               <label for="relativeSurname">Apellido materno:</label>
-              <input type="text" id="relativeSurname" placeholder="Apellido materno" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" required #relativeSurname="ngModel">
+              <input type="text" id="relativeSurname" placeholder="Gómez" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" required #relativeSurname="ngModel">
               <div *ngIf="relativeSurname.invalid && relativeSurname.touched" class="error">
                 El apellido materno es obligatorio.
                 <br>
@@ -240,7 +264,7 @@
               </div>
 
               <label for="relationship">Parentesco:</label>
-              <input type="text" id="relationship" placeholder="Parentesco" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" required #relationship="ngModel">
+              <input type="text" id="relationship" placeholder="Madre" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" required #relationship="ngModel">
               <div *ngIf="relationship.invalid && relationship.touched" class="error">
                 El parentesco es obligatorio.
                 <br>
@@ -250,7 +274,7 @@
       <div class="seccion">
 
               <label for="relativePhone">Teléfono:</label>
-              <input type="text" id="relativePhone" placeholder="Telefono" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" required #relativePhone="ngModel">
+              <input type="text" id="relativePhone" placeholder="5559876543" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" required #relativePhone="ngModel">
               <div *ngIf="relativePhone.invalid && relativePhone.touched" class="error">
                 El teléfono es obligatorio.
                 <br>
@@ -258,7 +282,7 @@
               </div>
 
               <label for="relativeEmail">Correo electrónico:</label>
-              <input type="email" id="relativeEmail" placeholder="Correo electronico" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" required #relativeEmail="ngModel">
+              <input type="email" id="relativeEmail" placeholder="marta.ramos@hotmail.com" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" required #relativeEmail="ngModel">
               <div *ngIf="relativeEmail.invalid && relativeEmail.touched" class="error">
                 El correo electrónico es obligatorio.
                 <br>
@@ -267,15 +291,15 @@
       </div>
       <div class="seccion">
               <label for="relativeZipCode">Código postal:</label>
-              <input type="text" id="relativeZipCode" placeholder="Codigo Pais" name="relativeZipCode" [(ngModel)]="patient.contacto_emergencia.codigo_postal" required #relativeZipCode="ngModel">
+              <input type="text" id="relativeZipCode" placeholder="54321" name="relativeZipCode" [(ngModel)]="patient.contacto_emergencia.codigo_postal" (change)="fillAddressData(0, 'emergencyContact')" required #relativeZipCode="ngModel">
               <div *ngIf="relativeZipCode.invalid && relativeZipCode.touched" class="error">
                 El código postal es obligatorio.
                 <br>
                 <br>
               </div>
-
+              
               <label for="relativeAddress">Dirección:</label>
-              <input type="text" id="relativeAddress" placeholder="Direccion" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required #relativeAddress="ngModel">
+              <input type="text" id="relativeAddress" placeholder="Calle Falsa 123" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required #relativeAddress="ngModel">
               <div *ngIf="relativeAddress.invalid && relativeAddress.touched" class="error">
                 La dirección es obligatoria.
                 <br>
@@ -283,7 +307,7 @@
               </div>
 
               <label for="relativeCity">Ciudad:</label>
-              <input type="text" id="relativeCity" placeholder="Ciudad" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required #relativeCity="ngModel">
+              <input type="text" id="relativeCity" placeholder="Ciudad Falsa" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required #relativeCity="ngModel">
               <div *ngIf="relativeCity.invalid && relativeCity.touched" class="error">
                 La ciudad es obligatoria.
                 <br>
@@ -291,7 +315,7 @@
               </div>
 
               <label for="relativeState">Estado:</label>
-              <input type="text" id="relativeState" placeholder="Estado" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" required #relativeState="ngModel">
+              <input type="text" id="relativeState" placeholder="Estado Falso" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" required #relativeState="ngModel">
               <div *ngIf="relativeState.invalid && relativeState.touched" class="error">
                 El estado es obligatorio.
                 <br>
@@ -299,7 +323,7 @@
               </div>
 
               <label for="relativeCountry">Pais:</label>
-              <input type="text" id="relativeCountry" placeholder="Pais" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" required #relativeCountry="ngModel">
+              <input type="text" id="relativeCountry" placeholder="México" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" required #relativeCountry="ngModel">
               <div *ngIf="relativeCountry.invalid && relativeCountry.touched" class="error">
                 El país es obligatorio.
                 <br>
@@ -308,8 +332,16 @@
         </div>
         <div class="seccion">
               <label for="relativeNotes">Notas:</label>
-              <textarea id="relativeNotes" name="notas_contacto_emergencia" [(ngModel)]="patient.contacto_emergencia.notas" required #relativeCountry="ngModel"></textarea>
+              <textarea id="relativeNotes" name="notas_contacto_emergencia" placeholder="Alergias a la penicilina" [(ngModel)]="patient.contacto_emergencia.notas" required #relativeCountry="ngModel"></textarea>
       </div>
+    </div>
+    <div class="tab-navigation-buttons">
+      <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+      <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+      <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+      <button (click)="cancelButton()" class="cancelar">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
@@ -341,8 +373,17 @@
       <button type="button" (click)="registerPatient()" class="registrar">
          <i class="icon fas fa-save" aria-hidden="true"></i>
       </button>
+      <div class="tab-navigation-buttons">
+        <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+        <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+        <!-- <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button> -->
+        <button (click)="cancelButton()" class="cancelar">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
   </div>
         
 </div>
 </div>
 </div>
+<app-usuario></app-usuario>

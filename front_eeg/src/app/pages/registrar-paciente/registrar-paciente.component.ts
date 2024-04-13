@@ -4,6 +4,7 @@ import { InfoPaciente } from '../../models/info-paciente.model';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
 import { formatDate } from '@angular/common';
+import { CodigoPostalService } from '../../services/codigoPostal/codigo-postal.service';
 
 @Component({
   selector: 'app-registrar-paciente',
@@ -18,6 +19,8 @@ export class RegistrarPacienteComponent implements OnInit {
   mediaRecorder!: MediaRecorder;
   audioUrl!: string;
   recording: boolean = false;
+  tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
+
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string } = {
     consentimiento: 1,
@@ -27,11 +30,30 @@ export class RegistrarPacienteComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService, // Servicio de autenticación
-    private pacienteService: PacienteService // Servicio de pacientes
+    private pacienteService: PacienteService, // Servicio de pacientes
+    private codigoPostalService: CodigoPostalService // Servicio de códigos postales
   ) {}
 
   ngOnInit(): void {
     this.getCurrentUser(); // Llamada al método para obtener el usuario actual
+    this.initDefaultContactInfo();
+  }
+
+  initDefaultContactInfo(): void {
+    // Asegura que haya al menos tres teléfonos por defecto: Celular, Casa y Trabajo
+    while (this.patient.telefonos.length < 3) {
+      this.patient.telefonos.push({ telefono: '' });
+    }
+  
+    // Asegura que haya al menos un campo para el correo electrónico
+    if (this.patient.correos_electronicos.length === 0) {
+      this.addEmail();
+    }
+  
+    // Asegura que haya al menos una dirección
+    if (this.patient.direcciones.length === 0) {
+      this.addAddress();
+    }
   }
 
   // Método para obtener el ID del usuario actual
@@ -58,23 +80,60 @@ export class RegistrarPacienteComponent implements OnInit {
   }
 
   addPhone(): void {
-    this.patient.telefonos.push({ telefono: '' }); // Agrega un teléfono vacío al arreglo
+    this.patient.telefonos.push({ telefono: '' });
   }
+  
 
   addEmail(): void {
-    this.patient.correos_electronicos.push({ correo_electronico: '' }); // Agrega un correo electrónico vacío al arreglo
+    this.patient.correos_electronicos.push({ correo_electronico: '' });
   }
 
   addAddress(): void {
     this.patient.direcciones.push({
       calle_numero: '',
-      colonia: '', // Opcional, puede ser cadena vacía
+      colonia: '',
       ciudad: '',
       estado: '',
       pais: '',
       codigo_postal: '',
     }); // Agrega una dirección vacía al arreglo
   }
+
+  fillAddressData(index: number, section: 'patientAddress' | 'emergencyContact') {
+    // Usamos un tipo unión aquí para permitir strings y undefined.
+    let postalCode: string | undefined;
+  
+    if (section === 'patientAddress') {
+      postalCode = this.patient.direcciones[index]?.codigo_postal;
+    } else {
+      postalCode = this.patient.contacto_emergencia?.codigo_postal;
+      // Dado que index no se usa para contacto de emergencia, simplemente lo ignoramos en este bloque.
+    }
+  
+    // Verificamos si postalCode es undefined antes de continuar.
+    if (postalCode) {
+      this.codigoPostalService.getAddressByPostalCode(postalCode)
+        .subscribe({
+          next: (data) => {
+            if (data && data.places && data.places.length > 0) {
+              const place = data.places[0];
+              if (section === 'patientAddress') {
+                this.patient.direcciones[index].ciudad = place['place name'];
+                this.patient.direcciones[index].estado = place['state'];
+                this.patient.direcciones[index].pais = 'México';
+              } else {
+                this.patient.contacto_emergencia.ciudad = place['place name'];
+                this.patient.contacto_emergencia.estado = place['state'];
+                this.patient.contacto_emergencia.pais = 'México';
+              }
+            }
+          },
+          error: (error) => {
+            console.error('Error al obtener datos de dirección', error);
+          }
+        });
+    }
+  }  
 
   cancelButton(): void {
     this.router.navigate(['/lista-pacientes']); // Redirige al usuario a la lista de pacientes
@@ -123,6 +182,17 @@ export class RegistrarPacienteComponent implements OnInit {
     }
   }
 
+  changeTab(direction: 'next' | 'back') {
+    const currentIndex = this.tabsOrder.indexOf(this.activeTab);
+    if (direction === 'next' && currentIndex < this.tabsOrder.length - 1) {
+      // Mueve a la siguiente pestaña
+      this.activeTab = this.tabsOrder[currentIndex + 1];
+    } else if (direction === 'back' && currentIndex > 0) {
+      // Mueve a la pestaña anterior
+      this.activeTab = this.tabsOrder[currentIndex - 1];
+    }
+  }
+
 registerPatient(): void {
   // Recorre el arreglo de consentimientos y asigna la fecha actual formateada a cada entrada
   //this.patient.consentimientos.forEach(consentimiento => {
@@ -130,7 +200,7 @@ registerPatient(): void {
   //});
 
   this.patient.consentimientos.push(this.consentimientoTemporal); // Agrega el consentimiento temporal al arreglo
-
+  this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
   console.log('Datos finales a enviar:', this.patient);
 
   // Procede con la lógica para enviar los datos al servidor

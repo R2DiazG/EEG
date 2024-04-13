@@ -1,3 +1,4 @@
+$udem: #FFF500;
 .container {
     background-image: url("../../../assets/img/fondo.png");
     display: flex;
@@ -14,13 +15,45 @@
     }
   }
   
+  label {
+    padding-left: 1rem;
+    margin: 10px;
+    font-size: small;
+  }
+  
+  .right {
+    display: flex;
+    align-items: center; // Align items vertically inside the .right div
+
+    .registrar{
+        background-color: $udem;
+        border: none;
+        border-radius: 4px;
+        font-size: small;
+        cursor: pointer;
+        padding: 10px 0;
+        margin-top: 10px;
+        color: #333;
+      }
+
+  }
+  
+  .left {
+    display: flex;
+    align-items: center; /* Alinea los elementos verticalmente */
+    width: 80%;
+    padding: 0;
+  }
+  
   .header {
-    width: 99%;
-    padding: 1rem;
-    text-align: right;
-    background-color: yellow;
+    display: flex;
+    align-items: center; // Keep this if you want to align items in the center vertically
+    width: 100%;
+    padding: 0;
+    background-color: $udem;
     position: absolute;
     top: 0;
+    height: 5rem;
   
     img {
         width: auto;

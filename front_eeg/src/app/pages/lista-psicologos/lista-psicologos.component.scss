@@ -62,7 +62,7 @@ body {
     width: 100%;
 
     &::placeholder {
-      color: #5F6368; // Color para el placeholder
+      color: #ccc; // Color para el placeholder
     }
 
     &:focus {
@@ -119,6 +119,9 @@ body {
 .container {
   display: flex;
   flex-direction: row;
+  width: 100rem;
+  max-width: 100rem;
+  position: relative;
 }
 
 .sidebar {
@@ -156,6 +159,11 @@ body {
       border-radius: 0.25rem;
       width: 30%;
     }
+  }
+
+  .table-container {
+    overflow-y: auto;
+    max-height: 61vh; // Puedes ajustar esto según sea necesario
   }
 
   table {

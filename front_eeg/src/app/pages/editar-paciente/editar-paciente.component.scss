@@ -7,6 +7,9 @@ $blue: #2492FF;
 .container {
   display: flex;
   flex-direction: row;
+  width: 100rem;
+  max-width: 100rem;
+  position: relative;
 }
 
 .header {
@@ -59,6 +62,7 @@ $blue: #2492FF;
 
       &.active {
         border-bottom: 3px solid #7353ba;
+        font-weight: bold;
         color: #333;
       }
 
@@ -167,10 +171,12 @@ $blue: #2492FF;
 
   label{
     color: #7353ba !important;
+    font-size: 1.15rem;
   }
-
+  
   .respuesta, a{
     color: #666;
+    font-size: .9rem;
   }
 
   .seccion{
@@ -180,7 +186,15 @@ $blue: #2492FF;
     padding: 1rem;
   }
 
-  .regresar, .editar{
+  .tab-navigation-buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-left: 40%;
+    margin-right: 40%;
+  }
+
+  .regresar, .editar, .acciones{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -207,6 +221,34 @@ $blue: #2492FF;
       color: white;
       .text { color: white; }
     }
+  }
+  .acciones {
+    color: $bg;
+    &:hover {
+    background-color: $blue;
+    color: white;
+    .text { color: white; }
+  }
+}
+
+  .cancelar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1rem;
+    background-color: transparent;
+    margin: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+
+    color: #666;
+    &:hover {
+    background-color: $blue;
+    color: white;
+    .text { color: white; }
+  }
   }
 
   // Botones de acción

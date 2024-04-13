@@ -20,6 +20,7 @@ export class EditarPacienteComponent implements OnInit {
   isDeleted: boolean = false;
   isDeleteInitiated: boolean = false;
   fechaActual: string = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+  tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoDisplay: string = "Consentimiento grabado (haz clic para reproducir)";
 
@@ -273,6 +274,18 @@ updateTelefonosBeforeSend() {
 }
   */
   
+  changeTab(direction: 'next' | 'back') {
+    const currentIndex = this.tabsOrder.indexOf(this.activeTab);
+    if (direction === 'next' && currentIndex < this.tabsOrder.length - 1) {
+      // Mueve a la siguiente pestaña
+      this.activeTab = this.tabsOrder[currentIndex + 1];
+    } else if (direction === 'back' && currentIndex > 0) {
+      // Mueve a la pestaña anterior
+      this.activeTab = this.tabsOrder[currentIndex - 1];
+    }
+  }
+
+
   onSubmit(): void {
     console.log('actualizando paciente')
     if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {

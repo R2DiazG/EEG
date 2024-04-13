@@ -12,8 +12,11 @@ $blue: #2492FF;
 .container{
     display: flex;
     flex-direction: row;
-    max-width: max-content;
+    width: 100rem;
+    max-width: 100rem;
+    position: relative;
   }
+
 .graphs-container {
     flex: 1;
     padding: 20px;
@@ -198,6 +201,12 @@ $blue: #2492FF;
         }
       }
     }
+
+    .table-container {
+      overflow-y: auto;
+      max-height: 61vh; // Puedes ajustar esto según sea necesario
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -214,7 +223,7 @@ $blue: #2492FF;
         }
       }
       th {
-        background-color: #f2f2f2;
+        background-color: #bbbdf6;
       }
     }
 
@@ -323,6 +332,7 @@ $blue: #2492FF;
   
         &.active {
           border-bottom: 3px solid #7353ba;
+          font-weight: bold;
           color: #333;
         }
   

@@ -17,54 +17,56 @@ export class RegistrarPsicologoComponent {
     private router: Router,
     private usuarioService: UsuarioService // Inyectar el servicio de usuario aquí
   ) {
-    // Inicializa el formulario con validaciones
+    // Inicializa el formulario con validaciones, incluyendo la confirmación de contraseña
     this.registrationForm = this.formBuilder.group({
       nombre: ['', [Validators.required]],
       apellidos: ['', [Validators.required]],
-      contraseña: ['', [Validators.required]],
+      contraseña: ['', [Validators.required, Validators.minLength(8)]], // Asegúrate de que las contraseñas tengan una longitud mínima, por ejemplo, 8 caracteres
+      confirmarContrasena: ['', [Validators.required]], // Agregado nuevo campo de confirmación de contraseña
       email: ['', [Validators.required, Validators.email]],
-    });
+    }, { validator: this.checkPasswords }); // Aplica validador personalizado al nivel del grupo
   }
+
+  // Validador personalizado para comparar que las contraseñas coincidan
+  checkPasswords(group: FormGroup): { [key: string]: any } | null { 
+    let pass = group.get('contraseña')!.value; // Aserción no nula
+    let confirmPass = group.get('confirmarContrasena')!.value; // Aserción no nula
+    return pass === confirmPass ? null : { notSame: true };
+}
 
   onSubmit() {
     if (this.registrationForm.valid) {
       console.log('Formulario válido', this.registrationForm.value);
-      const email: string = this.registrationForm.get('email')?.value;
+      // Se omite la confirmación de contraseña al enviar el formulario
+      const { confirmarContrasena, ...formData } = this.registrationForm.value;
+      const email: string = formData.email;
       const username = email.substring(0, email.lastIndexOf('@'));
   
-      // Configura la aprobación como false y actualiza el username y id_rol
-      const formData = {
-        ...this.registrationForm.value,
+      // Agrega el username y otros campos requeridos al formData antes de enviar
+      Object.assign(formData, {
         username: username,
         aprobacion: false,
-        id_rol: 2,
+        id_rol: 2, // Asegúrate de que el rol esté correctamente asignado
         correo: email
-      };
-  
+      });
+
       console.log('Enviando formData:', formData);
       this.usuarioService.crearUsuario(formData).subscribe({
         next: (response) => {
           console.log('Usuario registrado con éxito', response);
           this.router.navigate(['/login']);
         },
-        // ...
-      error: (error) => {
-        console.error('Error al registrar el usuario', error);
-        if (error.error instanceof ErrorEvent) {
-          // Error del lado del cliente o de la red
-          console.error('Error Event:', error.error.message);
-        } else {
-          // El backend devolvió un código de respuesta no exitoso
-          console.error('Body:', error.error);
-          alert(`Error al registrar: ${error.error.mensaje || 'Error desconocido'}`); // Muestra el mensaje de error del backend
+        error: (error) => {
+          console.error('Error al registrar el usuario', error);
+          // Manejo de errores...
         }
-      }
       });
     } else {
-      alert("Todos los campos son obligatorios y deben ser válidos.");
+      console.error("El formulario no es válido o las contraseñas no coinciden.");
+      // Mostrar un mensaje de error adecuado
     }
   }
-  
+
   cancel() {
     this.registrationForm.reset();
     this.router.navigate(['/login']);

@@ -1,7 +1,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <div class="container">
   <div class="header">
-    <img src="assets/img/logo.png"> <!--Agregar logo-->
+    <div class="left">
+      <img src="assets/img/logo.png"> <!--Agregar logo-->
+    </div>
+    <div class="right">
+      <label>¿Eres parte de la UDEM?</label>
+      <button type="button" (click)="registerUser()" class="registrar">Registrar aquí</button>
+    </div>
   </div>
 <div class="login-container">
   <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->

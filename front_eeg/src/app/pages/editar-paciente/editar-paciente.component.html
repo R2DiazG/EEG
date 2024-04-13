@@ -186,6 +186,9 @@
               <a>
                 <input type="radio" name="educationLevel" value="Doctorado" [(ngModel)]="patient.escolaridad"> Doctorado
               </a>
+              <a>
+                <input type="radio" name="educationLevel" value="Otro" [(ngModel)]="patient.escolaridad"> Sin estudios
+              </a>
             </div>
             <br>
 
@@ -208,9 +211,20 @@
               <a>
                 <input type="radio" name="occupation" value="Independiente" [(ngModel)]="patient.ocupacion"> Independiente
               </a>
+              <a>
+                <input type="radio" name="occupation" value="Jubilado" [(ngModel)]="patient.ocupacion"> Desempleado
+              </a>
             </div>
             <br>
           </div>
+      </div>
+      <div class="tab-navigation-buttons">
+        <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+        <!-- <button class="acciones" (click)="changeTab('back')">Anterior</button> -->
+        <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+        <button (click)="regresar()" class="cancelar">
+          <i class="fas fa-ban" aria-hidden="true"></i>
+        </button>
       </div>
     </form>
   </div>
@@ -230,7 +244,6 @@
             <div *ngFor="let phone of patient.telefonos; let i = index">
               <input type="text" [id]="'phone' + i" [name]="'phone' + i" [(ngModel)]="patient.telefonos[i].telefono" [readonly]="!isEditMode">
             -->
-            <!-- Teléfono de casa -->
             <!-- Teléfono de casa -->
             <ng-container *ngIf="isEditMode || patient.telefonos[0]?.telefono">
               <div *ngIf="!isEditMode; else editTelefonoCasa" class="respuesta">
@@ -376,6 +389,14 @@
               <input type="text" id="country0" name="country0" [(ngModel)]="patient.direcciones[0].pais" required>
             </ng-template>
           </div>
+        </div>
+        <div class="tab-navigation-buttons">
+          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+          <button (click)="regresar()" class="cancelar">
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
         </div>
         </form>
       </div>
@@ -595,6 +616,11 @@
             </ng-template>  
           </div>
         </div>
+        <div class="tab-navigation-buttons">
+          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas-->
+          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+        </div>
         </form>
       </div>
 
@@ -608,6 +634,14 @@
               <!-- <audio *ngIf="patient.consentimientos.audioUrl" [src]="patient.consentimientos.audioUrl" controls></audio> -->
             </div>
           </div>
+        </div>
+        <div class="tab-navigation-buttons">
+          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <!-- <button class="acciones" (click)="changeTab('next')">Siguiente</button> -->
+          <button (click)="regresar()" class="cancelar">
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
         </div>
       </div>
       
@@ -636,3 +670,4 @@
     </div>
   </div>
 </div>
+<app-usuario></app-usuario>

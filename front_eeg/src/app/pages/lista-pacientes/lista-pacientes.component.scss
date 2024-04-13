@@ -62,7 +62,7 @@ body {
     width: 100%;
 
     &::placeholder {
-      color: #5F6368; // Color para el placeholder
+      color: #ccc; // Color para el placeholder
     }
 
     &:focus {
@@ -126,11 +126,18 @@ body {
   opacity: 1;
 }
 
+.table-container {
+  overflow-y: auto;
+  max-height: 61vh; // Puedes ajustar esto según sea necesario
+}
 
 // Estilos del contenedor principal
 .container {
   display: flex;
   flex-direction: row;
+  width: 100rem;
+  max-width: 100rem;
+  position: relative;
 }
 
 .patient-list-container {

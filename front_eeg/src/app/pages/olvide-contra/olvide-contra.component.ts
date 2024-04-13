@@ -39,6 +39,10 @@ export class OlvideContraComponent {
     }
   }
 
+  registerUser() {
+    this.router.navigate(['/registrar-psicologo']); // Navega a la ruta de registrar paciente
+  }
+
   cancelForgetPassword() {
     this.router.navigate(['/login']); // Navega a la ruta de login
   }

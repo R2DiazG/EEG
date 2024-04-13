@@ -15,9 +15,10 @@ import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/cre
   styleUrls: ['./medicamentos.component.scss'] // Asegúrate de que el path sea correcto
 })
 export class MedicamentosComponent implements OnInit {
-  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'eliminar'];
+  displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'acciones', 'eliminar'];
   dataSource = new MatTableDataSource<any>([]);
   searchControl = new FormControl('');
+  editModeMap: { [key: number]: boolean } = {};
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -75,6 +76,33 @@ export class MedicamentosComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  enableEditMode(medicamento: any) {
+    this.editModeMap[medicamento.id_medicamento] = true; // Habilita el modo de edición para el medicamento específico
+    this.cdr.detectChanges();
+  }
+
+  saveMedicamento(medicamento: any) {
+    if (this.editModeMap[medicamento.id_medicamento]) {
+      // Llama al servicio de actualización con el id y los datos actualizados del medicamento
+      this.medicamentoService.actualizarMedicamento(medicamento.id_medicamento, medicamento).subscribe({
+        next: (res) => {
+          console.log('Medicamento actualizado exitosamente', res);
+          this.editModeMap[medicamento.id_medicamento] = false; // Desactiva el modo de edición
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al actualizar el medicamento:', error);
+        }
+      });
+    }
+  }
+
+  cancelEditMode(medicamento: any) {
+    this.editModeMap[medicamento.id_medicamento] = false; // Desactiva el modo de edición
+    this.cdr.detectChanges();
+    // Aquí deberías también restablecer los valores originales del medicamento si hiciste cambios
   }
 
   /*eliminarMedicamento(medicamento: any) {

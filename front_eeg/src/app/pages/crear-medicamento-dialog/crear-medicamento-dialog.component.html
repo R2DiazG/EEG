@@ -4,23 +4,23 @@
     <!-- Nombre Comercial -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nombre comercial</mat-label>
-      <input matInput [(ngModel)]="medicamento.nombre_comercial" name="nombreComercial" placeholder="Ej: Ibuprofeno">
+      <input matInput [(ngModel)]="medicamento.nombre_comercial" name="nombreComercial" placeholder="Aspirina">
     </mat-form-field>
 
     <!-- Principio Activo -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Principio activo</mat-label>
-      <input matInput [(ngModel)]="medicamento.principio_activo" name="principioActivo" placeholder="Ej: Ibuprofeno">
+      <input matInput [(ngModel)]="medicamento.principio_activo" name="principioActivo" placeholder="Ácido acetilsalicílico">
     </mat-form-field>
 
     <!-- Presentación -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Presentación</mat-label>
-      <input matInput [(ngModel)]="medicamento.presentacion" name="presentacion" placeholder="Ej: 400mg Tabletas">
+      <input matInput [(ngModel)]="medicamento.presentacion" name="presentacion" placeholder="500mg Tabletas">
     </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="false">Cancelar</button>
-  <button mat-button [mat-dialog-close]="false" color="primary" (click)="crearMedicamento()">Crear</button>
+  <button class="regresar" mat-button [mat-dialog-close]="false"><i class="fas fa-times" aria-hidden="true"></i></button>
+  <button class="guardar" mat-button [mat-dialog-close]="false" color="primary" (click)="crearMedicamento()"><i class="fas fa-save" aria-hidden="true"></i></button>
 </mat-dialog-actions>

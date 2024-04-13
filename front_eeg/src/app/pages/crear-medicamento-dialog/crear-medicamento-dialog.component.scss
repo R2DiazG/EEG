@@ -1,4 +1,38 @@
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 .full-width {
     width: 100%;
   }
-  
+
+  .guardar, .regresar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1.5rem;
+    background-color: transparent !important;
+    margin: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+    .guardar {
+      color: $bg !important;
+      &:hover {
+      background-color: $green !important;
+      color: white !important;
+      .text { color: white; }
+    }
+  }
+    .regresar {
+      color: $bg !important;
+      &:hover {
+      background-color: $blue !important;
+      color: white !important;
+      .text { color: white; }
+    }
+  }
