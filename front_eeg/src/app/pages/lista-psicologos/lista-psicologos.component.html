@@ -8,6 +8,7 @@
             <input type="search" placeholder="Nombre del psicólogo" [formControl]="searchControl" class="search-input">
           </div>                          
         </div>
+        <div class="table-container">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
           <!-- Nombre Column -->
           <ng-container matColumnDef="nombre">
@@ -92,7 +93,7 @@
                 <i class="icon fas fa-pencil" aria-hidden="true"></i>
               </button>
               <button class="saveButton" *ngIf="editModeMap[element.id_usuario]" (click)="saveUser(element)">
-                <i class="icon fas fa-save" aria-hidden="true"></i>
+                <i class="icon fas fa-check" aria-hidden="true"></i>
               </button>
               <button class="cancelEditButton" *ngIf="editModeMap[element.id_usuario]" (click)="cancelEditMode(element)">
                 <i class="icon fas fa-times" aria-hidden="true"></i>
@@ -123,6 +124,7 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+        </div>
         <br>
         <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
       </div>

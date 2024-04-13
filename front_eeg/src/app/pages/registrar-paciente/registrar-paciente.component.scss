@@ -7,6 +7,8 @@ $blue: #2492FF;
 .container {
   display: flex;
   flex-direction: row;
+  width: 100rem;
+  max-width: 100rem;
   position: relative;
   @media (max-width: 768px) {
     flex-direction: column;

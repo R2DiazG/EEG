@@ -136,6 +136,8 @@ body {
 .container {
   display: flex;
   flex-direction: row;
+  width: 100rem;
+  max-width: 100rem;
   position: relative;
 }
 
@@ -174,6 +176,11 @@ body {
       border-radius: 0.25rem;
       width: 30%;
     }
+  }
+
+  .table-container {
+    overflow-y: auto;
+    max-height: 61vh; // Puedes ajustar esto según sea necesario
   }
 
   table {

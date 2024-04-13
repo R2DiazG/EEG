@@ -13,6 +13,7 @@
               </button>              
         </div>
       </div>
+      <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <!-- Columnas para medicamentos -->
         <ng-container matColumnDef="nombre_comercial">
@@ -62,6 +63,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+      </div>
       <br>
       <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </div>
