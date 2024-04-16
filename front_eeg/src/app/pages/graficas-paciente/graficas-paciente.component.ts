@@ -79,6 +79,7 @@ export class GraficasPacienteComponent implements OnInit {
   estado_general!: string;
   estado_especifico!: string;
   resumen_sesion_actual!: string;
+  activeGraphTab = 'eeg';
 
   // Notas del psicólogo
   isAddingNote: boolean = false;
@@ -420,8 +421,18 @@ onSesionChange() {
   regresar(){
     this.router.navigate(['/lista-pacientes']);
   }
+
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+  }
+  setActiveGraphTab(tabName: string) {
+    this.activeGraphTab = tabName;
+    if (tabName === 'eeg') {
+      this.cargarDatosNormalizedEEG(); // Llamamos a la función que carga los datos de EEG normalizado.
+    }
+    if (tabName === 'psd') {
+      this.cargarDatosEEG(); // Llamamos a la función que carga los datos de PSD.
+    }
   }
 
   /*cargarDatosNormalizedEEG(): void {

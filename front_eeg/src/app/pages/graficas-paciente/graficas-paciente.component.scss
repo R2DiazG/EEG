@@ -74,7 +74,7 @@ $blue: #2492FF;
       background-color: transparent;
       margin: 0.5rem;
       cursor: pointer;
-      margin-bottom: 20px;
+      //margin-bottom: 20px;
     }
       .regresar {
         color: $bg;
@@ -161,11 +161,9 @@ $blue: #2492FF;
     .seccionInicial{
       margin-bottom: 20px;
       border-radius: 8px;
-      width: 98%;
+      //width: 98%;
       background-color: white;
-      padding-left: 2rem;
-      padding-top: 2rem;
-      padding-right: 1rem;
+      padding: 1.5rem;
     }  
     .search-container {
       display: flex;

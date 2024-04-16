@@ -3,13 +3,13 @@
 <div class="graphs-container">
   <div class="header">
     <div class="left">
-      <button (click)="regresar()" class="regresar">
+      <button (click)="regresar()" class="regresar" title="Regresar" >
         <i class="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
       <h1>Visualizador de Electroencefalograma</h1>
     </div>
     <div class="right">
-      <button (click)="addSession()" class="add">
+      <button (click)="addSession()" class="add" title="Registrar nueva sesion" >
         <i class="fas fa-plus" aria-hidden="true"></i>
       </button>
     </div>
@@ -18,7 +18,7 @@
   <div class="search">
     <div class="fecha-consulta-seccion">
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
-        <option disabled selected>{{fechaSesion}}</option>
+        <option disabled selected>Seleccionar fecha de sesion</option>
         <option *ngFor="let sesion of sesiones" [value]="sesion.id_sesion">
           {{ sesion.fecha_consulta }}
         </option>
@@ -34,16 +34,16 @@
     <div class="tab-content">
       <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'detailsSesion'">
+      <div class="seccionInicial">
       <div class="header">
         <div class="left">
-          <div class="seccionInicial">
           <div class="info-eeg">
               <p><strong>Fecha:</strong> {{fecha_consulta}}</p>
               <p><strong>Resumen de la sesión:</strong> {{resumen_sesion_actual}}</p>
               <p><strong>Estado general:</strong> {{estado_general}}</p>
               <p><strong>Estado especifico:</strong> {{estado_especifico}}</p>
               <div>
-              <div class="botones-container">
+              <!-- <div class="botones-container">
                 <div>
                   <button (click)="addMedication()" class="button-agregar">
                     <i class="fas fa-medkit" aria-hidden="true"></i> 
@@ -59,15 +59,30 @@
                       <i class="fas fa-save" aria-hidden="true"></i> 
                     </button>
                   </div>
+                </div>
+              </div> -->
               </div>
-              </div>
-              </div>
-          </div>
           </div>
         </div>
         <div class="right">
+          <div>
+            <button (click)="addMedication()" class="button-agregar" title="Agregar medicamento">
+              <i class="fas fa-medkit" aria-hidden="true"></i>
+            </button>
+          </div>          
+          <div class="nota-psicologo-container">
+            <button class="button-agregar" (click)="onAgregarNotasClick()" title="Agregar notas de sesion" >
+              <i class="fas fa-sticky-note" aria-hidden="true"></i> 
+            </button>
+            <div *ngIf="isAddingNote" class="nota-editor">
+              <textarea class="nota-textarea" [(ngModel)]="notasPsicologo" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
+              <button class="button-guardar" (click)="guardarNotasPsicologo()">
+                <i class="fas fa-save" aria-hidden="true"></i> 
+              </button>
+            </div>
+          </div>
           <div class="form-actions">
-            <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && isConfirm}">
+            <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && isConfirm}" title="Eliminar sesion" >
               <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
               <i class="icon fas fa-question-circle" *ngIf="isConfirm && isDeleted"></i>
               <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
@@ -75,14 +90,26 @@
             </button>
           </div>
         </div>
+      </div>
+  </div> 
+  <div class="tab-menu">
+    <button class="tab" (click)="setActiveGraphTab('eeg')" [class.active]="activeGraphTab === 'eeg'">EEG</button>
+    <button class="tab" (click)="setActiveGraphTab('psd')" [class.active]="activeGraphTab === 'psd'">PSD</button>
+    <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">Grafica</button>
   </div>
+  <div class="tab-content">
+    <div *ngIf="activeGraphTab === 'eeg'">
         <div class="space1"></div>
         <div class="seccion">
         <div id="eeg" style="width:100%; height:1000px;"></div>
         </div>
+    </div>
+    <div *ngIf="activeGraphTab === 'psd'">
         <div class="space"></div>
         <div class="seccion">
         <div id="processed" style="width:100%; height:400px;"></div>
+        </div>
+    </div>
         </div>
       </div>
       <div *ngIf="activeTab === 'meds'">
@@ -93,6 +120,7 @@
             </div>
         </div>
             <br>
+            <div class="seccionInicial">
             <div class="table-container">
           <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -123,6 +151,7 @@
           </div>
           <br>
           <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+        </div>
       </div>
       <div *ngIf="activeTab === 'prob'">
         <h2>Contenido de Pre-diagnóstico</h2>

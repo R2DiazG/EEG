@@ -3,7 +3,7 @@
 <div class="patient-edit-container">
   <div class="header">
     <div class="left">
-      <button (click)="regresar()" class="regresar">
+      <button (click)="regresar()" class="regresar" title="Regresar" >
         <i class="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
       <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
@@ -15,7 +15,7 @@
         <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
         <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
     </button> -->
-    <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}">
+    <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}" title="Eliminar paciente" >
       <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
       <i class="icon fas fa-question-circle" *ngIf="isConfirm && !isDeleted"></i>
       <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
