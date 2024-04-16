@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {
     this.loginForm = new FormGroup({
@@ -66,8 +67,11 @@ export class LoginComponent implements OnInit {
       alert('Todos los campos son obligatorios.');
     }
   */
-  
 
+    toggleShowPassword() {
+      this.showPassword = !this.showPassword;
+    }
+  
   onForgotPassword() {
     this.router.navigate(['/olvide-contra']); // Navega a la ruta de olvidé contraseña
   }
