@@ -36,6 +36,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { UsuarioComponent } from './pages/usuario/usuario.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
+import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { MatRadioModule } from '@angular/material/radio';
     MedicamentosComponent,
     CrearMedicamentoDialogComponent,
     DropMedicamentosDialogComponent,
-    UsuarioComponent
+    UsuarioComponent,
+    AdminRegistraPsicologoComponent
   ],
   imports: [
     BrowserModule,

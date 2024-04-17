@@ -1,0 +1,60 @@
+<div class="container">
+    <app-menu-lateral></app-menu-lateral>
+    <div class="user-registration-container">
+      <div class="tab-content">
+        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+            <div class="header" >
+                <div class="left">
+                  <button (click)="cancelButton()" class="regresar" title="Regresar">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                  </button>
+                  <h1>Registrar nuevo psicólogo</h1>
+                </div>
+            <div class="right">
+                <div class="form-actions">
+                  <button type="submit" class="guardar" [disabled]="!registrationForm.valid">
+                      <i class="fas fa-save" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+        <div class="seccion">
+        <div class="form-group">
+            <p><label for="name">Nombre</label></p>
+            <input type="text" id="nombre" class="form-control" formControlName="nombre" placeholder="Dr. Psicologo">
+          </div>
+          <br>
+          <div class="form-group">
+            <p><label for="apellidos">Apellidos</label></p>
+            <input type="text" id="apellidos" class="form-control" formControlName="apellidos" placeholder="Leon Garza">
+          </div>
+          <br>
+          <div class="form-group">
+            <p><label for="contraseña">Contraseña</label></p>
+            <div class="input-group">
+              <input [type]="showPassword ? 'text' : 'password'" id="contraseña" class="form-control password" formControlName="contraseña" placeholder="Ponga su contraseña">
+              <button type="button" class="toggle-password" (click)="toggleShowPassword()">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <br>
+          <div class="form-group">
+            <p><label for="confirmarContrasena">Confirmar Contraseña</label></p>
+            <div class="input-group">
+              <input [type]="showPassword ? 'text' : 'password'" id="confirmarContrasena" class="form-control password" formControlName="confirmarContrasena" placeholder="Confirme su contraseña">
+              <button type="button" class="toggle-password" (click)="toggleShowPassword()">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <br>
+          <div class="form-group">
+              <p><label for="email">Correo UDEM</label></p>
+              <input type="email" id="email" class="form-control" formControlName="email" placeholder="ejemplo@udem.edu">
+          </div>
+        </div>
+        </form>
+    </div>
+</div>
+    </div>

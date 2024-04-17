@@ -247,14 +247,13 @@ export class ListaPsicologosComponent implements OnInit {
       }
     });
   }
-  
-
-  registerPatient() {
-    this.router.navigate(['/registrar-paciente']); // Navega a la ruta de registrar paciente
-  }
 
   isEditMode(user: any): boolean {
     return this.editModeMap[user.id_usuario];
+  }
+
+  registerUser() {
+    this.router.navigate(['/admin-registra-psicologo']);
   }
 
   viewDetails(user: any) { // Asegúrate de pasar el usuario a la función
