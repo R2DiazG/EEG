@@ -3,7 +3,7 @@
   <div class="patient-registration-container">
     <div class="header">
       <div class="left">
-        <button (click)="cancelButton()" class="regresar">
+        <button (click)="cancelButton()" class="regresar" title="Regresar">
           <i class="fas fa-arrow-left" aria-hidden="true"></i>
         </button>
         <h1>Registrar nuevo paciente</h1>
@@ -57,7 +57,7 @@
               </div>
               </div>
               <br>
-              <label for="gender">Género:</label>
+              <!-- <label for="gender">Género:</label>
               <div id="gender">
                 <a>
                   <input type="radio" name="gender" value="1" [(ngModel)]="patient.id_genero"> Masculino
@@ -65,11 +65,27 @@
                 <a>
                   <input type="radio" name="gender" value="2" [(ngModel)]="patient.id_genero"> Femenino
                 </a>
-              </div>
+              </div> -->
+              <label for="gender">Género:</label>
+              <br>
+              <mat-radio-group aria-labelledby="gender" [(ngModel)]="patient.id_genero" name="gender">
+                <mat-radio-button value="1">Masculino</mat-radio-button>
+                <mat-radio-button value="2">Femenino</mat-radio-button>
+              </mat-radio-group>
+
               <br>
           </div>
           <div class="seccion">
-              <label for="civilStatus">Estado civil:</label>
+            <label for="civilStatus">Estado civil:</label>
+            <br>
+            <mat-radio-group aria-labelledby="civilStatus" [(ngModel)]="patient.id_estado_civil" name="civilStatus">
+              <mat-radio-button value="1">Soltero/a</mat-radio-button>
+              <mat-radio-button value="2">Casado/a</mat-radio-button>
+              <mat-radio-button value="3">Divorciado/a</mat-radio-button>
+              <mat-radio-button value="4">Viudo/a</mat-radio-button>
+            </mat-radio-group>
+
+              <!-- <label for="civilStatus">Estado civil:</label>
               <div id="civilStatus">
               <a>
                 <input type="radio" name="civilStatus" value="1" [(ngModel)]="patient.id_estado_civil"> Soltero/a
@@ -83,10 +99,31 @@
               <a>
                 <input type="radio" name="civilStatus" value="4" [(ngModel)]="patient.id_estado_civil"> Viudo/a
               </a>
-              </div>
+              </div> -->
               <br>
     
               <label for="laterality">Lateralidad:</label>
+              <br>
+              <mat-radio-group aria-labelledby="laterality" [(ngModel)]="patient.id_lateralidad" name="laterality">
+                <mat-radio-button value="1">Soltero/a</mat-radio-button>
+                <mat-radio-button value="2">Casado/a</mat-radio-button>
+                <mat-radio-button value="3">Divorciado/a</mat-radio-button>
+                <mat-radio-button value="4">Viudo/a</mat-radio-button>
+              </mat-radio-group>
+
+              <!-- <div id="laterality">
+              <a>
+                <input type="radio" name="laterality" value="1" [(ngModel)]="patient.id_lateralidad"> Zurdo
+              </a>
+              <a>
+                <input type="radio" name="laterality" value="2" [(ngModel)]="patient.id_lateralidad"> Diestro
+              </a>
+              <a>
+                <input type="radio" name="laterality" value="3" [(ngModel)]="patient.id_lateralidad"> Ambidiestro
+              </a>
+              </div> -->
+
+              <!-- <label for="laterality">Lateralidad:</label>
               <div id="laterality">
               <a>
                 <input type="radio" name="laterality" value="1" [(ngModel)]="patient.id_lateralidad"> Zurdo
@@ -97,10 +134,22 @@
               <a>
                 <input type="radio" name="laterality" value="3" [(ngModel)]="patient.id_lateralidad"> Ambidiestro
               </a>
-              </div>
+              </div> -->
               <br>
-              
+
               <label for="educationLevel">Escolaridad:</label>
+              <br>
+              <mat-radio-group aria-label="Escolaridad" [(ngModel)]="patient.id_escolaridad" name="educationLevel">
+                <mat-radio-button value="1">Primaria</mat-radio-button>
+                <mat-radio-button value="2">Secundaria</mat-radio-button>
+                <mat-radio-button value="3">Preparatoria</mat-radio-button>
+                <mat-radio-button value="4">Universidad</mat-radio-button>
+                <mat-radio-button value="5">Maestría</mat-radio-button>
+                <mat-radio-button value="6">Doctorado</mat-radio-button>
+                <mat-radio-button value="7">Sin estudios</mat-radio-button>
+              </mat-radio-group>
+              
+              <!-- <label for="educationLevel">Escolaridad:</label>
               <div id="educationLevel">
               <a>
                 <input type="radio" name="educationLevel" value="1" [(ngModel)]="patient.id_escolaridad"> Primaria
@@ -123,10 +172,19 @@
               <a>
                 <input type="radio" name="educationLevel" value="7" [(ngModel)]="patient.id_escolaridad"> Sin estudios
               </a>
-              </div>
+              </div> -->
               <br>
 
               <label for="occupation">Ocupación:</label>
+              <br>
+              <mat-radio-group aria-label="Ocupación" [(ngModel)]="patient.id_ocupacion" name="occupation">
+                <mat-radio-button value="1">Estudiante</mat-radio-button>
+                <mat-radio-button value="2">Empleado</mat-radio-button>
+                <mat-radio-button value="3">Empresario</mat-radio-button>
+                <mat-radio-button value="4">Independiente</mat-radio-button>
+                <mat-radio-button value="5">Desempleado</mat-radio-button>
+              </mat-radio-group>
+              <!-- <label for="occupation">Ocupación:</label>
               <div id="occupation">
               <a>
                 <input type="radio" name="occupation" value="1" [(ngModel)]="patient.id_ocupacion"> Estudiante
@@ -143,7 +201,7 @@
               <a>
                 <input type="radio" name="occupation" value="5" [(ngModel)]="patient.id_ocupacion"> Desempleado
               </a>
-              </div>
+              </div> -->
               <br>
           </div>
           <div class="tab-navigation-buttons">
@@ -167,7 +225,7 @@
                 </div>
                 
                 <div>
-                  <button type="button" (click)="addPhone()" class="phoneB">
+                  <button type="button" (click)="addPhone()" class="phoneB" title="Agregar otro número de telefono">
                     <i class="fas fa-plus" aria-hidden="true"></i>
                   </button>
                 </div>
@@ -177,7 +235,7 @@
                   <input type="email" id="email{{i}}" name="email{{i}}" placeholder="juan.perez@gmail.com" [(ngModel)]="email.correo_electronico">
                 </div>
                 <div>
-                  <button type="button" (click)="addEmail()" class="emailB">
+                  <button type="button" (click)="addEmail()" class="emailB" title="Agregar otro email">
                     <i class="fas fa-plus" aria-hidden="true"></i>
                   </button>
                 </div>
@@ -187,7 +245,7 @@
                 <!-- Este div contiene la lista de direcciones del paciente -->
               <div *ngFor="let address of patient.direcciones; let i = index" class="address">
                 <label for="postalCode{{i}}">Código postal:</label>
-                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345">
+                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345" (ngModelChange)="fillAddressData(i, 'patientAddress')">                
                 
                 <label for="streetNumber{{i}}">Calle y número:</label>
                 <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Av. Siempre Viva 742" [(ngModel)]="address.calle_numero">
@@ -207,7 +265,7 @@
 
               <!-- Este botón permite agregar direcciones adicionales a la lista -->
               <div>
-                <button type="button" (click)="addAddress()" class="addressB">
+                <button type="button" (click)="addAddress()" class="addressB" title="Agregar otra dirección">
                   <i class="fas fa-plus" aria-hidden="true"></i>
                 </button>
               </div>

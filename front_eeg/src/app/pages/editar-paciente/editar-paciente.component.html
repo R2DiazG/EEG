@@ -9,6 +9,12 @@
       <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
     </div>
     <div class="form-actions">
+      <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
+      <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+        <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+      </button>
+    </div>
+    <div class="form-actions">
       <!-- <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
         <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
         <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
@@ -22,12 +28,6 @@
       <!-- Actualizado para mostrar 'Delete' solo después del primer clic -->
       <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
     </button>
-    </div>
-    <div class="form-actions">
-      <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
-      <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-        <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-      </button>
     </div>
   </div>
     <div class="tab-menu">

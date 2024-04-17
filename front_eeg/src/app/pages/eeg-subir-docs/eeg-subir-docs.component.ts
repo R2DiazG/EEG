@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
 import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component'; // Asegúrate de tener la ruta correcta
 import { MatDialog } from '@angular/material/dialog';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-eeg-subir-docs',
@@ -78,21 +79,21 @@ export class EegSubirDocsComponent {
     this.selectedFile = event.target.files[0];
   }
 
-  toggleEstadoEspecifico(estado: string, event: Event): void {
-    const inputElement = event.target as HTMLInputElement; // Aserción de tipo
-    // La siguiente línea verifica si inputElement es realmente un HTMLInputElement
-    // Y luego verifica si está marcado antes de proceder.
-    const isChecked = inputElement ? inputElement.checked : false;
+  toggleEstadoEspecifico(estado: string, event: MatCheckboxChange): void {
+    const isChecked = event.checked; // Directamente obtenemos el estado del checkbox
   
     if (estado === 'ninguno' && isChecked) {
+      // Si el estado es 'ninguno' y está marcado, desmarca todos los otros y marca 'ninguno'
       Object.keys(this.estadosEspecificos).forEach(key => {
         this.estadosEspecificos[key] = false;
       });
       this.estadosEspecificos['ninguno'] = true;
     } else if (estado !== 'ninguno' && isChecked) {
+      // Si otro estado distinto de 'ninguno' es marcado, asegúrate de que 'ninguno' esté desmarcado
       this.estadosEspecificos['ninguno'] = false;
-      this.estadosEspecificos[estado] = isChecked;
-    } else if (!isChecked) {
+      this.estadosEspecificos[estado] = true;
+    } else {
+      // Esto maneja la deselección de cualquier checkbox, incluyendo 'ninguno'
       this.estadosEspecificos[estado] = isChecked;
     }
   }

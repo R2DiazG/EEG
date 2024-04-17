@@ -190,19 +190,16 @@ onDeletePatient(patient: any) {
   }
 }
 
-// Dentro de tu componente ListaPacientesComponent
-
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
   this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
     next: (sesion) => {
-      if (sesion) {
-        // Aquí puedes hacer lo que necesites con la información de la sesión
+      if (sesion && sesion.id_sesion) {
         console.log('La última sesión es:', sesion);
-        // Por ejemplo, podrías querer navegar a una página de detalles de la sesión
         this.router.navigate(['/graficas-paciente', sesion.id_sesion]);
       } else {
-        console.log('No se encontró la última sesión para este paciente.');
+        console.log('No se encontró la última sesión para este paciente. Redirigiendo a la página de subida de EEG.');
+        this.router.navigate(['/eeg-subir-docs', idPaciente]);
       }
     },
     error: (error) => {
