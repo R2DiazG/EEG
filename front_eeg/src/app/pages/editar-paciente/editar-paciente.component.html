@@ -23,6 +23,12 @@
       <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
     </button>
     </div>
+    <div class="form-actions">
+      <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
+      <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+        <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+      </button>
+    </div>
   </div>
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
@@ -35,13 +41,6 @@
       <!-- Información del paciente -->
       <div *ngIf="activeTab === 'infoPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <!-- Dentro de <div *ngIf="activeTab === 'infoPatient'"> y otros tabs según corresponda -->
-          <div class="form-actions">
-            <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
           <div class="informacionDelPaciente">
           <div class="seccion" >
@@ -232,11 +231,6 @@
       <!-- Contacto del paciente-->:
       <div *ngIf="activeTab === 'contactPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <div class="form-actions">
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
           <div class="seccion">
             <!--
@@ -442,11 +436,6 @@
       <!-- Información del familiar -->
       <div *ngIf="activeTab === 'infoFamily' && patient && patient.contacto_emergencia">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <div class="form-actions">
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
             <!-- <label for="relativeFirstName">Nombre(s):</label>
             <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" [readOnly]="!isEditMode">
@@ -604,7 +593,6 @@
             
           </div>
           <div class="seccion">
-
             <div *ngIf="!isEditMode; else editRelativeNotes" class="respuesta">
               <label>Notas:</label>
               {{patient.contacto_emergencia.notas}}
