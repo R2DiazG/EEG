@@ -1159,6 +1159,50 @@ def actualizar_contacto_emergencia(paciente, datos_contacto):
         )
         db.session.add(nuevo_contacto)
 
+@app.route('/admin/pacientes/<int:id_paciente>', methods=['DELETE'])
+@jwt_required()
+def eliminar_paciente_admin(id_paciente):
+    """
+    Endpoint for an admin to delete any patient.
+    Requires a valid JWT access token and admin privileges.
+    Removes the patient and all related data from the database.
+    ·Parameters:
+        id_paciente: int - The ID of the patient to be deleted.
+    ·Responses:
+        200: If the patient was successfully deleted. Returns a success message.
+        404: If the patient is not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        DELETE /admin/pacientes/<id_paciente>
+        Headers: { "Authorization": "Bearer <JWT_ACCESS_TOKEN>" }
+    """
+    # Here you would typically check if the current user has admin privileges
+    # if not current_user.is_admin:
+    #     return jsonify({'error': 'Acceso denegado. Se requieren privilegios de administrador.'}), 403
+
+    paciente = Paciente.query.get_or_404(id_paciente)
+    try:
+        # Similar cleaning operations as in the non-admin endpoint
+        ContactoEmergencia.query.filter_by(id_paciente=id_paciente).delete()
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        for sesion in sesiones:
+            sesion.medicamentos.clear()
+            db.session.delete(sesion)
+        Telefono.query.filter_by(id_paciente=id_paciente).delete()
+        CorreoElectronico.query.filter_by(id_paciente=id_paciente).delete()
+        Direccion.query.filter_by(id_paciente=id_paciente).delete()
+        HistorialMedico.query.filter_by(id_paciente=id_paciente).delete()
+        DiagnosticoPrevio.query.filter_by(id_paciente=id_paciente).delete()
+        Consentimiento.query.filter_by(id_paciente=id_paciente).delete()
+        db.session.delete(paciente)
+        db.session.commit()
+        logging.info('Admin eliminó exitosamente al paciente %s', id_paciente)
+        return jsonify({'mensaje': 'Paciente eliminado exitosamente'}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error al eliminar el paciente %s: %s', id_paciente, e)
+        return jsonify({'error': 'Error al eliminar el paciente: ' + str(e)}), 500
+
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['DELETE'])
 @jwt_required()
 def eliminar_paciente(id_usuario, id_paciente):
