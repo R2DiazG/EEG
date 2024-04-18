@@ -66,7 +66,7 @@ export class GraficasPacienteComponent implements OnInit {
   // Notas del psicólogo
   isAddingNote: boolean = false;
   fechaSesionActual!: string;
-  notasPsicologoEdit: string = '';
+  notasPsicologoEdit!: string;
 
   // Eliminar sesion
   isConfirm: boolean = false;
@@ -291,7 +291,11 @@ cargarDatosDeEeg(idSesion: number): void {
         // Asume que la respuesta incluye las propiedades directamente
         this.fecha_consulta = datosEeg.detalle_sesion.fecha_consulta;
         this.estado_general = datosEeg.detalle_sesion.estado_general;
-        this.estado_especifico = datosEeg.detalle_sesion.estado_especifico;
+        this.estado_especifico = datosEeg.detalle_sesion.estado_especifico
+          .replace(/_/g, ' ')
+          .split(' ')
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
         this.resumen_sesion_actual = datosEeg.detalle_sesion.resumen_sesion_actual;
         this.notas_psicologo = datosEeg.detalle_sesion.notas_psicologo;
       } else {
@@ -697,7 +701,7 @@ cargarDatos() {
     d3.select('#spectrogramDiv').select('svg').remove();
 
     // Crear elemento SVG y configurar dimensiones
-    const svg = d3.select('#spectrogramDiv')
+    const svg = d3.select('spectrogramDiv')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -717,7 +721,7 @@ cargarDatos() {
       .domain(timesExtent) // Asumiendo que channelData.times es un array con el tiempo
       .range([0, width]);
 
-    const y = d3.scaleLog()
+    const y = d3.scaleLinear()
       .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
       .range([height, 0]);
 
@@ -743,8 +747,8 @@ cargarDatos() {
       .data(channelData.magnitude_squared)
       .enter()
       .append('rect')
-      .attr('x', (d, i) => x(channelData.times[Math.floor(i / channelData.frequencies.length)]))
-      .attr('y', (d, i) => y(channelData.frequencies[i % channelData.frequencies.length]))
+      .attr('x', (_d, i) => x(channelData.times[Math.floor(i / channelData.frequencies.length)]))
+      .attr('y', (_d, i) => y(channelData.frequencies[i % channelData.frequencies.length]))
       .attr('width', rectWidth)
       .attr('height', rectHeight)
       .attr('fill', d => d3.interpolateInferno(Number(d))); // Cast 'd' to a number

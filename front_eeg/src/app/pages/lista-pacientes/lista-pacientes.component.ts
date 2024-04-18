@@ -65,6 +65,7 @@ export class ListaPacientesComponent implements OnInit {
             isDeleted: false,
           }));
           this.cdr.detectChanges();
+          console.log('Pacientes recuperados:', data);
         },
         error: (error) => {
           console.error('Error al recuperar pacientes:', error);
