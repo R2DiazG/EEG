@@ -171,18 +171,19 @@ $blue: #2492FF;
 
   label{
     color: #7353ba !important;
-    font-size: 1.15rem;
+    font-size: .9rem;
   }
   
   .respuesta, a{
-    color: #666;
-    font-size: .9rem;
+    color: $black;
+    font-size: 1.3rem;
   }
 
   .seccion{
     margin-bottom: 20px;
     border-radius: 8px;
     background-color: white;
+    width: 100%;
     padding: 1rem;
   }
 
@@ -229,6 +230,14 @@ $blue: #2492FF;
     color: white;
     .text { color: white; }
   }
+  &:disabled {
+    color: #ebebfc;
+    background-color: transparent;
+    cursor: not-allowed;
+    &:hover {
+        background-color: transparent;
+    }
+}
 }
 
   .cancelar{

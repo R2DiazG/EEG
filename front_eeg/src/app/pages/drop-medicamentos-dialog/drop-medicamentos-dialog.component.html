@@ -1,31 +1,23 @@
-<!-- <h1>Seleccionar medicamentos</h1>
+<h1>Seleccionar medicamentos</h1>
 <ng-select [items]="medicamentos$ | async"
-           bindLabel="nombre"
-           bindValue="id"
-           placeholder="Buscar medicamentos"
-           [multiple]="true"
-           [closeOnSelect]="false"
+           bindLabel="nombre_comercial"
+           bindValue="id_medicamento"
+           placeholder="{{ placeholderText }}"
+           [multiple]="true" 
+           [closeOnSelect]="false" 
            [searchable]="true"
-           [(ngModel)]="selectedMedicamentos">
-  <ng-template ng-label-tmp let-item="item">
+           [(ngModel)]="selectedMedicamentos"
+           (change)="onMedicamentosSelected()" 
+           (clear)="onMedicamentosCleared()">
+  <ng-template ng-option-tmp let-item="item">
     <span>{{ item.nombre_comercial }}</span> 
   </ng-template>
 </ng-select>
 <div class="actions">
-  <button mat-button (click)="closeDialog()">Cerrar</button> 
-</div> -->
-
-<!-- drop-medicamentos-dialog.component.html -->
-<h1>Seleccionar medicamentos</h1>
-<ng-select [items]="medicamentos$ | async"
-           bindLabel="nombre_comercial"
-           bindValue="id"
-           placeholder="Buscar medicamentos"
-           [multiple]="true"
-           [closeOnSelect]="false"
-           [searchable]="true"
-           [(ngModel)]="selectedMedicamentos">
-</ng-select>
-<div class="actions">
-  <button mat-button (click)="closeDialog()">Cerrar</button>
+  <button mat-button (click)="guardarSeleccion()" class="add" title="Guardar selección de medicamentos">
+    <i class="fas fa-save" aria-hidden="true"></i>
+  </button>
+  <button mat-button (click)="closeDialog()" class="add" title="Cancelar">
+    <i class="fas fa-trash" aria-hidden="true"></i>
+  </button> 
 </div>

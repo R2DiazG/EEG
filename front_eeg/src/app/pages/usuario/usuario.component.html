@@ -1,5 +1,12 @@
 <div class="container-usuario">
-    <div *ngIf="userInfo">
-        <p><i class="fas fa-user-circle" aria-hidden="true"></i><label>{{ userInfo.nombre }} {{ userInfo.apellidos }}</label></p>
-      </div>
+  <div *ngIf="userInfo">
+      <p>
+          <i class="fas fa-user-circle" aria-hidden="true"></i>
+          <label>{{ userInfo.nombre }} {{ userInfo.apellidos }}</label>
+      </p>
+      <p>
+          <span *ngIf="userInfo.id_rol === 1">Administrador</span>
+          <span *ngIf="userInfo.id_rol === 2">Psicólogo</span>
+      </p>
+  </div>
 </div>

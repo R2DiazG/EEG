@@ -1,7 +1,8 @@
-/*import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { EegService } from '../../services/sesiones/eeg.service';
 
 @Component({
   selector: 'app-drop-medicamentos-dialog',
@@ -9,20 +10,25 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./drop-medicamentos-dialog.component.scss']
 })
 export class DropMedicamentosDialogComponent implements OnInit {
-
-  medicamentos$!: Observable<any[]>; // Esta es la declaración correcta para un Observable que se llenará con medicamentos.
-  selectedMedicamentos: any[] = []; // Almacenará los medicamentos seleccionados.
+  medicamentos$!: Observable<any[]>; 
+  selectedMedicamentos: number[] = []; // Ahora es un array para múltiples IDs de medicamentos
+  placeholderText = 'Buscar medicamentos'; // Placeholder inicial
+  idSesion!: number; // ID de la sesión
 
   constructor(
     private dialogRef: MatDialogRef<DropMedicamentosDialogComponent>,
     private medicamentoService: MedicamentoService,
-    @Inject(MAT_DIALOG_DATA) public data: any // Inyecta los datos pasados al diálogo.
+    private eegService: EegService,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   ngOnInit() {
     this.medicamentos$ = this.medicamentoService.obtenerMedicamentos();
-    
-    // Solo para depuración: suscribirse al Observable para ver los datos.
+    console.log('Medicamentos Observable:', this.medicamentos$);
+
+    if (this.data && this.data.idSesion) {
+      this.idSesion = this.data.idSesion;
+    }
     this.medicamentos$.subscribe({
       next: (medicamentos) => {
         console.log('Medicamentos recibidos:', medicamentos);
@@ -31,49 +37,52 @@ export class DropMedicamentosDialogComponent implements OnInit {
         console.error('Error al obtener medicamentos:', error);
       }
     });
+
+    // Actualiza selectedMedicamentos si existen algunos pasados en data
     if (this.data && this.data.selectedMedicamentos) {
       this.selectedMedicamentos = this.data.selectedMedicamentos;
     }
+    this.updatePlaceholder();
   }
-  
+
+  onMedicamentosSelected() {
+    // Llamado cuando se seleccionan nuevos medicamentos
+    this.updatePlaceholder();
+  }
+
+  onMedicamentosCleared() {
+    // Llamado cuando se limpia la selección
+    this.selectedMedicamentos = [];
+    this.updatePlaceholder();
+  }
+
+  updatePlaceholder() {
+    // Cambia el placeholder según si hay medicamentos seleccionados
+    this.placeholderText = this.selectedMedicamentos.length > 0 ? '' : 'Buscar medicamentos';
+  }
+
+  guardarSeleccion() {
+    if (this.idSesion && this.selectedMedicamentos.length > 0) {
+      console.log('Medicamentos seleccionados:', this.selectedMedicamentos);
+      console.log('ID de la sesión:', this.idSesion);
+      // Envía los IDs de medicamentos seleccionados al servidor
+      this.eegService.agregarMedicamentosSesion(this.idSesion, this.selectedMedicamentos)
+        .subscribe({
+          next: (response) => {
+            console.log('Respuesta del servidor:', response);
+            this.dialogRef.close(this.selectedMedicamentos); // Devuelve los medicamentos seleccionados
+          },
+          error: (error) => {
+            console.error('Error al agregar medicamentos a la sesión:', error);
+          }
+        });
+    } else {
+      // Cierra el diálogo sin realizar cambios si no se seleccionó ningún medicamento o falta el ID de sesión
+      this.dialogRef.close(null);
+    }
+  }
+
   closeDialog() {
-    this.dialogRef.close(this.selectedMedicamentos); // Al cerrar el diálogo, devuelve los medicamentos seleccionados.
-  }
-}*/
-
-// drop-medicamentos-dialog.component.ts
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, of } from 'rxjs';
-
-@Component({
-  selector: 'app-drop-medicamentos-dialog',
-  templateUrl: './drop-medicamentos-dialog.component.html',
-  styleUrls: ['./drop-medicamentos-dialog.component.scss']
-})
-export class DropMedicamentosDialogComponent implements OnInit {
-
-  medicamentos$!: Observable<any[]>; 
-  selectedMedicamentos: any[] = [];
-
-  constructor(
-    private dialogRef: MatDialogRef<DropMedicamentosDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    // Si el diálogo se abrió con medicamentos ya seleccionados, inicialízalos aquí.
-    this.selectedMedicamentos = data.selectedMedicamentos || [];
-  }
-
-  ngOnInit() {
-    // Aquí, reemplaza con datos de tu servicio. Uso datos mock para la demostración.
-    this.medicamentos$ = of([
-      { id: 1, nombre_comercial: 'Medicamento A' },
-      { id: 2, nombre_comercial: 'Medicamento B' },
-      // Agrega más medicamentos aquí...
-    ]);
-  }
-
-  closeDialog() {
-    this.dialogRef.close(this.selectedMedicamentos);
+    this.dialogRef.close(null); // Cierra el diálogo sin devolver nada si se pulsa "Cerrar"
   }
 }

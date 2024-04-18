@@ -3,10 +3,16 @@
 <div class="patient-edit-container">
   <div class="header">
     <div class="left">
-      <button (click)="regresar()" class="regresar">
+      <button (click)="regresar()" class="regresar" title="Regresar" >
         <i class="fas fa-arrow-left" aria-hidden="true"></i>
       </button>
       <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
+    </div>
+    <div class="form-actions">
+      <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
+      <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+        <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+      </button>
     </div>
     <div class="form-actions">
       <!-- <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
@@ -15,7 +21,7 @@
         <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
         <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
     </button> -->
-    <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}">
+    <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}" title="Eliminar paciente" >
       <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
       <i class="icon fas fa-question-circle" *ngIf="isConfirm && !isDeleted"></i>
       <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
@@ -35,13 +41,6 @@
       <!-- Información del paciente -->
       <div *ngIf="activeTab === 'infoPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <!-- Dentro de <div *ngIf="activeTab === 'infoPatient'"> y otros tabs según corresponda -->
-          <div class="form-actions">
-            <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
           <div class="informacionDelPaciente">
           <div class="seccion" >
@@ -220,11 +219,14 @@
       </div>
       <div class="tab-navigation-buttons">
         <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
-        <!-- <button class="acciones" (click)="changeTab('back')">Anterior</button> -->
-        <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
-        <button (click)="regresar()" class="cancelar">
-          <i class="fas fa-ban" aria-hidden="true"></i>
+        <button class="acciones" (click)="changeTab('back')" disabled><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+        <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+          <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
         </button>
+        <button (click)="regresar()" class="acciones" title="Cancelar">
+          <i class="fas fa-trash" aria-hidden="true"></i>
+        </button>
+        <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
       </div>
     </form>
   </div>
@@ -232,11 +234,6 @@
       <!-- Contacto del paciente-->:
       <div *ngIf="activeTab === 'contactPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <div class="form-actions">
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
           <div class="seccion">
             <!--
@@ -392,11 +389,14 @@
         </div>
         <div class="tab-navigation-buttons">
           <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
-          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
-          <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
-          <button (click)="regresar()" class="cancelar">
-            <i class="fas fa-times" aria-hidden="true"></i>
+          <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+            <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
           </button>
+          <button (click)="regresar()" class="acciones" title="Cancelar">
+            <i class="fas fa-trash" aria-hidden="true"></i>
+          </button>
+          <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
         </div>
         </form>
       </div>
@@ -442,11 +442,6 @@
       <!-- Información del familiar -->
       <div *ngIf="activeTab === 'infoFamily' && patient && patient.contacto_emergencia">
         <form (ngSubmit)="onSubmit()" ngForm>
-          <div class="form-actions">
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
           <div class="form-section">
             <!-- <label for="relativeFirstName">Nombre(s):</label>
             <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" [readOnly]="!isEditMode">
@@ -604,7 +599,6 @@
             
           </div>
           <div class="seccion">
-
             <div *ngIf="!isEditMode; else editRelativeNotes" class="respuesta">
               <label>Notas:</label>
               {{patient.contacto_emergencia.notas}}
@@ -617,9 +611,15 @@
           </div>
         </div>
         <div class="tab-navigation-buttons">
-          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas-->
-          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
-          <button class="acciones" (click)="changeTab('next')"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
+          <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+            <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
+          </button>
+          <button (click)="regresar()" class="acciones" title="Cancelar">
+            <i class="fas fa-trash" aria-hidden="true"></i>
+          </button>
+          <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
         </div>
         </form>
       </div>
@@ -630,18 +630,21 @@
           <div class="seccion">
             <div>
               <label>Consentimiento:</label>
-              <span>{{ getConsentimientoDisplay() }}</span>
+              <a>{{ getConsentimientoDisplay() }}</a>
               <!-- <audio *ngIf="patient.consentimientos.audioUrl" [src]="patient.consentimientos.audioUrl" controls></audio> -->
             </div>
           </div>
         </div>
         <div class="tab-navigation-buttons">
           <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
-          <button class="acciones" (click)="changeTab('back')"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
-          <!-- <button class="acciones" (click)="changeTab('next')">Siguiente</button> -->
-          <button (click)="regresar()" class="cancelar">
-            <i class="fas fa-times" aria-hidden="true"></i>
+          <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+          <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
+            <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
           </button>
+          <button (click)="regresar()" class="acciones" title="Cancelar">
+            <i class="fas fa-trash" aria-hidden="true"></i>
+          </button>
+          <button class="acciones" (click)="changeTab('next')" disabled><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
         </div>
       </div>
       

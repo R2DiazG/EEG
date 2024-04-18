@@ -118,11 +118,11 @@ export class RegistrarPacienteComponent implements OnInit {
             if (data && data.places && data.places.length > 0) {
               const place = data.places[0];
               if (section === 'patientAddress') {
-                this.patient.direcciones[index].ciudad = place['place name'];
+                //this.patient.direcciones[index].ciudad = place['place name'];
                 this.patient.direcciones[index].estado = place['state'];
                 this.patient.direcciones[index].pais = 'México';
               } else {
-                this.patient.contacto_emergencia.ciudad = place['place name'];
+                //this.patient.contacto_emergencia.ciudad = place['place name'];
                 this.patient.contacto_emergencia.estado = place['state'];
                 this.patient.contacto_emergencia.pais = 'México';
               }

@@ -7,6 +7,11 @@
             <i class="fas fa-search search-icon" aria-hidden="true"></i>
             <input type="search" placeholder="Nombre del psicólogo" [formControl]="searchControl" class="search-input">
           </div>                          
+          <div>
+            <button class="registerPButton" (click)="registerUser()" title="Registrar psicólogo">
+              <i class="fas fa-plus" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
         <div class="table-container">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -75,7 +80,7 @@
 
           <!-- Aprobacion Column -->
           <ng-container matColumnDef="aprobacion">
-            <th mat-header-cell *matHeaderCellDef> Aprobación </th>
+            <th mat-header-cell *matHeaderCellDef> Aprobar </th>
             <td mat-cell *matCellDef="let element">
               <mat-slide-toggle  
               [ngClass]="{'toggle-active': element.aprobacion}"  
@@ -87,15 +92,15 @@
 
           <!-- Acciones Column -->
           <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <th mat-header-cell *matHeaderCellDef> Editar </th>
             <td mat-cell *matCellDef="let element">
-              <button class="editButton" *ngIf="!editModeMap[element.id_usuario]" (click)="enableEditMode(element)">
+              <button class="editButton" *ngIf="!editModeMap[element.id_usuario]" (click)="enableEditMode(element)" title="Editar psicologo">
                 <i class="icon fas fa-pencil" aria-hidden="true"></i>
               </button>
-              <button class="saveButton" *ngIf="editModeMap[element.id_usuario]" (click)="saveUser(element)">
+              <button class="saveButton" *ngIf="editModeMap[element.id_usuario]" (click)="saveUser(element)" title="Guardar cambios">
                 <i class="icon fas fa-check" aria-hidden="true"></i>
               </button>
-              <button class="cancelEditButton" *ngIf="editModeMap[element.id_usuario]" (click)="cancelEditMode(element)">
+              <button class="cancelEditButton" *ngIf="editModeMap[element.id_usuario]" (click)="cancelEditMode(element)" title="Cancelar cambios">
                 <i class="icon fas fa-times" aria-hidden="true"></i>
               </button>
             </td>
@@ -111,7 +116,7 @@
                 <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
                 <span class="text">{{ element.isDeleted ? 'Deleted' : (element.isConfirm ? '¿Estas seguro?' : 'Delete') }}</span>
               </button> -->
-              <button class="button-eliminar" (click)="onDeleteUser(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted, 'delete-initiated': element.isDeleteInitiated && !element.isConfirm}">
+              <button class="button-eliminar" (click)="onDeleteUser(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted, 'delete-initiated': element.isDeleteInitiated && !element.isConfirm}" title="Eliminar psicologo">
                 <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>

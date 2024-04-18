@@ -58,6 +58,13 @@ $blue: #2492FF;
       font-size: 1.1rem;
     }
     
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem;
+    }
+    
     .header h1 {
       margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
       font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
@@ -74,7 +81,7 @@ $blue: #2492FF;
       background-color: transparent;
       margin: 0.5rem;
       cursor: pointer;
-      margin-bottom: 20px;
+      //margin-bottom: 20px;
     }
       .regresar {
         color: $bg;
@@ -161,11 +168,9 @@ $blue: #2492FF;
     .seccionInicial{
       margin-bottom: 20px;
       border-radius: 8px;
-      width: 98%;
+      //width: 98%;
       background-color: white;
-      padding-left: 2rem;
-      padding-top: 2rem;
-      padding-right: 1rem;
+      padding: 1.5rem;
     }  
     .search-container {
       display: flex;

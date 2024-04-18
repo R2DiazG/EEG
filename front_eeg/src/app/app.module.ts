@@ -34,6 +34,9 @@ import { DropMedicamentosDialogComponent } from './pages/drop-medicamentos-dialo
 import { CommonModule } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { UsuarioComponent } from './pages/usuario/usuario.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,8 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
     MedicamentosComponent,
     CrearMedicamentoDialogComponent,
     DropMedicamentosDialogComponent,
-    UsuarioComponent
+    UsuarioComponent,
+    AdminRegistraPsicologoComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +74,9 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
     MatFormFieldModule,
     MatInputModule,
     CommonModule,
-    NgSelectModule
+    NgSelectModule,
+    MatCheckboxModule,
+    MatRadioModule
   ],
   providers: [
     provideClientHydration(),

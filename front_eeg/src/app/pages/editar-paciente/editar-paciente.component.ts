@@ -285,7 +285,6 @@ updateTelefonosBeforeSend() {
     }
   }
 
-
   onSubmit(): void {
     console.log('actualizando paciente')
     if (this.isEditMode && this.id_usuario && this.id_paciente !== undefined) {

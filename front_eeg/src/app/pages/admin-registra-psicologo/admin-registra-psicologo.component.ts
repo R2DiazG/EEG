@@ -4,12 +4,11 @@ import { Router } from '@angular/router';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
 
 @Component({
-  selector: 'app-registrar-psicologo',
-  templateUrl: './registrar-psicologo.component.html',
-  styleUrls: ['./registrar-psicologo.component.scss']
+  selector: 'app-admin-registra-psicologo',
+  templateUrl: './admin-registra-psicologo.component.html',
+  styleUrl: './admin-registra-psicologo.component.scss'
 })
-export class RegistrarPsicologoComponent {
-
+export class AdminRegistraPsicologoComponent {
   registrationForm: FormGroup;
   showPassword: boolean = false;
 
@@ -60,7 +59,7 @@ toggleShowPassword() {
       this.usuarioService.crearUsuario(formData).subscribe({
         next: (response) => {
           console.log('Usuario registrado con éxito', response);
-          this.router.navigate(['/login']);
+          this.router.navigate(['/lista-psicologos']);
         },
         error: (error) => {
           console.error('Error al registrar el usuario', error);
@@ -73,8 +72,8 @@ toggleShowPassword() {
     }
   }
 
-  cancel() {
+  cancelButton() {
     this.registrationForm.reset();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/lista-psicologos']);
   }
 }

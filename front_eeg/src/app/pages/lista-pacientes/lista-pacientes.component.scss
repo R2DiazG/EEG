@@ -281,7 +281,7 @@ body {
 }
 
 // Botones de acción
-.registerPButton, .seeMoreDetails, .seeMoreSesion{
+.seeMoreDetails, .seeMoreSesion{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -294,14 +294,6 @@ body {
   cursor: pointer;
   margin-bottom: 20px;
   width: 90%;
-}
-  .registerPButton {
-    color: $bg;
-    &:hover {
-    background-color: $blue;
-    color: white;
-    .text { color: white; }
-  }
 }
   .seeMoreDetails {
     color: $bg;
@@ -318,6 +310,28 @@ body {
     color: white;
     .text { color: white; }
   }
+  }
+
+  .registerPButton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    font-size: 1.5rem;
+    background-color: $blue;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 90%;
+      color: white;
+      &:hover {
+      background-color: $blue;
+      background-color: (darken($blue, 10%)) !important;
+      color: white;
+      .text { color: white; }
+    }
   }
 
   .icon {

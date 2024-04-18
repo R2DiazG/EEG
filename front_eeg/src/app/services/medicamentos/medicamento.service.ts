@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MedicamentoService {
-  private apiUrl = 'http://127.0.0.1:5000/medicamentos'; // URL base del API para medicamentos
+  private apiUrl = 'http://127.0.0.1:5000/medicamentos';
 
   constructor(private http: HttpClient) { }
 
@@ -35,7 +35,7 @@ export class MedicamentoService {
   }
 
   obtenerMedicamentosPorPaciente(idPaciente: number): Observable<any[]> {
-    const url = `${this.apiUrl}/pacientes/${idPaciente}/medicamentos`; // URL específica para el nuevo endpoint
+    const url = `${this.apiUrl}/pacientes/${idPaciente}/medicamentos`;
     return this.http.get<any[]>(url, { headers: this.getHeaders() });
   }
 
