@@ -394,7 +394,7 @@ cargarDatos() {
     this.cargarDatosEEG();
   }if (this.activeGraphTab === 'stft') {
     this.cargarDatosSTFT();
-  
+
   }
 }
 
@@ -656,11 +656,15 @@ cargarDatos() {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response) => {
           console.log('Datos STFT recibidos:', response);
-          // Asume que los datos STFT están incluidos en los datos de EEG normalizados recibidos
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const stftData = JSON.parse(response.normalized_eegs[0].data_stft); // Asegúrate que esto coincide con cómo estás guardando los datos
+            const stftData = JSON.parse(response.normalized_eegs[0].data_stft);
             console.log('Datos STFT:', stftData);
-            this.renderSpectrogram(stftData);
+            const channelData = stftData.find((d: any) => d.name === 'Fp1'); // Encuentra los datos del canal Fp1
+            if (channelData) {
+              this.renderSpectrogram(channelData);
+            } else {
+              console.error('Canal Fp1 no encontrado en los datos STFT.');
+            }
           } else {
             console.error('No se encontraron datos STFT para esta sesión.');
           }
@@ -672,23 +676,21 @@ cargarDatos() {
     }
   }
 
-  renderSpectrogram(stftData: any): void {
-    if (!stftData || stftData.length === 0) {
-      console.error('No STFT data available to render.');
+  renderSpectrogram(channelData: any): void {
+    if (!channelData) {
+      console.error('No data available to render.');
       return;
-    };
+    }
     const trace = {
-      z: stftData.map((d: {
-        magnitude_squared: any; data: any;
-}) => d.magnitude_squared),
-      x: stftData[0].times,
-      y: stftData[0].frequencies,
+      z: channelData.magnitude_squared,
+      x: channelData.times,
+      y: channelData.frequencies,
       type: 'heatmap',
       colorscale: 'Jet',
       showscale: true
     };
     const layout = {
-      title: 'Espectrograma EEG',
+      title: 'Espectrograma EEG - Canal Fp1',
       xaxis: { title: 'Tiempo (s)' },
       yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
     };
@@ -697,6 +699,5 @@ cargarDatos() {
     } else {
       console.error('Plotly no está disponible.');
     }
-    //Plotly.newPlot('spectrogramDiv', [trace], layout);
   }
 }
