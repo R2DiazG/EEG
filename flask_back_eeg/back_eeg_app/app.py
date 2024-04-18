@@ -1374,14 +1374,19 @@ def crear_nueva_sesion():
             print("Forma de los datos de EEG:", raw.get_data().shape)
             print("Datos de ejemplo:", raw.get_data()[:, :100])  # Imprime los primeros 100 puntos de cada canal
             # Calculate the Short-Time Fourier Transform (STFT) of the EEG data
-            stft_data = stft(raw.get_data(), 128)  # Usando ventanas de 128 puntos
-            stft_magnitude_squared = np.abs(stft_data) ** 2
-            data_stft = [{
-                'name': ch,
-                'magnitude_squared': stft_mag.tolist(),
-                'times': np.arange(stft_data.shape[2]).tolist(),  # ajustar según tu configuración de STFT
-                'frequencies': np.linspace(0, raw.info['sfreq'] / 2, stft_data.shape[1]).tolist()
-            } for ch, stft_mag in zip(nuevos_nombres, stft_magnitude_squared)]
+            fs = raw.info['sfreq']  # Frecuencia de muestreo de los datos EEG
+            nperseg = 128  # Número de puntos por segmento para la STFT
+            stft_results = []  # Para almacenar los resultados de la STFT de cada canal
+            for i, channel_data in enumerate(eeg_data):
+                frequencies, times, Zxx = stft(channel_data, fs=fs, nperseg=nperseg)
+                magnitude_squared = np.abs(Zxx) ** 2  # Calcula el cuadrado de la magnitud
+                # Preparar los datos para cada canal
+                stft_results.append({
+                    'name': nuevos_nombres[i],
+                    'magnitude_squared': magnitude_squared.tolist(),
+                    'times': times.tolist(),
+                    'frequencies': frequencies.tolist()
+                })
             data_stft_json = json.dumps(data_stft)  # Data of the STFT in JSON format
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
