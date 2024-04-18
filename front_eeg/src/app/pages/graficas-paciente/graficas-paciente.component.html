@@ -91,7 +91,7 @@
   <div class="tab-menu">
     <button class="tab" (click)="setActiveGraphTab('eeg')" [class.active]="activeGraphTab === 'eeg'">EEG</button>
     <button class="tab" (click)="setActiveGraphTab('psd')" [class.active]="activeGraphTab === 'psd'">PSD</button>
-    <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">Grafica</button>
+    <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">STFT</button>
   </div>
   <div class="tab-content">
     <div *ngIf="activeGraphTab === 'eeg'">
