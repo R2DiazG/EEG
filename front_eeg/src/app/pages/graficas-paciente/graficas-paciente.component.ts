@@ -27,18 +27,6 @@ import PriceIndicator from 'highcharts/modules/price-indicator';
 import FullScreen from 'highcharts/modules/full-screen';
 import StockTools from 'highcharts/modules/stock-tools';
 
-// Initialize modules
-/* More(Highcharts);
-HC_stock(Highcharts);
-HC_exporting(Highcharts);
-HC_exportData(Highcharts);
-IndicatorsCore(Highcharts);
-DragPanes(Highcharts);
-AnnotationsAdvanced(Highcharts);
-PriceIndicator(Highcharts);
-FullScreen(Highcharts);
-StockTools(Highcharts);
- */
 interface SeriesOptions {
   name: string;
   data: number[];
@@ -86,7 +74,7 @@ export class GraficasPacienteComponent implements OnInit {
   isAddingNote: boolean = false;
   fechaSesionActual!: string;
   notasPsicologoEdit: string = '';
-  
+
   // Eliminar sesion
   isConfirm: boolean = false;
   isDeleted: boolean = false;
@@ -152,19 +140,6 @@ ngAfterViewInit() {
   this.dataSource.paginator = this.paginator;
 }
 
-/*
-cargarMedicamentos() {
-  this.medicamentoService.obtenerMedicamentos().subscribe({
-    next: (medicamentos) => {
-      this.dataSource.data = medicamentos;
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('Error al recuperar medicamentos:', error);
-    }
-  });
-}*/
-
 cargarMedicamentos() {
   // Asumiendo que tienes un idPaciente disponible
   const idPaciente = this.idPaciente; // Debes definir cómo obtienes este ID
@@ -180,41 +155,6 @@ cargarMedicamentos() {
     }
   });
 }
-
-// onDeleteSesion(): void {
-//   if (!this.isConfirm) {
-//     this.isConfirm = true;
-//     setTimeout(() => {
-//       // Este timeout restablecerá el botón si el usuario no confirma la eliminación
-//       this.isConfirm = false;
-//     }, 3000);
-//   } else {
-//     if (this.idPaciente && this.idSesion) {
-//       this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
-//         next: () => {
-//           console.log('Sesion eliminada con éxito.');
-//           this.isDeleted = true;
-          
-//           // Establece un tiempo para que el estado 'eliminado' se muestre durante un tiempo antes de resetear
-//           setTimeout(() => {
-//             // Restablece los estados para volver al texto original del botón 'Eliminar'
-//             this.isConfirm = false;
-//             this.isDeleted = false;
-//             this.getLastSession(this.idPaciente); // Obtener la última sesión aquí o donde sea adecuado
-//           }, 2000); // Ajusta este tiempo como sea necesario
-//         },
-//         error: (error) => {
-//           console.error('Error al eliminar el paciente:', error);
-//           this.isConfirm = false;
-//           // Si no deseas cambiar el botón en caso de error, no cambies isDeleted aquí
-//         }
-//       });
-//     } else {
-//       console.error('Faltan datos necesarios para la eliminación.');
-//       // No es necesario cambiar el estado del botón aquí ya que no se confirmó la eliminación
-//     }
-//   }
-// }
 
 onDeleteSesion(): void {
   // Asumiendo que this.idPaciente y this.idSesion están disponibles en el contexto
@@ -314,13 +254,13 @@ guardarNotasPsicologo(): void {
       next: (response) => {
         // Actualiza ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
         this.notas_psicologo = this.notasPsicologoEdit;
-        
+
         // Oculta el input de texto después de guardar
         this.isAddingNote = false;
-        
+
         // Si quieres limpiar el cuadro de edición después de guardar, descomenta la siguiente línea.
         // this.notasPsicologoEdit = '';
-        
+
         console.log(response.mensaje);
       },
       error: (error) => {
@@ -367,14 +307,6 @@ cargarDatosDeEeg(idSesion: number): void {
     return this.eegService.obtenerEEGPorSesion(idSesion);
   }
 
-  /*
-  fecha_consulta': sesion.fecha_consulta.strftime('%Y-%m-%d'),
-                'estado_general': sesion.estado_general,
-                'estado_especifico': sesion.estado_especifico,
-                'resumen_sesion_actual': sesion.resumen_sesion_actual,
-                'notas_psicologo': sesion.notas_psicologo
-  */
-
   cargarFechasSesionesPorPaciente(idPaciente: number) {
     this.pacienteService.obtenerFechasSesionesPorPaciente(idPaciente).subscribe({
       next: (data) => {
@@ -387,28 +319,7 @@ cargarDatosDeEeg(idSesion: number): void {
       error: (error) => console.error('Error al obtener fechas de sesiones:', error)
     });
   }
-/*
-  ngOnInit() {
-this.route.paramMap.subscribe(params => {
-      const idPaciente = params.get('idPaciente');
-      if (idPaciente) {
-        this.cargarFechasSesionesPorPaciente(+idPaciente);
-      } else {
-        console.error('ID de paciente no proporcionado');
-      }
-    });
-  }
 
-  cargarFechasSesionesPorPaciente(idPaciente: number) {
-    this.pacienteService.obtenerFechasSesionesPorPaciente(idPaciente).subscribe({
-      next: (data) => {
-        this.sesiones = data;
-        // Opcionalmente, selecciona una sesión por defecto aquí
-      },
-      error: (error) => console.error('Error al obtener fechas de sesiones:', error)
-    });
-  }
-*/
 onSesionChange() {
   console.log('Sesión seleccionada:', this.selectedSesionId);
   if (this.selectedSesionId != null) {
@@ -430,12 +341,12 @@ onSesionChange() {
     const dialogRef = this.dialog.open(DropMedicamentosDialogComponent, {
       width: '50rem',
       height: '15rem',
-      data: { 
-        selectedMedicamentos: this.selectedMedicamentos, 
+      data: {
+        selectedMedicamentos: this.selectedMedicamentos,
         idSesion: idSesion  // Asegúrate de pasar idSesion al diálogo
       }
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Medicamentos seleccionados:', result);
@@ -444,8 +355,7 @@ onSesionChange() {
       }
     });
   }
-  
-  
+
   regresar(){
     this.router.navigate(['/lista-pacientes']);
   }
@@ -454,17 +364,6 @@ onSesionChange() {
     this.activeTab = tab;
     this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
   }
-/*
-  setActiveGraphTab(tabName: string) {
-    this.activeGraphTab = tabName;
-    if (tabName === 'eeg') {
-      this.cargarDatosNormalizedEEG(); // Llamamos a la función que carga los datos de EEG normalizado.
-    }
-    if (tabName === 'psd') {
-      this.cargarDatosEEG(); // Llamamos a la función que carga los datos de PSD.
-    }
-  }
-*/
 
 setActiveGraphTab(tabName: string) {
   this.activeGraphTab = tabName;
@@ -485,7 +384,7 @@ cargarDatos() {
       // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
       break;
   }
-  
+
   // Si tienes lógica específica para los tabs de EEG o PSD en `activeGraphTab`, puedes agregarla aquí también
   if (this.activeGraphTab === 'eeg') {
     this.cargarDatosNormalizedEEG();
@@ -493,25 +392,6 @@ cargarDatos() {
     this.cargarDatosEEG();
   }
 }
-
-  /*cargarDatosNormalizedEEG(): void {
-    if (this.idSesion) {
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-        next: (response: { normalized_eegs: string | any[]; }) => {
-          console.log('Datos EEG normalizados:', response);
-          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const dataNormalized = JSON.parse(response.normalized_eegs[0].data_normalized);
-            this.procesarYMostrarDatosNormalizedEEG(dataNormalized);
-          } else {
-            console.error('No se encontraron EEGs normalizados para esta sesión.');
-          }
-        },
-        error: (error: any) => console.error('Error al obtener datos EEG normalizados:', error)
-      });
-    } else {
-      console.error('ID de sesión es nulo');
-    }
-  }*/
 
   cargarDatosNormalizedEEG(): void {
     if (this.idSesion) {
@@ -670,7 +550,7 @@ cargarDatos() {
       console.error('Error al procesar los datos EEG normalizados:', error);
     }
   }
-  
+
   // Función para cargar los datos EEG y procesarlos para mostrarlos en Highcharts
   cargarDatosEEG(): void {
     console.log('cargarDatosEEG psd');
@@ -764,5 +644,5 @@ cargarDatos() {
       series: series as SeriesOptionsType[]
     };
     Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
-  }  
+  }
 }
