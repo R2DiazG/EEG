@@ -1388,6 +1388,8 @@ def crear_nueva_sesion():
                     'frequencies': frequencies.tolist()
                 })
             data_stft_json = json.dumps(data_stft)  # Data of the STFT in JSON format
+            print('STFT terminado')
+            print('Datos STFT:', data_stft_json[:, :100])
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
                 fecha_hora_procesado=datetime.now(timezone.utc),
