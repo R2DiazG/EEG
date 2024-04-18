@@ -685,17 +685,13 @@ cargarDatos() {
       console.error('No data available to render.');
       return;
     }
-
     // Configuración de dimensiones y márgenes para el gráfico
     const margin = { top: 20, right: 20, bottom: 30, left: 50 },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
-
       console.log('Margin', margin)
-
     // Eliminar cualquier gráfico anterior
     d3.select('#spectrogramDiv').select('svg').remove();
-
     // Crear elemento SVG y configurar dimensiones
     const svg = d3.select('#spectrogramDiv')
       .append('svg')
@@ -703,42 +699,31 @@ cargarDatos() {
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
       console.log('svg',svg)
-
     const timesExtent = d3.extent(channelData.times) as unknown as [number, number];
     const frequenciesExtent = d3.extent(channelData.frequencies) as unknown as [number, number];
-
     console.log('T',timesExtent)
     console.log('F',frequenciesExtent)
-
     // Escalas para los ejes X e Y
     const x = d3.scaleLinear()
       .domain(timesExtent) // Asumiendo que channelData.times es un array con el tiempo
       .range([0, width]);
-
     const y = d3.scaleLog()
       .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
       .range([height, 0]);
-
       console.log('x',x)
       console.log('y',y)
-
     // Eje X y Eje Y
     svg.append('g')
       .attr('transform', 'translate(0,' + height + ')')
       .call(d3.axisBottom(x));
-
     svg.append('g')
       .call(d3.axisLeft(y));
-
     // Mapeo de los datos a rectángulos para el espectrograma
     const rectWidth = width / channelData.times.length;
     const rectHeight = height / channelData.frequencies.length;
-
     console.log('width', rectWidth)
     console.log('height', rectHeight)
-
     svg.selectAll()
       .data(channelData.magnitude_squared)
       .enter()
