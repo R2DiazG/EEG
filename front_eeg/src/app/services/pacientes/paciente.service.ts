@@ -48,6 +48,11 @@ export class PacienteService {
     return this.http.put<UpdatePaciente>(url, paciente, { headers: this.getHeaders() });
   }
 
+  eliminarPacienteAdmin(idPaciente: number): Observable<any> {
+    const url = `${this.apiUrl}/admin/pacientes/${idPaciente}`;
+    return this.http.delete(url, { headers: this.getHeaders() });
+  }
+  
   eliminarPaciente(idUsuario: number, idPaciente: number): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes/${idPaciente}`;
     return this.http.delete(url, { headers: this.getHeaders() });

@@ -134,6 +134,80 @@ export class ListaPacientesComponent implements OnInit {
 }*/
 
 onDeletePatient(patient: any) {
+  // Verifica si el idUsuarioActual está disponible
+  if (!this.idUsuarioActual) {
+    console.error('Error: ID de usuario no disponible.');
+    return;
+  }
+
+  // Inicia el proceso de confirmación para la eliminación
+  if (!patient.isConfirm && !patient.isDeleteInitiated) {
+    patient.isDeleteInitiated = true;
+    this.cdr.detectChanges();
+    
+    // Establece un timeout para revertir el estado si no hay confirmación
+    setTimeout(() => {
+      if (!patient.isConfirm) {
+        patient.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+    return;
+  }
+
+  if (patient.isConfirm) {
+    // Verifica el rol del usuario para determinar qué servicio usar para la eliminación
+    if (this.idRol === 1) {
+      // Usuario administrador elimina a cualquier paciente
+      this.pacienteService.eliminarPacienteAdmin(patient.id_paciente).subscribe({
+        next: (response) => {
+          console.log('Paciente eliminado exitosamente:', response);
+          patient.isDeleted = true; // Marca al paciente como eliminado
+          this.loadUsers(); // Recarga la lista de pacientes
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al eliminar el paciente:', error);
+          patient.isConfirm = false; // Revierte la confirmación
+          patient.isDeleteInitiated = false; // Cancela el inicio de la eliminación
+          this.cdr.detectChanges();
+        }
+      });
+    } else if (this.idRol === 2) {
+      // Usuario regular elimina solo a sus pacientes asignados
+      this.pacienteService.eliminarPaciente(this.idUsuarioActual, patient.id_paciente).subscribe({
+        next: (response) => {
+          console.log('Paciente eliminado exitosamente:', response);
+          patient.isDeleted = true;
+          this.loadUsers();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al eliminar el paciente:', error);
+          patient.isConfirm = false;
+          patient.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  } else {
+    // Solicita confirmación en el segundo clic
+    patient.isConfirm = true;
+    this.cdr.detectChanges();
+    
+    // Si el usuario no confirma dentro de 3 segundos, revertir
+    setTimeout(() => {
+      if (!patient.isDeleted) {
+        patient.isConfirm = false;
+        patient.isDeleteInitiated = false;
+        this.cdr.detectChanges();
+      }
+    }, 3000);
+  }
+}
+
+/*
+onDeletePatient(patient: any) {
   if (this.idUsuarioActual === null) {
     console.error('Error: ID de usuario no disponible.');
     return; // Salir temprano si idUsuarioActual es null
@@ -182,7 +256,7 @@ onDeletePatient(patient: any) {
       }
     }, 3000);
   }
-}
+}*/
 
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
