@@ -659,8 +659,13 @@ cargarDatos() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const stftData = JSON.parse(response.normalized_eegs[0].data_stft);
             console.log('Datos STFT:', stftData);
+            console.log('Plotly is defined:', Plotly);
+    console.log('Plotly version:', Plotly.version);
             const channelData = stftData.find((d: any) => d.name === 'Fp1'); // Encuentra los datos del canal Fp1
+            console.log('Plotly is defined:', Plotly);
+    console.log('Plotly version:', Plotly.version);
             if (channelData) {
+              console.log('Datos del canal Fp1:', channelData);
               this.renderSpectrogram(channelData);
             } else {
               console.error('Canal Fp1 no encontrado en los datos STFT.');
@@ -694,6 +699,8 @@ cargarDatos() {
       xaxis: { title: 'Tiempo (s)' },
       yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
     };
+    console.log('Plotly is defined:', Plotly);
+    console.log('Plotly version:', Plotly.version);
     if (typeof Plotly !== 'undefined') {
       Plotly.newPlot('spectrogramDiv', [trace], layout);
     } else {
