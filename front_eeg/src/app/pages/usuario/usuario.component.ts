@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/login/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-usuario',
@@ -12,7 +13,7 @@ export class UsuarioComponent {
   activeLink: string | undefined;
   userInfo: { nombre: string, apellidos: string, id_rol: number } | undefined;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({
@@ -29,6 +30,13 @@ export class UsuarioComponent {
         console.error('Error al obtener información del usuario:', error);
       }
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    console.log('Usuario ha cerrado la sesión');
+    // Navegar de vuelta al login después del logout
+    this.router.navigate(['/login']);
   }
 
 }
