@@ -1295,12 +1295,6 @@ def crear_nueva_sesion():
         db.session.add(nueva_sesion)
         db.session.flush()  # For getting the ID of the new session before committing
         logging.info('Nueva sesión creada y añadida a la base de datos')
-        # Asoociate the medications with the session
-        #for med_id in medicamentos_ids:
-        #    medicamento = Medicamento.query.get(int(med_id))
-        #    if medicamento:
-        #        nueva_sesion.medicamentos.append(medicamento)
-        #logging.info('Medicamentos asociados a la sesión')
         def renombrar_canales(ch_names):
             nuevos_nombres = []
             for ch in ch_names:
@@ -1372,7 +1366,6 @@ def crear_nueva_sesion():
                 'names': nuevos_nombres,
                 'data': raw.get_data().tolist()
                 }
-            
             datos_procesados_json = json.dumps(data_eeg_normalized_with_channels)  # Data cleaned and processed in JSON format
             datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
             # When storing the data in the database, it is necessary to store the PSD data as well
