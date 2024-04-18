@@ -1,8 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Options, SeriesOptionsType } from 'highcharts';
-import { InfoPaciente } from '../../models/info-paciente.model';
 import { ActivatedRoute } from '@angular/router';
 import { EegService } from '../../services/sesiones/eeg.service';
 import { PacienteService } from '../../services/pacientes/paciente.service';
@@ -12,23 +11,11 @@ import { FormControl } from '@angular/forms';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component';
-import { id } from 'date-fns/locale';
 import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 import * as Highcharts from 'highcharts/highstock';
-import More from 'highcharts/highcharts-more';
-import HC_stock from 'highcharts/modules/stock';
-import HC_exporting from 'highcharts/modules/exporting';
-import HC_exportData from 'highcharts/modules/export-data';
-import IndicatorsCore from 'highcharts/indicators/indicators-all';
-import DragPanes from 'highcharts/modules/drag-panes';
-import AnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
-import PriceIndicator from 'highcharts/modules/price-indicator';
-import FullScreen from 'highcharts/modules/full-screen';
-import StockTools from 'highcharts/modules/stock-tools';
-import * as Plotly from 'plotly.js-dist-min';
-import { Data } from 'plotly.js-dist-min';
-import { Layout } from 'plotly.js-dist-min';
+//import * as Plotly from 'plotly.js-dist-min';
+//import { Data } from 'plotly.js-dist-min';
+//import { Layout } from 'plotly.js-dist-min';
 
 interface SeriesOptions {
   name: string;
@@ -89,6 +76,10 @@ export class GraficasPacienteComponent implements OnInit {
   searchControl = new FormControl('');
   selectedMedicamentos: number[] = [];
 
+  //EEG
+  dataSource = new MatTableDataSource<any>();
+  private plotly: any;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -98,10 +89,16 @@ export class GraficasPacienteComponent implements OnInit {
     private pacienteService: PacienteService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
 ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      import('plotly.js-dist-min').then(Plotly => {
+        this.plotly = Plotly;
+      });
+    }
     this.searchControl.valueChanges.subscribe((value) => {
       this.applyFilter(value || '');
     });
@@ -677,7 +674,7 @@ cargarDatos() {
     };
     const trace: Data = {
       z: stftData.map((d: {
-        magnitude_squared: any; data: any; 
+        magnitude_squared: any; data: any;
 }) => d.magnitude_squared),
       x: stftData[0].times,
       y: stftData[0].frequencies,
