@@ -677,7 +677,7 @@ def obtener_medicamentos_por_paciente(id_paciente):
         # Making sure the patient exists
         paciente = Paciente.query.get_or_404(id_paciente)
         # Obtain all the sessions for the patient
-        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).all()
+        sesiones = Sesion.query.filter_by(id_paciente=id_paciente).order_by(Sesion.fecha_consulta.desc()).all()
         # List to store the medications and the psychologist's notes
         medicamentos_detalle = []
         # Go through each session to extract the medications and notes for each one
