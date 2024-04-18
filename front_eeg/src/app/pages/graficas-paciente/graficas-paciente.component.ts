@@ -13,7 +13,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 import * as Highcharts from 'highcharts/highstock';
-import * d3 from 'd3';
+import * as d3 from 'd3';
 //import * as Plotly from 'plotly.js-dist-min';
 //import { Data } from 'plotly.js-dist-min';
 //import { Layout } from 'plotly.js-dist-min';
@@ -661,7 +661,9 @@ cargarDatos() {
             const stftData = JSON.parse(response.normalized_eegs[0].data_stft);
             console.log('Datos STFT:', stftData);
             const channelData = stftData.find((d: any) => d.name === 'Fp1'); // Encuentra los datos del canal Fp1
+            console.log('Datos del canal Fp1:', channelData);
             if (channelData) {
+              console.log('Datos STFT para el canal Fp1:', channelData);
               this.renderSpectrogram(channelData);
             } else {
               console.error('Canal Fp1 no encontrado en los datos STFT.');
@@ -678,6 +680,7 @@ cargarDatos() {
   }
 
   renderSpectrogram(channelData: any): void {
+    console.log('Datos del canal para el espectrograma dentro de renderS:', channelData);
     if (!channelData) {
       console.error('No data available to render.');
       return;
@@ -687,6 +690,8 @@ cargarDatos() {
     const margin = { top: 20, right: 20, bottom: 30, left: 50 },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
+
+      console.log('Margin', margin)
 
     // Eliminar cualquier gráfico anterior
     d3.select('#spectrogramDiv').select('svg').remove();
@@ -699,14 +704,25 @@ cargarDatos() {
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
+      console.log('svg',svg)
+
+    const timesExtent = d3.extent(channelData.times) as unknown as [number, number];
+    const frequenciesExtent = d3.extent(channelData.frequencies) as unknown as [number, number];
+
+    console.log('T',timesExtent)
+    console.log('F',frequenciesExtent)
+
     // Escalas para los ejes X e Y
     const x = d3.scaleLinear()
-      .domain(d3.extent(channelData.times)) // Asumiendo que channelData.times es un array con el tiempo
+      .domain(timesExtent) // Asumiendo que channelData.times es un array con el tiempo
       .range([0, width]);
 
     const y = d3.scaleLog()
-      .domain(d3.extent(channelData.frequencies)) // Asumiendo que channelData.frequencies es un array con las frecuencias
+      .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
       .range([height, 0]);
+
+      console.log('x',x)
+      console.log('y',y)
 
     // Eje X y Eje Y
     svg.append('g')
@@ -720,6 +736,9 @@ cargarDatos() {
     const rectWidth = width / channelData.times.length;
     const rectHeight = height / channelData.frequencies.length;
 
+    console.log('width', rectWidth)
+    console.log('height', rectHeight)
+
     svg.selectAll()
       .data(channelData.magnitude_squared)
       .enter()
@@ -728,6 +747,6 @@ cargarDatos() {
       .attr('y', (d, i) => y(channelData.frequencies[i % channelData.frequencies.length]))
       .attr('width', rectWidth)
       .attr('height', rectHeight)
-      .attr('fill', d => d3.interpolateInferno(d)); // Usa una función de color adecuada
+      .attr('fill', d => d3.interpolateInferno(Number(d))); // Cast 'd' to a number
   }
 }
