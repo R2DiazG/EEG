@@ -1376,12 +1376,12 @@ def crear_nueva_sesion():
             # Calculate the Short-Time Fourier Transform (STFT) of the EEG data
             fs = raw.info['sfreq']  # Frecuencia de muestreo de los datos EEG
             nperseg = 128  # Número de puntos por segmento para la STFT
-            stft_results = []  # Para almacenar los resultados de la STFT de cada canal
-            for i, channel_data in enumerate(eeg_data):
+            data_stft = []  # Para almacenar los resultados de la STFT de cada canal
+            for i, channel_data in enumerate(raw.get_data()):
                 frequencies, times, Zxx = stft(channel_data, fs=fs, nperseg=nperseg)
                 magnitude_squared = np.abs(Zxx) ** 2  # Calcula el cuadrado de la magnitud
                 # Preparar los datos para cada canal
-                stft_results.append({
+                data_stft.append({
                     'name': nuevos_nombres[i],
                     'magnitude_squared': magnitude_squared.tolist(),
                     'times': times.tolist(),
