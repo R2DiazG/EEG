@@ -213,3 +213,4 @@ class NormalizedEEG(db.Model):
     fecha_hora_procesado = db.Column(db.DateTime, nullable=False)
     data_normalized = db.Column(db.JSON)
     data_psd = db.Column(db.JSON)
+    data_stft = db.Column(db.JSON)

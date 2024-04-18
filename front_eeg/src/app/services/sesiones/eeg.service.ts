@@ -7,12 +7,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class EegService {
-
   private apiUrl = 'http://127.0.0.1:5000/sesiones';
-
-
   constructor(private http: HttpClient) { }
-
   private getHeaders(): HttpHeaders {
     const access_token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     let headers = new HttpHeaders({
@@ -24,31 +20,14 @@ export class EegService {
     return headers;
   }
 
-   obtenerEEGPorSesion(idSesion: number): Observable<any> {
-     const url = `${this.apiUrl}/${idSesion}/eegs`;
-     return this.http.get(url, { headers: this.getHeaders() });
-   }
-
-  /*obtenerEEGPorSesion(idSesion: number): Observable<any> {
+  obtenerEEGPorSesion(idSesion: number): Observable<any> {
     const url = `${this.apiUrl}/${idSesion}/eegs`;
-  
-    return this.http.get(url, { headers: this.getHeaders(), observe: 'response' })
-      .pipe(
-        catchError((error) => {
-          console.error('Error completo:', error);
-          if (error instanceof HttpErrorResponse && error.status === 200) {
-            // Manejo especial si el status es 200 pero hay un error
-            console.error('Error a pesar del status 200:', error.message);
-          }
-          return throwError(() => new Error('Error al obtener datos de EEG'));
-        })
-      );
-  }*/
-  
+    return this.http.get(url, { headers: this.getHeaders() });
+  }
 
   crearNuevaSesion(datosSesion: FormData): Observable<any> {
     // Nota: Usamos FormData para manejar la carga de archivos.
-    return this.http.post(`${this.apiUrl}/nueva`, datosSesion, { 
+    return this.http.post(`${this.apiUrl}/nueva`, datosSesion, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       })
@@ -92,7 +71,7 @@ export class EegService {
     const url = `${this.apiUrl}/${idSesion}`;
     return this.http.delete(url, { headers: this.getHeaders() });
   }
-  
+
   actualizarMedicamentosSesion(idSesion: number, medicamentosIds: number[]): Observable<any> {
     const url = `${this.apiUrl}/${idSesion}/medicamentos`;
     const datos = { medicamentos_ids: medicamentosIds };
@@ -104,5 +83,4 @@ export class EegService {
     const datos = { notas_psicologo: notasPsicologo };
     return this.http.put(url, datos, { headers: this.getHeaders() });
   }
-
 }

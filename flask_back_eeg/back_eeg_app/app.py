@@ -16,6 +16,7 @@ from mne.io import read_raw_edf
 from mne.filter import filter_data
 from mne.preprocessing import ICA, create_eog_epochs
 from sklearn.decomposition import PCA
+from scipy.signal import stft
 import os
 import mne
 import json
@@ -1375,11 +1376,22 @@ def crear_nueva_sesion():
             datos_procesados_json = json.dumps(data_eeg_normalized_with_channels)  # Data cleaned and processed in JSON format
             datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
             # When storing the data in the database, it is necessary to store the PSD data as well
+            # Calculate the Short-Time Fourier Transform (STFT) of the EEG data
+            stft_data = stft(raw.get_data(), 128)  # Usando ventanas de 128 puntos
+            stft_magnitude_squared = np.abs(stft_data) ** 2
+            data_stft = [{
+                'name': ch,
+                'magnitude_squared': stft_mag.tolist(),
+                'times': np.arange(stft_data.shape[2]).tolist(),  # ajustar según tu configuración de STFT
+                'frequencies': np.linspace(0, raw.info['sfreq'] / 2, stft_data.shape[1]).tolist()
+            } for ch, stft_mag in zip(nuevos_nombres, stft_magnitude_squared)]
+            data_stft_json = json.dumps(data_stft)  # Data of the STFT in JSON format
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
                 fecha_hora_procesado=datetime.now(timezone.utc),
                 data_normalized=datos_procesados_json,
-                data_psd=datos_psd_json  # Here we store the PSD data
+                data_psd=datos_psd_json,  # Here we store the PSD data
+                data_stft=data_stft_json  # Here we store the STFT data
             )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')
@@ -1447,7 +1459,8 @@ def obtener_eegs_por_sesion(id_sesion):
                 'id_eeg_procesado': eeg.id_eeg_procesado,
                 'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
                 'data_normalized': eeg.data_normalized,
-                'data_psd': eeg.data_psd
+                'data_psd': eeg.data_psd,
+                'data_stft': eeg.data_stft
             } for eeg in normalized_eegs]
         }
         logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
@@ -1474,7 +1487,8 @@ def generar_datos_eeg(raw_eegs, normalized_eegs):
             'id_eeg_procesado': eeg.id_eeg_procesado,
             'fecha_hora_procesado': eeg.fecha_hora_procesado.strftime('%Y-%m-%d %H:%M:%S'),
             'data_normalized': eeg.data_normalized,
-            'data_psd': eeg.data_psd
+            'data_psd': eeg.data_psd,
+            'data_stft': eeg.data_stft
         }) + ','
     yield ']}'
 

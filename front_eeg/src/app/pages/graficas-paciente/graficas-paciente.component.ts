@@ -26,6 +26,7 @@ import AnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
 import PriceIndicator from 'highcharts/modules/price-indicator';
 import FullScreen from 'highcharts/modules/full-screen';
 import StockTools from 'highcharts/modules/stock-tools';
+import * as Plotly from 'plotly.js-dist-min';
 
 interface SeriesOptions {
   name: string;
@@ -119,6 +120,7 @@ ngOnInit() {
                 this.cargarDatosNormalizedEEG();
                 this.cargarDatosEEG();
                 this.cargarMedicamentos();
+                this.cargarDatosSTFT();
                 // Cargar datos de la sesión de EEG directamente aquí
                 this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
               } else {
@@ -644,5 +646,46 @@ cargarDatos() {
       series: series as SeriesOptionsType[]
     };
     Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
+  }
+
+  cargarDatosSTFT(): void {
+    if (this.idSesion) {
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response) => {
+          console.log('Datos STFT recibidos:', response);
+          // Asume que los datos STFT están incluidos en los datos de EEG normalizados recibidos
+          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+            const stftData = JSON.parse(response.normalized_eegs[0].data_stft); // Asegúrate que esto coincide con cómo estás guardando los datos
+            this.renderSpectrogram(stftData);
+          } else {
+            console.error('No se encontraron datos STFT para esta sesión.');
+          }
+        },
+        error: (error) => console.error('Error al obtener datos STFT:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
+  }
+
+  renderSpectrogram(stftData: any): void {
+    if (!stftData || stftData.length === 0) {
+      console.error('No STFT data available to render.');
+      return;
+    };
+    const trace = {
+      z: stftData.map(d => d.data),
+      x: stftData[0].times,
+      y: stftData[0].frequencies,
+      type: 'heatmap',
+      colorscale: 'Jet',
+      showscale: true
+    };
+    const layout = {
+      title: 'Espectrograma EEG',
+      xaxis: { title: 'Tiempo (s)' },
+      yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
+    };
+    Plotly.newPlot('spectrogramDiv', [trace], layout);
   }
 }
