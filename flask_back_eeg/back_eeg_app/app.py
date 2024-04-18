@@ -1371,6 +1371,8 @@ def crear_nueva_sesion():
             # When storing the data in the database, it is necessary to store the PSD data as well
             print ('ACABADOOOOOOOO!!!!!!!!!!!!!!!!!!!!!')
             print('Empezando STFT')
+            print("Forma de los datos de EEG:", raw.get_data().shape)
+            print("Datos de ejemplo:", raw.get_data()[:, :100])  # Imprime los primeros 100 puntos de cada canal
             # Calculate the Short-Time Fourier Transform (STFT) of the EEG data
             stft_data = stft(raw.get_data(), 128)  # Usando ventanas de 128 puntos
             stft_magnitude_squared = np.abs(stft_data) ** 2
