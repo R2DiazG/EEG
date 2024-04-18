@@ -27,6 +27,8 @@ import PriceIndicator from 'highcharts/modules/price-indicator';
 import FullScreen from 'highcharts/modules/full-screen';
 import StockTools from 'highcharts/modules/stock-tools';
 import * as Plotly from 'plotly.js-dist-min';
+import { Data } from 'plotly.js-dist-min';
+import { Layout } from 'plotly.js-dist-min';
 
 interface SeriesOptions {
   name: string;
@@ -673,15 +675,17 @@ cargarDatos() {
       console.error('No STFT data available to render.');
       return;
     };
-    const trace = {
-      z: stftData.map(d => d.data),
+    const trace: Data = {
+      z: stftData.map((d: {
+        magnitude_squared: any; data: any; 
+}) => d.magnitude_squared),
       x: stftData[0].times,
       y: stftData[0].frequencies,
       type: 'heatmap',
       colorscale: 'Jet',
       showscale: true
     };
-    const layout = {
+    const layout: Partial<Layout> = {
       title: 'Espectrograma EEG',
       xaxis: { title: 'Tiempo (s)' },
       yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
