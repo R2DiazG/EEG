@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import delete
+from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
 from mne.io import RawArray
 from mne.io import read_raw_edf
@@ -1447,6 +1448,60 @@ def obtener_fechas_sesiones_por_paciente(id_paciente):
     except Exception as e:
         logging.error('Error al obtener las fechas de las sesiones para el paciente %s: %s', id_paciente, e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
+
+@app.route('/sesiones/<int:id_sesion>/medicamentos', methods=['POST'])
+@jwt_required()
+def agregar_medicamentos_sesion(id_sesion):
+    """
+    Endpoint to add medications to a specific session.
+    Requires a valid JWT access token.
+    Allows adding one or more medications to the session without replacing existing ones.
+    ·Parameters:
+        id_sesion: int - The ID of the session.
+        medicamentos_ids: list - The IDs of the medications to add.
+    ·Responses:
+        200: If the medications were successfully added.
+        400: If the medication IDs were not provided, a medication was not found, or duplicate entries.
+        404: If the session was not found.
+        500: If an internal server error occurred.
+    ·Usage example:
+        POST /sesiones/1/medicamentos
+        {
+            "medicamentos_ids": [1, 2, 3]
+        }
+    """
+    logging.info('Agregando medicamentos a la sesión %s', id_sesion)
+    try:
+        sesion = Sesion.query.get_or_404(id_sesion)
+        datos = request.get_json()
+        medicamentos_ids = datos.get('medicamentos_ids')
+        if not medicamentos_ids:
+            raise BadRequest('No se proporcionaron IDs de medicamentos')
+        
+        medicamentos_actuales = set(med.id for med in sesion.medicamentos)
+        for med_id in medicamentos_ids:
+            if med_id in medicamentos_actuales:
+                continue  # Ignora los duplicados dentro de la misma sesión
+            medicamento = Medicamento.query.get(med_id)
+            if not medicamento:
+                raise BadRequest(f'No se encontró el medicamento con ID {med_id}')
+            sesion.medicamentos.append(medicamento)
+        
+        db.session.commit()
+        logging.info('Medicamentos agregados a la sesión %s exitosamente', id_sesion)
+        return jsonify({'mensaje': 'Medicamentos agregados exitosamente'}), 200
+    except BadRequest as e:
+        db.session.rollback()
+        logging.error('Error al procesar la solicitud: %s', str(e))
+        return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 400
+    except IntegrityError as e:
+        db.session.rollback()
+        logging.error('Error de integridad: %s', str(e))
+        return jsonify({'error': 'Error de integridad: ' + str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        logging.error('Error inesperado: %s', str(e))
+        return jsonify({'error': 'Error inesperado: ' + str(e)}), 500
 
 @app.route('/sesiones/<int:id_sesion>/medicamentos', methods=['PUT'])
 @jwt_required()
