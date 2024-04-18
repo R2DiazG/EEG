@@ -13,6 +13,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 import * as Highcharts from 'highcharts/highstock';
+import * d3 from 'd3';
 //import * as Plotly from 'plotly.js-dist-min';
 //import { Data } from 'plotly.js-dist-min';
 //import { Layout } from 'plotly.js-dist-min';
@@ -659,13 +660,8 @@ cargarDatos() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const stftData = JSON.parse(response.normalized_eegs[0].data_stft);
             console.log('Datos STFT:', stftData);
-            console.log('Plotly is defined:', Plotly);
-    console.log('Plotly version:', Plotly.version);
             const channelData = stftData.find((d: any) => d.name === 'Fp1'); // Encuentra los datos del canal Fp1
-            console.log('Plotly is defined:', Plotly);
-    console.log('Plotly version:', Plotly.version);
             if (channelData) {
-              console.log('Datos del canal Fp1:', channelData);
               this.renderSpectrogram(channelData);
             } else {
               console.error('Canal Fp1 no encontrado en los datos STFT.');
@@ -686,25 +682,52 @@ cargarDatos() {
       console.error('No data available to render.');
       return;
     }
-    const trace = {
-      z: channelData.magnitude_squared,
-      x: channelData.times,
-      y: channelData.frequencies,
-      type: 'heatmap',
-      colorscale: 'Jet',
-      showscale: true
-    };
-    const layout = {
-      title: 'Espectrograma EEG - Canal Fp1',
-      xaxis: { title: 'Tiempo (s)' },
-      yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
-    };
-    console.log('Plotly is defined:', Plotly);
-    console.log('Plotly version:', Plotly.version);
-    if (typeof Plotly !== 'undefined') {
-      Plotly.newPlot('spectrogramDiv', [trace], layout);
-    } else {
-      console.error('Plotly no está disponible.');
-    }
+
+    // Configuración de dimensiones y márgenes para el gráfico
+    const margin = { top: 20, right: 20, bottom: 30, left: 50 },
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+
+    // Eliminar cualquier gráfico anterior
+    d3.select('#spectrogramDiv').select('svg').remove();
+
+    // Crear elemento SVG y configurar dimensiones
+    const svg = d3.select('#spectrogramDiv')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // Escalas para los ejes X e Y
+    const x = d3.scaleLinear()
+      .domain(d3.extent(channelData.times)) // Asumiendo que channelData.times es un array con el tiempo
+      .range([0, width]);
+
+    const y = d3.scaleLog()
+      .domain(d3.extent(channelData.frequencies)) // Asumiendo que channelData.frequencies es un array con las frecuencias
+      .range([height, 0]);
+
+    // Eje X y Eje Y
+    svg.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x));
+
+    svg.append('g')
+      .call(d3.axisLeft(y));
+
+    // Mapeo de los datos a rectángulos para el espectrograma
+    const rectWidth = width / channelData.times.length;
+    const rectHeight = height / channelData.frequencies.length;
+
+    svg.selectAll()
+      .data(channelData.magnitude_squared)
+      .enter()
+      .append('rect')
+      .attr('x', (d, i) => x(channelData.times[Math.floor(i / channelData.frequencies.length)]))
+      .attr('y', (d, i) => y(channelData.frequencies[i % channelData.frequencies.length]))
+      .attr('width', rectWidth)
+      .attr('height', rectHeight)
+      .attr('fill', d => d3.interpolateInferno(d)); // Usa una función de color adecuada
   }
 }
