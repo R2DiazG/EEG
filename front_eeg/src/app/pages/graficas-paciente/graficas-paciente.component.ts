@@ -17,6 +17,8 @@ import * as Highcharts from 'highcharts/highstock';
 //import { Data } from 'plotly.js-dist-min';
 //import { Layout } from 'plotly.js-dist-min';
 
+declare var Plotly: any;
+
 interface SeriesOptions {
   name: string;
   data: number[];
@@ -77,7 +79,6 @@ export class GraficasPacienteComponent implements OnInit {
   selectedMedicamentos: number[] = [];
 
   //EEG
-  dataSource = new MatTableDataSource<any>();
   private plotly: any;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -389,8 +390,11 @@ cargarDatos() {
   // Si tienes lógica específica para los tabs de EEG o PSD en `activeGraphTab`, puedes agregarla aquí también
   if (this.activeGraphTab === 'eeg') {
     this.cargarDatosNormalizedEEG();
-  } else if (this.activeGraphTab === 'psd') {
+  } if (this.activeGraphTab === 'psd') {
     this.cargarDatosEEG();
+  }if (this.activeGraphTab === 'stft') {
+    this.cargarDatosSTFT();
+  
   }
 }
 
@@ -655,6 +659,7 @@ cargarDatos() {
           // Asume que los datos STFT están incluidos en los datos de EEG normalizados recibidos
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const stftData = JSON.parse(response.normalized_eegs[0].data_stft); // Asegúrate que esto coincide con cómo estás guardando los datos
+            console.log('Datos STFT:', stftData);
             this.renderSpectrogram(stftData);
           } else {
             console.error('No se encontraron datos STFT para esta sesión.');
@@ -672,7 +677,7 @@ cargarDatos() {
       console.error('No STFT data available to render.');
       return;
     };
-    const trace: Data = {
+    const trace = {
       z: stftData.map((d: {
         magnitude_squared: any; data: any;
 }) => d.magnitude_squared),
@@ -682,11 +687,16 @@ cargarDatos() {
       colorscale: 'Jet',
       showscale: true
     };
-    const layout: Partial<Layout> = {
+    const layout = {
       title: 'Espectrograma EEG',
       xaxis: { title: 'Tiempo (s)' },
       yaxis: { title: 'Frecuencia (Hz)', type: 'log' } // Considera si necesitas un eje logarítmico para las frecuencias
     };
-    Plotly.newPlot('spectrogramDiv', [trace], layout);
+    if (typeof Plotly !== 'undefined') {
+      Plotly.newPlot('spectrogramDiv', [trace], layout);
+    } else {
+      console.error('Plotly no está disponible.');
+    }
+    //Plotly.newPlot('spectrogramDiv', [trace], layout);
   }
 }

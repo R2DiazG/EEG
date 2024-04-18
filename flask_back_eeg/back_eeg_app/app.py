@@ -1376,6 +1376,8 @@ def crear_nueva_sesion():
             datos_procesados_json = json.dumps(data_eeg_normalized_with_channels)  # Data cleaned and processed in JSON format
             datos_psd_json = json.dumps(data_for_frontend)  # Data of the PSD in JSON format
             # When storing the data in the database, it is necessary to store the PSD data as well
+            print ('ACABADOOOOOOOO!!!!!!!!!!!!!!!!!!!!!')
+            print('Empezando STFT')
             # Calculate the Short-Time Fourier Transform (STFT) of the EEG data
             stft_data = stft(raw.get_data(), 128)  # Usando ventanas de 128 puntos
             stft_magnitude_squared = np.abs(stft_data) ** 2
