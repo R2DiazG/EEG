@@ -58,6 +58,13 @@ $blue: #2492FF;
       font-size: 1.1rem;
     }
     
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem;
+    }
+    
     .header h1 {
       margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
       font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */

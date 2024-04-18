@@ -1,44 +1,59 @@
 :host {
-    display: block;
-    padding: 20px;
+  display: block;
+  padding: 20px;
+}
+
+ng-select {
+  width: 55%;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  &:not(.ng-select-opened) .ng-select-container .ng-value-container .ng-placeholder {
+    /* Solo muestra el placeholder cuando no hay nada seleccionado y el ng-select no está abierto */
+    visibility: visible;
   }
-  
-  ng-select {
+
+  .ng-select-container {
+    border: none;
+  }
+
+  .ng-value-container {
+    align-items: center;
+  }
+
+  .ng-placeholder {
+    /* Por defecto oculta el placeholder, se muestra según la regla anterior */
+    visibility: hidden;
+  }
+
+  .ng-value {
+    background-color: #e4e4e4;
+    display: inline-block;
+    margin: 0 10px 0 0;
+    padding: 3px 10px;
+    border-radius: 15px;
+  }
+
+  .ng-input input {
     width: 100%;
-    margin-bottom: 20px;
-  
-    .ng-select-container {
-      border-radius: 4px;
-    }
-  
-    .ng-value {
-      background-color: #e4e4e4;
-      display: inline-block;
-      margin: 0 10px 0 0;
-      padding: 3px 10px;
-      border-radius: 15px;
-    }
-  
-    .ng-input input {
-      width: 100%;
-      padding: 8px;
-    }
-  
-    .ng-option {
-      padding: 10px;
-      &:hover {
-        background-color: #f5f5f5;
-      }
+    padding: 8px;
+  }
+
+  .ng-option {
+    padding: 10px;
+    &:hover {
+      background-color: #f5f5f5;
     }
   }
-  
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-  
-    button {
-      margin-left: 20px;
-    }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+
+  button {
+    margin-left: 20px;
   }
-  
+}

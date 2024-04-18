@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-drop-medicamentos-dialog',
@@ -9,20 +9,20 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./drop-medicamentos-dialog.component.scss']
 })
 export class DropMedicamentosDialogComponent implements OnInit {
-
-  medicamentos$!: Observable<any[]>; // Esta es la declaración correcta para un Observable que se llenará con medicamentos.
-  selectedMedicamentos: any[] = []; // Almacenará los medicamentos seleccionados.
+  medicamentos$!: Observable<any[]>; 
+  selectedMedicamentos: number[] = []; // Ahora es un array para múltiples IDs de medicamentos
+  placeholderText = 'Buscar medicamentos'; // Placeholder inicial
 
   constructor(
     private dialogRef: MatDialogRef<DropMedicamentosDialogComponent>,
     private medicamentoService: MedicamentoService,
-    @Inject(MAT_DIALOG_DATA) public data: any // Inyecta los datos pasados al diálogo.
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   ngOnInit() {
     this.medicamentos$ = this.medicamentoService.obtenerMedicamentos();
-    
-    // Solo para depuración: suscribirse al Observable para ver los datos.
+    console.log('Medicamentos Observable:', this.medicamentos$);
+
     this.medicamentos$.subscribe({
       next: (medicamentos) => {
         console.log('Medicamentos recibidos:', medicamentos);
@@ -31,12 +31,38 @@ export class DropMedicamentosDialogComponent implements OnInit {
         console.error('Error al obtener medicamentos:', error);
       }
     });
+
+    // Actualiza selectedMedicamentos si existen algunos pasados en data
     if (this.data && this.data.selectedMedicamentos) {
       this.selectedMedicamentos = this.data.selectedMedicamentos;
     }
+    this.updatePlaceholder();
   }
-  
+
+  onMedicamentosSelected() {
+    // Llamado cuando se seleccionan nuevos medicamentos
+    this.updatePlaceholder();
+  }
+
+  onMedicamentosCleared() {
+    // Llamado cuando se limpia la selección
+    this.selectedMedicamentos = [];
+    this.updatePlaceholder();
+  }
+
+  updatePlaceholder() {
+    // Cambia el placeholder según si hay medicamentos seleccionados
+    this.placeholderText = this.selectedMedicamentos.length > 0 ? '' : 'Buscar medicamentos';
+  }
+
+  guardarSeleccion() {
+    // Aquí deberías agregar tu lógica para procesar los medicamentos seleccionados
+    console.log('Medicamentos seleccionados:', this.selectedMedicamentos);
+    // Procesa los medicamentos seleccionados
+    this.dialogRef.close(this.selectedMedicamentos); // Cierra el diálogo y devuelve los medicamentos seleccionados
+  }
+
   closeDialog() {
-    this.dialogRef.close(this.selectedMedicamentos);
+    this.dialogRef.close(null); // Cierra el diálogo sin devolver nada si se pulsa "Cerrar"
   }
 }

@@ -96,7 +96,7 @@ export class GraficasPacienteComponent implements OnInit {
   displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion', 'notas_psicologo'];
   dataSource = new MatTableDataSource<any>([]);
   searchControl = new FormControl('');
-  selectedMedicamentos: any[] = [];
+  selectedMedicamentos: number[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -428,7 +428,8 @@ onSesionChange() {
 
   addMedication(): void {
     const dialogRef = this.dialog.open(DropMedicamentosDialogComponent, {
-      width: '500px',
+      width: '50rem',
+      height: '15rem',
       data: { selectedMedicamentos: this.selectedMedicamentos }
     });
   
