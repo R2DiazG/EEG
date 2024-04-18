@@ -1,12 +1,12 @@
 <div class="container-usuario">
   <div *ngIf="userInfo">
       <p>
-          <i class="fas fa-user-circle" aria-hidden="true"></i>
-          <label>{{ userInfo.nombre }} {{ userInfo.apellidos }}</label>
-      </p>
-      <p>
-          <span *ngIf="userInfo.id_rol === 1">Administrador</span>
-          <span *ngIf="userInfo.id_rol === 2">Psicólogo</span>
+        <!-- <i class="fas fa-user-circle" aria-hidden="true"></i> -->
+          <label *ngIf="userInfo.id_rol === 1">Administrador:&nbsp;</label>
+          <label *ngIf="userInfo.id_rol === 2">Psicólogo:&nbsp;</label>
+          <label>{{ userInfo.nombre}}&nbsp;</label>
+          <label>{{ userInfo.apellidos}}&nbsp;&nbsp;&nbsp;</label>
+          <a (click)="logout()" class="logout" title="Cerrar sesión"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
       </p>
   </div>
 </div>

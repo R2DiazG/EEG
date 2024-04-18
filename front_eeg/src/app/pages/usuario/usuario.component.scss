@@ -1,4 +1,9 @@
 $bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 .container {
     position: relative; // Esto es necesario para que la posición absoluta del hijo se base en este contenedor
   }
@@ -8,10 +13,11 @@ $bg: #313841;
     top: 0; // Alinea el div con la parte superior del contenedor
     right: 0; // Alinea el div con el lado derecho del contenedor
     z-index: 10; // Asegura que el div se muestre por encima de otros elementos si es necesario
+    max-width: fit-content;
   
     display: flex;
     align-items: center; // Centra el contenido del div verticalmente
-    padding: 10px; // Agrega un poco de espacio alrededor del contenido dentro del div
+    padding: 20px; // Agrega un poco de espacio alrededor del contenido dentro del div
   
     .fas.fa-user-circle {
       margin-right: 10px; // Agrega un espacio entre el icono y el texto
@@ -23,6 +29,25 @@ $bg: #313841;
       color: $bg; // Cambia el color del texto si es necesario
       font-size: 14px; // Ajusta esto al tamaño de fuente deseado
       padding-right: 1rem; // Agrega un poco de espacio a la derecha del texto
+    }
+    .logout{
+      align-items: center;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 70px;
+      font-size: 1.25rem;
+      background-color: transparent;
+      margin: 0.5rem;
+      cursor: pointer;
+      //margin-bottom: 20px;
+    }
+      .logout {
+        color: $bg;
+        &:hover {
+        background-color: $red;
+        color: white;
+        .text { color: white; }
+      }
     }
   }
   
