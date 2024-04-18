@@ -94,19 +94,26 @@ $blue: #2492FF;
     border-radius: 4px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   }
-  
-  button {  
-    padding: 0.7rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;      
+}
+
+.return{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.5rem;
+  background-color: transparent !important;
+  margin: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+  .return {
+    color: $bg !important;
     &:hover {
-      background-color: #333;
-    }
-    &:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-  }
+    background-color: $blue;
+    color: white;
+    .text { color: white; }
+  }}
 }
 
 .upload, .cancel{
@@ -154,7 +161,6 @@ $blue: #2492FF;
   border-color: #80bdff; /* Focus border color */
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus box shadow to match the date input */
 }
-
 
       .form-group {
         display: flex;

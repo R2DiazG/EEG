@@ -1,7 +1,14 @@
 <div class="container">
   <app-menu-lateral></app-menu-lateral>
   <div class="eeg-upload-container">
-    <h1>Nueva sesión</h1>
+    <div class="header">
+      <div class="left">
+        <!-- <button (click)="onCancel()" class="return" title="Regresar">
+          <i class="fa fa-arrow-left" aria-hidden="true"></i>
+        </button> -->
+        <h1>Nueva sesión</h1>
+      </div>
+    </div>
     <app-info-paciente  [id_paciente]="idPaciente"></app-info-paciente>
     <div class="upload-form">
     <!--  <div class="form-group">

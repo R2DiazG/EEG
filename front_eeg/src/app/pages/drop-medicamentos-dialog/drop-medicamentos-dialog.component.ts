@@ -1,4 +1,4 @@
-/*import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
 import { Observable, of } from 'rxjs';
@@ -36,43 +36,6 @@ export class DropMedicamentosDialogComponent implements OnInit {
     }
   }
   
-  closeDialog() {
-    this.dialogRef.close(this.selectedMedicamentos); // Al cerrar el diálogo, devuelve los medicamentos seleccionados.
-  }
-}*/
-
-// drop-medicamentos-dialog.component.ts
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, of } from 'rxjs';
-
-@Component({
-  selector: 'app-drop-medicamentos-dialog',
-  templateUrl: './drop-medicamentos-dialog.component.html',
-  styleUrls: ['./drop-medicamentos-dialog.component.scss']
-})
-export class DropMedicamentosDialogComponent implements OnInit {
-
-  medicamentos$!: Observable<any[]>; 
-  selectedMedicamentos: any[] = [];
-
-  constructor(
-    private dialogRef: MatDialogRef<DropMedicamentosDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    // Si el diálogo se abrió con medicamentos ya seleccionados, inicialízalos aquí.
-    this.selectedMedicamentos = data.selectedMedicamentos || [];
-  }
-
-  ngOnInit() {
-    // Aquí, reemplaza con datos de tu servicio. Uso datos mock para la demostración.
-    this.medicamentos$ = of([
-      { id: 1, nombre_comercial: 'Medicamento A' },
-      { id: 2, nombre_comercial: 'Medicamento B' },
-      // Agrega más medicamentos aquí...
-    ]);
-  }
-
   closeDialog() {
     this.dialogRef.close(this.selectedMedicamentos);
   }

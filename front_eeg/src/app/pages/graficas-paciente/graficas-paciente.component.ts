@@ -79,11 +79,13 @@ export class GraficasPacienteComponent implements OnInit {
   estado_general!: string;
   estado_especifico!: string;
   resumen_sesion_actual!: string;
+  notas_psicologo!: string;
   activeGraphTab = 'eeg';
 
   // Notas del psicólogo
   isAddingNote: boolean = false;
-  notasPsicologo: string = '';
+  fechaSesionActual!: string;
+  notasPsicologoEdit: string = '';
   
   // Eliminar sesion
   isConfirm: boolean = false;
@@ -268,6 +270,17 @@ onDeleteSesion(): void {
   }
 }
 
+iniciarEdicion() {
+  this.notasPsicologoEdit = this.notas_psicologo; // Carga las notas existentes para edición
+  this.isAddingNote = true;
+}
+
+// Cancelar la edición de las notas
+cancelarEdicion() {
+  this.notasPsicologoEdit = ''; // Limpia el área de texto de edición
+  this.isAddingNote = false; // Oculta el editor
+}
+
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);
   this.eegService.obtenerUltimaSesion(idPaciente).subscribe({
@@ -290,24 +303,33 @@ getLastSession(idPaciente: number): void {
 }
 
 onAgregarNotasClick(): void {
+  this.notasPsicologoEdit = this.notas_psicologo || '';
   this.isAddingNote = true; // Muestra el input de texto
 }
 
 // Método para guardar las notas del psicólogo
 guardarNotasPsicologo(): void {
-  if (this.idSesion && this.notasPsicologo.trim()) {
-    this.eegService.actualizarNotasPsicologoSesion(this.idSesion, this.notasPsicologo).subscribe({
+  if (this.idSesion && this.notasPsicologoEdit.trim()) {
+    this.eegService.actualizarNotasPsicologoSesion(this.idSesion, this.notasPsicologoEdit).subscribe({
       next: (response) => {
+        // Actualiza ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
+        this.notas_psicologo = this.notasPsicologoEdit;
+        
+        // Oculta el input de texto después de guardar
+        this.isAddingNote = false;
+        
+        // Si quieres limpiar el cuadro de edición después de guardar, descomenta la siguiente línea.
+        // this.notasPsicologoEdit = '';
+        
         console.log(response.mensaje);
-        this.isAddingNote = false; // Oculta el input de texto después de guardar
-        this.notasPsicologo = ''; // Limpia el input después de guardar
       },
       error: (error) => {
         console.error('Error al actualizar las notas del psicólogo:', error);
+        // Manejar errores, por ejemplo, mostrando un mensaje al usuario
       }
     });
   } else {
-    console.error('Error: No se proporcionó el ID de la sesión o las notas del psicólogo.');
+    console.error('Error: No se proporcionó el ID de la sesión o el contenido para las notas.');
   }
 }
 
@@ -328,6 +350,7 @@ cargarDatosDeEeg(idSesion: number): void {
         this.estado_general = datosEeg.detalle_sesion.estado_general;
         this.estado_especifico = datosEeg.detalle_sesion.estado_especifico;
         this.resumen_sesion_actual = datosEeg.detalle_sesion.resumen_sesion_actual;
+        this.notas_psicologo = datosEeg.detalle_sesion.notas_psicologo;
       } else {
         console.error('Datos de EEG no encontrados para esta sesión.');
       }

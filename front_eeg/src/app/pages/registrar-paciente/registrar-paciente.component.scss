@@ -156,6 +156,14 @@ button{
     color: white;
     .text { color: white; }
   }
+    &:disabled {
+      color: #ebebfc;
+      background-color: transparent !important;
+      cursor: not-allowed;
+      &:hover {
+          background-color: transparent;
+      }
+  }
 }
 
 .cancelar{
