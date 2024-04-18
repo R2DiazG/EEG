@@ -67,6 +67,12 @@ export class EegService {
     return this.http.get(`${this.apiUrl}/${idSesion}`, { headers: this.getHeaders() });
   }
 
+  agregarMedicamentosSesion(idSesion: number, medicamentosIds: number[]): Observable<any> {
+    const url = `${this.apiUrl}/${idSesion}/medicamentos`;
+    const datos = { medicamentos_ids: medicamentosIds };
+    return this.http.post(url, datos, { headers: this.getHeaders() });
+  }
+
   obtenerUltimaSesion(idPaciente: number): Observable<any> {
     const url = `${this.apiUrl}/pacientes/${idPaciente}/sesiones/fechas`;
     return this.http.get<any[]>(url, { headers: this.getHeaders() })

@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
 import { Observable } from 'rxjs';
+import { EegService } from '../../services/sesiones/eeg.service';
 
 @Component({
   selector: 'app-drop-medicamentos-dialog',
@@ -12,10 +13,12 @@ export class DropMedicamentosDialogComponent implements OnInit {
   medicamentos$!: Observable<any[]>; 
   selectedMedicamentos: number[] = []; // Ahora es un array para múltiples IDs de medicamentos
   placeholderText = 'Buscar medicamentos'; // Placeholder inicial
+  idSesion!: number; // ID de la sesión
 
   constructor(
     private dialogRef: MatDialogRef<DropMedicamentosDialogComponent>,
     private medicamentoService: MedicamentoService,
+    private eegService: EegService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -23,6 +26,9 @@ export class DropMedicamentosDialogComponent implements OnInit {
     this.medicamentos$ = this.medicamentoService.obtenerMedicamentos();
     console.log('Medicamentos Observable:', this.medicamentos$);
 
+    if (this.data && this.data.idSesion) {
+      this.idSesion = this.data.idSesion;
+    }
     this.medicamentos$.subscribe({
       next: (medicamentos) => {
         console.log('Medicamentos recibidos:', medicamentos);
@@ -56,10 +62,24 @@ export class DropMedicamentosDialogComponent implements OnInit {
   }
 
   guardarSeleccion() {
-    // Aquí deberías agregar tu lógica para procesar los medicamentos seleccionados
-    console.log('Medicamentos seleccionados:', this.selectedMedicamentos);
-    // Procesa los medicamentos seleccionados
-    this.dialogRef.close(this.selectedMedicamentos); // Cierra el diálogo y devuelve los medicamentos seleccionados
+    if (this.idSesion && this.selectedMedicamentos.length > 0) {
+      console.log('Medicamentos seleccionados:', this.selectedMedicamentos);
+      console.log('ID de la sesión:', this.idSesion);
+      // Envía los IDs de medicamentos seleccionados al servidor
+      this.eegService.agregarMedicamentosSesion(this.idSesion, this.selectedMedicamentos)
+        .subscribe({
+          next: (response) => {
+            console.log('Respuesta del servidor:', response);
+            this.dialogRef.close(this.selectedMedicamentos); // Devuelve los medicamentos seleccionados
+          },
+          error: (error) => {
+            console.error('Error al agregar medicamentos a la sesión:', error);
+          }
+        });
+    } else {
+      // Cierra el diálogo sin realizar cambios si no se seleccionó ningún medicamento o falta el ID de sesión
+      this.dialogRef.close(null);
+    }
   }
 
   closeDialog() {

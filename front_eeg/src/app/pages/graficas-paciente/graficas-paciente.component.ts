@@ -426,21 +426,25 @@ onSesionChange() {
     }
   }
 
-  addMedication(): void {
+  addMedication(idSesion: number): void {
     const dialogRef = this.dialog.open(DropMedicamentosDialogComponent, {
       width: '50rem',
       height: '15rem',
-      data: { selectedMedicamentos: this.selectedMedicamentos }
+      data: { 
+        selectedMedicamentos: this.selectedMedicamentos, 
+        idSesion: idSesion  // Asegúrate de pasar idSesion al diálogo
+      }
     });
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Medicamentos seleccionados:', result);
-        this.selectedMedicamentos = result; // Asume que deseas actualizar la lista existente
-        this.cargarMedicamentos();
+        this.selectedMedicamentos = result; // Actualiza la lista con el resultado del diálogo
+        // Puede que también necesites llamar a un método para asociar estos medicamentos con la sesión en tu backend
       }
     });
   }
+  
   
   regresar(){
     this.router.navigate(['/lista-pacientes']);
@@ -448,7 +452,9 @@ onSesionChange() {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+    this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
   }
+/*
   setActiveGraphTab(tabName: string) {
     this.activeGraphTab = tabName;
     if (tabName === 'eeg') {
@@ -458,6 +464,35 @@ onSesionChange() {
       this.cargarDatosEEG(); // Llamamos a la función que carga los datos de PSD.
     }
   }
+*/
+
+setActiveGraphTab(tabName: string) {
+  this.activeGraphTab = tabName;
+  this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
+}
+
+cargarDatos() {
+  switch(this.activeTab) {
+    case 'detailsSesion':
+      // Carga datos relacionados con los detalles de la sesión
+      this.cargarDatosDeEeg(this.idSesion);
+      break;
+    case 'meds':
+      // Carga el historial de medicamentos
+      this.cargarMedicamentos();
+      break;
+    case 'prob':
+      // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
+      break;
+  }
+  
+  // Si tienes lógica específica para los tabs de EEG o PSD en `activeGraphTab`, puedes agregarla aquí también
+  if (this.activeGraphTab === 'eeg') {
+    this.cargarDatosNormalizedEEG();
+  } else if (this.activeGraphTab === 'psd') {
+    this.cargarDatosEEG();
+  }
+}
 
   /*cargarDatosNormalizedEEG(): void {
     if (this.idSesion) {

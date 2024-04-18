@@ -1474,11 +1474,12 @@ def agregar_medicamentos_sesion(id_sesion):
     try:
         sesion = Sesion.query.get_or_404(id_sesion)
         datos = request.get_json()
-        medicamentos_ids = datos.get('medicamentos_ids')
+        medicamentos_ids = datos.get('medicamentos_ids', [])
         if not medicamentos_ids:
             raise BadRequest('No se proporcionaron IDs de medicamentos')
         
-        medicamentos_actuales = set(med.id for med in sesion.medicamentos)
+        medicamentos_actuales = set(med.id_medicamento for med in sesion.medicamentos)
+        
         for med_id in medicamentos_ids:
             if med_id in medicamentos_actuales:
                 continue  # Ignora los duplicados dentro de la misma sesión

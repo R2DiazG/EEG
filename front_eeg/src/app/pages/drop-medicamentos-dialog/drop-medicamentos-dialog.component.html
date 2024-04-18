@@ -14,6 +14,10 @@
   </ng-template>
 </ng-select>
 <div class="actions">
-  <button mat-button (click)="guardarSeleccion()">Guardar</button>
-  <button mat-button (click)="closeDialog()">Cerrar</button> 
+  <button mat-button (click)="guardarSeleccion()" class="add" title="Guardar selección de medicamentos">
+    <i class="fas fa-save" aria-hidden="true"></i>
+  </button>
+  <button mat-button (click)="closeDialog()" class="add" title="Cancelar">
+    <i class="fas fa-trash" aria-hidden="true"></i>
+  </button> 
 </div>

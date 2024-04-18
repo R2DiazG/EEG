@@ -1,3 +1,9 @@
+$bg: #313841;
+$red: #F34541;
+$black: #1D242B;
+$green: #38B87C;
+$blue: #2492FF;
+
 :host {
   display: block;
   padding: 20px;
@@ -52,8 +58,26 @@ ng-select {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+}
 
-  button {
-    margin-left: 20px;
+.add{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.5rem;
+  background-color: transparent;
+  margin: 0.5rem;
+  cursor: pointer;
+  //margin-bottom: 20px;
+}
+  .add {
+    color: $bg;
+    margin-right: 10px;
+    &:hover {
+    background-color: $blue;
+    color: white;
+    .text { color: white; }
   }
 }
