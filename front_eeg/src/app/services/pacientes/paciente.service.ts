@@ -28,6 +28,11 @@ export class PacienteService {
     return this.http.post(url, paciente, { headers: this.getHeaders() });
   }
 
+  obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {
+    const url = `${this.apiUrl}/pacientes/por-psicologo`;
+    return this.http.get<any>(url, { headers: this.getHeaders() });
+  }
+
   obtenerPacientesPorUsuario(idUsuario: number): Observable<any[]> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
     return this.http.get<any[]>(url, { headers: this.getHeaders() });

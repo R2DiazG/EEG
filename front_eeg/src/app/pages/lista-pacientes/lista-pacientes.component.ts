@@ -19,6 +19,7 @@ export class ListaPacientesComponent implements OnInit {
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
   idUsuarioActual!: number;
+  idRol!: number; // Agregado para almacenar el rol del usuario
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -26,7 +27,7 @@ export class ListaPacientesComponent implements OnInit {
     private pacienteService: PacienteService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private eegService: EegService, // Inyecta el EegService aquí
+    private eegService: EegService, 
     private authService: AuthService // Inyecta el AuthService aquí
   ) { }
 
@@ -35,10 +36,8 @@ export class ListaPacientesComponent implements OnInit {
       next: (user) => {
         if (user && user.id_usuario) {
           this.idUsuarioActual = user.id_usuario;
-          // Llama a loadUsers solo si idUsuarioActual es un número
-          if (this.idUsuarioActual !== null) {
-            this.loadUsers(this.idUsuarioActual);
-          }
+          this.idRol = user.id_rol; // Almacena el id_rol obtenido
+          this.loadUsers();
         } else {
           console.error('ID de usuario no disponible. Redirigiendo a la página de inicio de sesión.');
           this.router.navigate(['/login']);
@@ -55,36 +54,15 @@ export class ListaPacientesComponent implements OnInit {
     });
   }
 
-  /*
-  loadUsers(idUsuario: number) {
-    // Asegúrate de que idUsuario es un número antes de continuar
-    if (typeof idUsuario === 'number') {
-      // Realiza la solicitud con el idUsuario válido
-      this.pacienteService.obtenerPacientesPorUsuario(idUsuario).subscribe({
+  loadUsers() {
+    if (this.idRol === 2) {
+      this.pacienteService.obtenerPacientesPorUsuario(this.idUsuarioActual).subscribe({
         next: (data) => {
-          this.dataSource.data = data;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('Error al recuperar pacientes:', error);
-        }
-      });
-    } else {
-      console.error('loadUsers fue llamado sin un idUsuario válido.');
-    }
-  }
-  */
-
-  loadUsers(idUsuario: number) {
-    if (typeof idUsuario === 'number') {
-      this.pacienteService.obtenerPacientesPorUsuario(idUsuario).subscribe({
-        next: (data) => {
-          // Asegurándonos de que cada paciente tenga la propiedad isDeleteInitiated
           this.dataSource.data = data.map(patient => ({
             ...patient,
             isConfirm: false,
             isDeleteInitiated: false,
-            isDeleted: false, // Asumiendo que también quieres tener esta propiedad
+            isDeleted: false,
           }));
           this.cdr.detectChanges();
         },
@@ -92,8 +70,24 @@ export class ListaPacientesComponent implements OnInit {
           console.error('Error al recuperar pacientes:', error);
         }
       });
+    } else if (this.idRol === 1) {
+      this.pacienteService.obtenerPacientesAgrupadosPorPsicologo().subscribe({
+        next: (data) => {
+          const flattenedData = data.reduce((acc: any, group: { pacientes: any; }) => [...acc, ...group.pacientes], []);
+          this.dataSource.data = flattenedData.map((patient: any) => ({
+            ...patient,
+            isConfirm: false,
+            isDeleteInitiated: false,
+            isDeleted: false,
+          }));
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al recuperar pacientes agrupados:', error);
+        }
+      });
     } else {
-      console.error('loadUsers fue llamado sin un idUsuario válido.');
+      console.error('ID de rol no válido o no definido.');
     }
   }
 
@@ -165,7 +159,7 @@ onDeletePatient(patient: any) {
         console.log('Paciente eliminado:', resp);
         patient.isDeleted = true;
         patient.isDeleteInitiated = false;
-        this.loadUsers(this.idUsuarioActual);
+        this.loadUsers();
         this.cdr.detectChanges();
       },
       error: (error) => {

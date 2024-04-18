@@ -832,14 +832,14 @@ def obtener_pacientes_agrupados_por_psicologo():
         resultado = []
         for usuario in usuarios:
             pacientes_list = []
-            pacientes = Paciente.query.filter_by(id_usuario=usuario.id).all()
+            pacientes = Paciente.query.filter_by(id_usuario=usuario.id_usuario).all()
             for paciente in pacientes:
                 edad = (datetime.today().year - paciente.fecha_nacimiento.year - ((datetime.today().month, datetime.today().day) < (paciente.fecha_nacimiento.month, paciente.fecha_nacimiento.day)))
-                sesiones = Sesion.query.filter_by(id_paciente=paciente.id).order_by(Sesion.fecha_consulta.desc()).all()
+                sesiones = Sesion.query.filter_by(id_paciente=paciente.id_paciente).order_by(Sesion.fecha_consulta.desc()).all()
                 numero_de_sesiones = len(sesiones)
                 notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
                 pacientes_list.append({
-                    'id_paciente': paciente.id,
+                    'id_paciente': paciente.id_paciente,
                     'nombre': f"{paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno}",
                     'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
                     'edad': edad,
