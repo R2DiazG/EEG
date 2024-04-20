@@ -7,9 +7,9 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private loginUrl = 'http://127.0.0.1:5000/login'; // URL a tu endpoint de login
-  private forgotPasswordUrl = 'http://127.0.0.1:5000/solicitar_cambio_contraseña'; // URL a tu endpoint para solicitar cambio de contraseña
-  private currentUserUrl = 'http://127.0.0.1:5000/usuario/actual'; // URL a tu endpoint para obtener el usuario actual
+  private loginUrl = 'http://127.0.0.1:5000/login';
+  private forgotPasswordUrl = 'http://127.0.0.1:5000/solicitar_cambio_contraseña';
+  private currentUserUrl = 'http://127.0.0.1:5000/usuario/actual';
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class AuthService {
         next: (response) => {
           if (response && response.access_token) {
             localStorage.setItem('access_token', response.access_token);
-            observer.next(response); // Propaga la respuesta a cualquier suscriptor
+            observer.next(response);
             observer.complete();
           } else {
             observer.error('No se recibió el token');
@@ -45,7 +45,6 @@ export class AuthService {
     return this.http.get<any>(this.currentUserUrl, httpOptions)
       .pipe(
         map(response => {
-          // Aquí puedes procesar la respuesta y devolver lo que necesitas
           return response;
         }),
         catchError(error => {
@@ -56,7 +55,6 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('access_token'); // Asumiendo que el token se guarda con la clave 'access_token'
-    // Aquí deberías invalidar la sesión del lado del servidor si es necesario.
+    localStorage.removeItem('access_token');
   }
 }
