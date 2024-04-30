@@ -1295,6 +1295,7 @@ def crear_nueva_sesion():
         db.session.add(nueva_sesion)
         db.session.flush()  # For getting the ID of the new session before committing
         logging.info('Nueva sesión creada y añadida a la base de datos')
+        # Helper function to rename channels
         def renombrar_canales(ch_names):
             nuevos_nombres = []
             for ch in ch_names:
@@ -1388,12 +1389,75 @@ def crear_nueva_sesion():
                     'frequencies': frequencies.tolist()
                 })
             data_stft_json = json.dumps(data_stft)  # Data of the STFT in JSON format
+            # Area-band processing step
+            # Define areas and frequency bands
+            areas = {
+                'Frontal izq': ['Fp1', 'F3', 'F7'],
+                'Frontal der': ['Fp2', 'F4', 'F8'],
+                'Frontal centro': ['Fz'],
+                'Central': ['Cz', 'C3', 'C4'],
+                'Temporal izq': ['T3', 'T5'],
+                'Temporal der': ['T4', 'T6'],
+                'Parietal izq': ['P3'],
+                'Parietal der': ['P4'],
+                'Parietal centro': ['Pz'],
+                'Occipital izq': ['O1'],
+                'Occipital der': ['O2']
+            }
+            bandas = {
+                'Delta': (0.5, 4),
+                'Theta': (4, 8),
+                'Alpha': (8, 12),
+                'Beta': (12, 30),
+                'Gamma': (30, 100)
+            }
+            area_band_psds = {}
+            area_band_power_rel = {}
+            for area, channels in areas.items():
+                indices = [ch_names.index(ch) for ch in channels if ch in ch_names]
+                area_band_psds[area] = {}
+                area_band_power_rel[area] = {}
+                for banda, (fmin, fmax) in bandas.items():
+                    idx_banda = np.where((freqs >= fmin) & (freqs < fmax))[0]
+                    if len(indices) == 1:
+                        band_power = psds_db[indices[0], idx_banda]
+                    else:
+                        band_power = np.mean(psds_db[indices][:, idx_banda], axis=0)
+                    total_power = np.sum(band_power)
+                    power_rel = band_power / total_power
+                    area_band_psds[area][banda] = band_power
+                    area_band_power_rel[area][banda] = power_rel
+            # Prepare area-band data for frontend
+            data_for_highcharts_areas_bandas = []
+            data_for_highcharts_areas_bandas_power_rel = []
+            for area, band_psds in area_band_psds.items():
+                for banda, psd in band_psds.items():
+                    data_for_highcharts_areas_bandas.append({
+                        'area': area,
+                        'banda': banda,
+                        'data': psd.tolist(),
+                        'pointStart': freqs[idx_banda[0]],
+                        'pointInterval': np.diff(freqs[idx_banda]).mean()
+                    })
+            for area, band_power_rel in area_band_power_rel.items():
+                for banda, power_rel in band_power_rel.items():
+                    data_for_highcharts_areas_bandas_power_rel.append({
+                        'area': area,
+                        'banda': banda,
+                        'data': power_rel.tolist(),
+                        'pointStart': freqs[idx_banda[0]],
+                        'pointInterval': np.diff(freqs[idx_banda]).mean()
+                    })
+            data_area_bandas_psd_json = json.dumps(data_for_highcharts_areas_bandas)
+            data_area_bandas_pr_json = json.dumps(data_for_highcharts_areas_bandas_power_rel)
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
                 fecha_hora_procesado=datetime.now(timezone.utc),
                 data_normalized=datos_procesados_json,
                 data_psd=datos_psd_json,  # Here we store the PSD data
-                data_stft=data_stft_json  # Here we store the STFT data
+                data_stft=data_stft_json,  # Here we store the STFT data
+                data_area_bandas_psd=data_area_bandas_psd_json, # Here we store the data of the PSD by area and band
+                data_area_bandas_pr=data_area_bandas_pr_json # Here we store the data of the relative power by area and band
             )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')
