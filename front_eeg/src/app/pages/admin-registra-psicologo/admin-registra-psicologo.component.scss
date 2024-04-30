@@ -102,8 +102,8 @@ p{
     .guardar {
       color: $bg !important;
       &:hover {
-      background-color: $green;
-      color: white;
+      background-color: $green !important;
+      color: white !important;
       .text { color: white; }
     }
   }

@@ -71,7 +71,7 @@ $blue: #2492FF;
       align-items: baseline;
     }
 
-    .regresar, .add, .button-agregar{
+    .regresar, .add, .button-agregar, .save{
       display: flex;
       align-items: center;
       justify-content: center;
@@ -91,11 +91,20 @@ $blue: #2492FF;
         .text { color: white; }
       }
     }
+    .save {
+      color: $bg;
+      &:hover {
+      background-color: $green;
+      color: white;
+      .text { color: white; }
+    }
+  }
       .add {
-        color: $bg;
+        color: white;
+        background-color: $blue !important;
         margin-right: 10px;
         &:hover {
-        background-color: $blue;
+        background-color: darken($blue, 10%);
         color: white;
         .text { color: white; }
       }

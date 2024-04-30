@@ -76,6 +76,28 @@ ng-select {
     color: $bg;
     margin-right: 10px;
     &:hover {
+    background-color: $green;
+    color: white;
+    .text { color: white; }
+  }
+}
+
+.less{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.5rem;
+  background-color: transparent;
+  margin: 0.5rem;
+  cursor: pointer;
+  //margin-bottom: 20px;
+}
+  .less {
+    color: $bg;
+    margin-right: 10px;
+    &:hover {
     background-color: $blue;
     color: white;
     .text { color: white; }

@@ -45,7 +45,7 @@
               <!-- Mostrar las Notas del Psicólogo -->
               <div *ngIf="notas_psicologo && !isAddingNote" class="nota-display">
                 <p>Observaciones de la sesión: <strong>{{ notas_psicologo }}</strong></p>
-                <button class="add" (click)="iniciarEdicion()" title="Editar observaciones de la sesión">
+                <button class="regresar" (click)="iniciarEdicion()" title="Editar observaciones de la sesión">
                   <i class="fas fa-pencil" aria-hidden="true"></i>
                 </button>
               </div>
@@ -55,12 +55,12 @@
                 <textarea class="nota-textarea" [(ngModel)]="notasPsicologoEdit" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
                 <div class="editor-actions">
                   <!-- Botón para Guardar -->
-                  <button class="add" (click)="guardarNotasPsicologo()" title="Guardar cambios">
+                  <button class="save" (click)="guardarNotasPsicologo()" title="Guardar cambios">
                     <i class="fas fa-save" aria-hidden="true"></i>
                   </button>
                   <!-- Botón para Cancelar -->
-                  <button class="add" (click)="cancelarEdicion()" title="Cancelar cambios">
-                    <i class="fas fa-times" aria-hidden="true"></i>
+                  <button class="regresar" (click)="cancelarEdicion()" title="Cancelar cambios">
+                    <i class="fas fa-trash" aria-hidden="true"></i>
                   </button>
                 </div>
               </div>
