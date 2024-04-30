@@ -1414,7 +1414,7 @@ def crear_nueva_sesion():
             area_band_psds = {}
             area_band_power_rel = {}
             for area, channels in areas.items():
-                indices = [ch_names.index(ch) for ch in channels if ch in ch_names]
+                indices = [raw.ch_names.index(ch) for ch in channels if ch in raw.ch_names]
                 area_band_psds[area] = {}
                 area_band_power_rel[area] = {}
                 for banda, (fmin, fmax) in bandas.items():

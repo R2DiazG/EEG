@@ -37,6 +37,7 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
+import { AreaBandVisualizationComponent } from './pages/area-band-visualization/area-band-visualization.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicolog
     CrearMedicamentoDialogComponent,
     DropMedicamentosDialogComponent,
     UsuarioComponent,
-    AdminRegistraPsicologoComponent
+    AdminRegistraPsicologoComponent,
+    AreaBandVisualizationComponent
   ],
   imports: [
     BrowserModule,
