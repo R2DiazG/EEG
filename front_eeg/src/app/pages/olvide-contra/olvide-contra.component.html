@@ -13,7 +13,7 @@
   <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
     <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="email">Olvidaste la contraseña</label>
+        <label class="email" for="email">Olvidaste la contraseña</label>
         <input type="email" id="email" class="form-control" formControlName="email" placeholder="usuario&#64;correo.com">
       </div>
       

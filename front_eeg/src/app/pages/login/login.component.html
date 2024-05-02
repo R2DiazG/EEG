@@ -12,7 +12,7 @@
   <div class="login-container">
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="username">Usuario</label>
+        <label class="titulo" for="username">Usuario</label>
         <input type="username" id="username" class="form-control" formControlName="username" placeholder="Ingrese su nombre de usuario">
         <!-- Utiliza 'get' para acceder de forma segura a los controles del formulario -->
         <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="alert alert-danger">
@@ -31,7 +31,7 @@
       </div> -->
 
       <div class="form-group">
-        <label for="contraseña">Contraseña</label>
+        <label class="titulo" for="contraseña">Contraseña</label>
         <div class="input-group">
           <input [type]="showPassword ? 'text' : 'password'" id="contraseña" class="form-control password" formControlName="contraseña" placeholder="Ingrese su contraseña">
           <button type="button" class="toggle-password" (click)="toggleShowPassword()">

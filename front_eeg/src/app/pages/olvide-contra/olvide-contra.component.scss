@@ -1,4 +1,9 @@
 $udem: #FFF500;
+$form-color: #333;
+$button-icon-color: #777;
+$input-border-color: #ddd;
+$input-background-color: white;
+$input-placeholder-color: #ccc;
 .container {
     background-image: url("../../../assets/img/fondo.png");
     display: flex;
@@ -15,10 +20,10 @@ $udem: #FFF500;
     }
   }
   
-  label {
-    padding-left: 1rem;
-    margin: 10px;
-    font-size: small;
+  .email {
+    //padding-left: 1rem;
+    margin-bottom: 10px;
+    //font-size: small;
   }
   
   .right {
@@ -29,25 +34,26 @@ $udem: #FFF500;
         background-color: $udem;
         border: none;
         border-radius: 4px;
-        font-size: small;
+        font-size: medium;
         cursor: pointer;
         padding: 10px 0;
         margin-top: 10px;
-        color: #333;
+        color: black;
+        text-decoration: underline;
       }
 
   }
   
   .left {
     display: flex;
-    align-items: center; /* Alinea los elementos verticalmente */
-    width: 80%;
+    align-items: center; // Align items vertically inside the .left div
+    width: 75%;
     padding: 0;
   }
   
   .header {
     display: flex;
-    align-items: center; // Keep this if you want to align items in the center vertically
+    align-items: center; 
     width: 100%;
     padding: 0;
     background-color: $udem;
@@ -58,6 +64,7 @@ $udem: #FFF500;
     img {
         width: auto;
         height: 58px;
+        margin-top: 10px;
     }
   
     @media (max-width: 768px) {
@@ -72,7 +79,7 @@ $udem: #FFF500;
     min-width: 20rem;
     padding: 1.25rem;
     border-radius: 5px;
-    background-color: #333;
+    background-color: $form-color;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: white; // As the text is white
     position: relative; // For absolute positioning of children
@@ -86,7 +93,7 @@ $udem: #FFF500;
     form {
         display: flex;
         flex-direction: column;
-        width: 95%;
+        width: 90%;
   
         @media (max-width: 768px) {
             align-items: center;
@@ -97,9 +104,9 @@ $udem: #FFF500;
         margin-bottom: 15px;
         label {
             display: block;
-            margin-bottom: 5px;
+            //margin-bottom: 5px;
         }
-        input {
+        input{
             width: 95%;
             padding: 10px;
             border: 1px solid #ddd;
