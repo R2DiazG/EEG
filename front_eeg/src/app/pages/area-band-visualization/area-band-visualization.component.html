@@ -24,7 +24,7 @@
         <div id="gammaChart" [highcharts]="charts['Gamma']"></div>
     </body> -->
 <!-- Angular Template for EEG Data Visualization -->
-<select [(ngModel)]="selectedArea" (change)="onAreaChange($event)">
+<!-- <select [(ngModel)]="selectedArea" (change)="onAreaChange($event)">
     <option value="Frontal izq">Frontal izq</option>
     <option value="Frontal der">Frontal der</option>
     <option value="Frontal centro">Frontal centro</option>
@@ -43,4 +43,26 @@
         [Highcharts]="highcharts"
         [options]="charts[chartKey]">
     </highcharts-chart>
-</div>
+</div> -->
+<!-- area-band-visualization.component.html -->
+<div class="chart-container">
+    <select [(ngModel)]="selectedArea" (change)="loadEegData(id_sesion)">
+      <option value="Frontal izq">Frontal izq</option>
+      <option value="Frontal der">Frontal der</option>
+      <option value="Frontal centro">Frontal centro</option>
+      <option value="Central">Central</option>
+      <option value="Temporal izq">Temporal izq</option>
+      <option value="Temporal der">Temporal der</option>
+      <option value="Parietal izq">Parietal izq</option>
+      <option value="Parietal der">Parietal der</option>
+      <option value="Parietal centro">Parietal centro</option>
+      <option value="Occipital izq">Occipital izq</option>
+      <option value="Occipital der">Occipital der</option>
+    </select>
+    <div id="deltaChart" class="chart"></div>
+    <div id="thetaChart" class="chart"></div>
+    <div id="alphaChart" class="chart"></div>
+    <div id="betaChart" class="chart"></div>
+    <div id="gammaChart" class="chart full-width"></div>
+  </div>
+  

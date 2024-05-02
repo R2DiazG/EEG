@@ -25,6 +25,14 @@ export class EegService {
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
+  obtenerDataAreaBandasPSD(idSesion: number): Observable<any> {
+    const url = `${this.apiUrl}/${idSesion}/eegs`;
+    return this.http.get<any>(url, { headers: this.getHeaders() })
+      .pipe(
+        map(response => response.normalized_eegs.map((eeg: { data_area_bandas_psd: string; }) => JSON.parse(eeg.data_area_bandas_psd)))
+      );
+  }
+
   crearNuevaSesion(datosSesion: FormData): Observable<any> {
     // Nota: Usamos FormData para manejar la carga de archivos.
     return this.http.post(`${this.apiUrl}/nueva`, datosSesion, {

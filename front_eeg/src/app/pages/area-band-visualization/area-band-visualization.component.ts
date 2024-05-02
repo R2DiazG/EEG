@@ -221,7 +221,7 @@ export class AreaBandVisualizationComponent implements OnDestroy {
 
 // Define a type for the band names
 type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';*/
-import { Component, Inject, Input, OnDestroy, PLATFORM_ID } from '@angular/core';
+/*import { Component, Inject, Input, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as Highcharts from 'highcharts';
 import { ActivatedRoute } from '@angular/router';
@@ -332,4 +332,50 @@ export class AreaBandVisualizationComponent implements OnDestroy {
 
 // Define a type for the band names
 type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';
+*/
+import { Component, OnInit, Input } from '@angular/core';
+import { EegService } from '../../services/sesiones/eeg.service';
+import * as Highcharts from 'highcharts';
+
+@Component({
+  selector: 'app-area-band-visualization',
+  templateUrl: './area-band-visualization.component.html',
+  styleUrls: ['./area-band-visualization.component.scss']
+})
+export class AreaBandVisualizationComponent implements OnInit {
+  selectedArea: string = 'Frontal izq';
+  @Input() id_sesion!: number;
+
+  constructor(private eegService: EegService) {}
+
+  ngOnInit(): void {
+    this.loadEegData(this.id_sesion);
+  }
+
+  loadEegData(id_sesion: number): void {
+    this.eegService.obtenerDataAreaBandasPSD(id_sesion).subscribe((dataAreasBandasPsd: any[]) => {
+      dataAreasBandasPsd.forEach((data: any) => {
+        console.log('Data AREA BANDAS PSD:', data);
+        this.createCharts(data);
+      });
+    });
+  }
+
+  createCharts(datosPorBanda: { [x: string]: any; }): void {
+    // Clear existing charts if needed
+    Highcharts.chart('deltaChart', this.createChartConfig('Delta', datosPorBanda['Delta']));
+    Highcharts.chart('thetaChart', this.createChartConfig('Theta', datosPorBanda['Theta']));
+    Highcharts.chart('alphaChart', this.createChartConfig('Alpha', datosPorBanda['Alpha']));
+    Highcharts.chart('betaChart', this.createChartConfig('Beta', datosPorBanda['Beta']));
+    Highcharts.chart('gammaChart', this.createChartConfig('Gamma', datosPorBanda['Gamma']));
+  }
+
+  createChartConfig(title: string, series: any[]): any {
+    return {
+      chart: { type: 'line' },
+      title: { text: 'PSD de la Banda ' + title },
+      series: [{ name: title, data: series.map((item: { data: any; }) => item.data) }]
+    };
+  }
+}
 

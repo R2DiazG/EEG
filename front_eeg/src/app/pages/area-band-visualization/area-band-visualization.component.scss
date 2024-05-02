@@ -1,26 +1,48 @@
+// .chart-container {
+//     display: grid;
+//     grid-template-columns: repeat(2, 1fr); // two columns of equal width
+//     grid-template-rows: auto auto auto; // three rows
+//     grid-gap: 10px; // space between charts
+//   }
+  
+//   highcharts-chart {
+//     width: 100%; // ensures charts fill the cell
+//     height: 400px; // fixed height for all charts
+//   }
+  
+//   .chart-container select {
+//     grid-column: 1 / -1; // select dropdown spans all columns
+//   }
+  
+//   highcharts-chart:nth-child(2),
+//   highcharts-chart:nth-child(3),
+//   highcharts-chart:nth-child(4) {
+//     grid-column: span 1; // these charts take up only one column
+//   }
+  
+//   highcharts-chart:nth-child(5) {
+//     grid-column: 1 / -1; // the fifth chart spans all columns
+//   }
+
+/* area-band-visualization.component.scss */
 .chart-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); // two columns of equal width
-    grid-template-rows: auto auto auto; // three rows
-    grid-gap: 10px; // space between charts
-  }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; // Distributes space between charts
+    align-items: flex-start; // Aligns charts to the top of the container
   
-  highcharts-chart {
-    width: 100%; // ensures charts fill the cell
-    height: 400px; // fixed height for all charts
-  }
+    select {
+      width: 100%;
+      margin-bottom: 20px; // Spacing below the dropdown
+    }
   
-  .chart-container select {
-    grid-column: 1 / -1; // select dropdown spans all columns
-  }
+    .chart {
+      width: 49%; // Makes two charts fit in one row
+      height: 400px; // Fixed height for all charts
   
-  highcharts-chart:nth-child(2),
-  highcharts-chart:nth-child(3),
-  highcharts-chart:nth-child(4) {
-    grid-column: span 1; // these charts take up only one column
-  }
-  
-  highcharts-chart:nth-child(5) {
-    grid-column: 1 / -1; // the fifth chart spans all columns
+      &:nth-last-child(1) { // Targets the last chart to take full width
+        width: 100%;
+      }
+    }
   }
   
