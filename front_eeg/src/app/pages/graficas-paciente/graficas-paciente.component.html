@@ -110,9 +110,6 @@
     </div>
     <div *ngIf="activeGraphTab === 'psd-band'">
         <div class="space"></div>
-        <div class="seccion">
-        <div id="spectrogramDiv" style="width:100%; height:600px;"></div>
-        </div>
         <app-area-band-visualization [id_sesion]="idSesion"></app-area-band-visualization>
     </div>
     <div *ngIf="activeGraphTab === 'pr-band'">

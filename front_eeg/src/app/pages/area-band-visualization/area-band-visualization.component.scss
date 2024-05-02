@@ -1,9 +1,26 @@
-.chart {
-    width: 49%;
-    float: left;
-}
-
-#gammaChart {
-    width: 100%;
-    clear: both;
-}
+.chart-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // two columns of equal width
+    grid-template-rows: auto auto auto; // three rows
+    grid-gap: 10px; // space between charts
+  }
+  
+  highcharts-chart {
+    width: 100%; // ensures charts fill the cell
+    height: 400px; // fixed height for all charts
+  }
+  
+  .chart-container select {
+    grid-column: 1 / -1; // select dropdown spans all columns
+  }
+  
+  highcharts-chart:nth-child(2),
+  highcharts-chart:nth-child(3),
+  highcharts-chart:nth-child(4) {
+    grid-column: span 1; // these charts take up only one column
+  }
+  
+  highcharts-chart:nth-child(5) {
+    grid-column: 1 / -1; // the fifth chart spans all columns
+  }
+  

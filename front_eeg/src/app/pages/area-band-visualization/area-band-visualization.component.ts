@@ -114,7 +114,7 @@ export class AreaBandVisualizationComponent {
     this.loadData(this.selectedArea);
   }
 }*/
-import { HttpClient } from '@angular/common/http';
+/*import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as Highcharts from 'highcharts';
@@ -220,4 +220,116 @@ export class AreaBandVisualizationComponent implements OnDestroy {
 }
 
 // Define a type for the band names
+type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';*/
+import { Component, Inject, Input, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import * as Highcharts from 'highcharts';
+import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
+import { EegService } from '../../services/sesiones/eeg.service';
+import { PacienteService } from '../../services/pacientes/paciente.service';
+
+@Component({
+  selector: 'app-area-band-visualization',
+  templateUrl: './area-band-visualization.component.html',
+  styleUrls: ['./area-band-visualization.component.scss']
+})
+export class AreaBandVisualizationComponent implements OnDestroy {
+  @Input() id_sesion!: number;
+  public selectedArea: string = 'Frontal izq';
+  public highcharts = Highcharts;
+  public charts: { [key in BandType]: Highcharts.Options } = {
+    Delta: {},
+    Theta: {},
+    Alpha: {},
+    Beta: {},
+    Gamma: {}
+  };
+  public chartKeys: BandType[] = ['Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'];
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private route: ActivatedRoute,
+    private EegService: EegService,
+    private pacienteService: PacienteService
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      // Dynamically import the exporting module only on the client side
+      import('highcharts/modules/exporting').then(module => {
+        module.default(Highcharts);
+      });
+    }
+  }
+
+  ngOnInit(): void {
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        const idSesion = +params.get('id_sesion')!;
+        if (idSesion) {
+          return this.EegService.obtenerEEGPorSesion(idSesion);
+        } else {
+          throw new Error('ID de sesión no encontrado');
+        }
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.loadData(this.selectedArea);
+    }, error => {
+      console.error('Error loading EEG data:', error);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadData(area: string): void {
+    this.EegService.obtenerEEGPorSesion(this.id_sesion).subscribe((data: any) => {
+      const datosPorBanda: { [key in BandType]: any[] } = {
+          Delta: [],
+          Theta: [],
+          Alpha: [],
+          Beta: [],
+          Gamma: []
+      };
+      data.data_area_bandas_psd.forEach((item: { area: string; banda: BandType; canal: any; data: any; }) => {
+        if (item.area === area) {
+          datosPorBanda[item.banda].push({
+            name: item.canal,
+            data: item.data
+          });
+        }
+      });
+      this.chartKeys.forEach(banda => {
+        this.charts[banda] = this.createChartConfig(banda, datosPorBanda[banda]);
+      });
+    });
+  }
+
+  createChartConfig(title: BandType, series: Highcharts.SeriesOptionsType[]): Highcharts.Options {
+    return {
+      chart: {
+        type: 'column',
+        zooming: {
+          type: 'x'
+        },
+      },
+      title: {
+        text: 'Potencia Relativa de la Banda ' + title
+      },
+      series: series
+    };
+  }
+
+  onAreaChange(event: any): void {
+    this.selectedArea = event.target.value;
+    this.loadData(this.selectedArea);
+  }
+}
+
+// Define a type for the band names
 type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';
+
