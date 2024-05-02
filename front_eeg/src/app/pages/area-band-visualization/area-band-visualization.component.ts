@@ -1,7 +1,12 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+/*import { HttpClient } from '@angular/common/http';
+import { Component, Input } from '@angular/core';
 import { EegService } from '../../services/sesiones/eeg.service';
+import { PacienteService } from '../../services/pacientes/paciente.service';
 import { ActivatedRoute } from '@angular/router';
+import * as Highcharts from 'highcharts';
+import { Observable } from 'rxjs';
+import Exporting from 'highcharts/modules/exporting';
+Exporting(Highcharts);
 
 @Component({
   selector: 'app-area-band-visualization',
@@ -12,17 +17,52 @@ export class AreaBandVisualizationComponent {
   public selectedArea: string = 'Frontal izq';
   public highcharts = Highcharts;
   public charts: { [key: string]: Highcharts.ChartOptions } = {};
+  @Input() id_sesion!: number;
+  id_paciente?: number;
+  paciente: any;
 
-  constructor(private http: HttpClient, private eegService: EegService, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private EegService: EegService, private route: ActivatedRoute, private pacienteService: PacienteService) {}
 
   ngOnInit() {
     this.loadData(this.selectedArea);
+    console.log(`ID de la sesion recibido: ${this.id_sesion}`);
+  }
+
+  cargarDetallesPaciente(): void {
+    const id_sesion = this.route.snapshot.paramMap.get('id_sesion');
+    console.log(this.route.params)
+    if(id_sesion) {
+      this.obtenerPacienteEnBaseASesion(+id_sesion).subscribe({
+        next: (id_paciente: any) => {
+          console.log('Id del paciente:', id_paciente);
+          this.pacienteService.obtenerDetallesPaciente(id_paciente).subscribe({
+            next: (data: any) => {
+              console.log('Detalles del paciente:', data);
+              this.paciente = data;
+            },
+    
+            error: (error: any) => {
+              console.error('Error al obtener los detalles del paciente', error);
+            }
+          });
+        },
+        error: (error: any) => {
+          console.error('Error al obtener los detalles del paciente', error);
+        }
+      });
+      
+    } else {
+      console.error('ID de paciente no encontrado en la ruta');
+    }
+  }
+
+  obtenerPacienteEnBaseASesion(idSesion: number): Observable<any> {
+    return this.EegService.obtener_paciente_en_base_a_sesion(idSesion);
   }
 
   loadData(area: string) {
     this.route.paramMap.subscribe(params => {
-        const sessionId = +params.get('sessionId'); // Assume session ID is passed as a route parameter
-        this.eegService.obtenerEEGPorSesion(sessionId).subscribe((data: any) => {
+        this.EegService.obtenerEEGPorSesion(this.id_sesion).subscribe((data: any) => {
             const datosPorBanda = {
                 'Delta': [],
                 'Theta': [],
@@ -47,16 +87,137 @@ export class AreaBandVisualizationComponent {
     });
 }
 
-  createChartConfig(title: string, series: any[]): Highcharts.ChartOptions {
+ /*createChartConfig(title: string, series: any[]): Highcharts.ChartOptions {
     return {
-      chart: { type: 'column' },
       title: { text: 'Potencia Relativa de la Banda ' + title },
       series: series
     };
   }
+  
+  createChartConfig(title: string, series: Highcharts.SeriesOptionsType[]): Highcharts.Options {
+    return {
+        chart: {
+            type: 'column',
+            zooming: {
+              type: 'x'
+            },
+        },
+        title: {
+            text: 'Potencia Relativa de la Banda ' + title
+        },
+        series: series
+    };
+}
 
   onAreaChange(event: any) {
     this.selectedArea = event.target.value;
     this.loadData(this.selectedArea);
   }
+}*/
+import { HttpClient } from '@angular/common/http';
+import { Component, Input, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import * as Highcharts from 'highcharts';
+import Exporting from 'highcharts/modules/exporting';
+import { Observable, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
+import { EegService } from '../../services/sesiones/eeg.service';
+import { PacienteService } from '../../services/pacientes/paciente.service';
+
+Exporting(Highcharts); // Enables exporting features for Highcharts
+
+@Component({
+  selector: 'app-area-band-visualization',
+  templateUrl: './area-band-visualization.component.html',
+  styleUrls: ['./area-band-visualization.component.scss']
+})
+export class AreaBandVisualizationComponent implements OnDestroy {
+  @Input() id_sesion!: number;
+  public selectedArea: string = 'Frontal izq';
+  public highcharts = Highcharts;
+  public charts: { [key in BandType]: Highcharts.Options } = {
+    Delta: {},
+    Theta: {},
+    Alpha: {},
+    Beta: {},
+    Gamma: {}
+  };
+  private destroy$ = new Subject<void>();
+  id_paciente?: number;
+  paciente: any;
+
+  constructor(
+    private route: ActivatedRoute,
+    private EegService: EegService,
+    private pacienteService: PacienteService
+  ) {}
+
+  ngOnInit(): void {
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        const idSesion = +params.get('id_sesion')!;
+        if (idSesion) {
+          return this.EegService.obtenerEEGPorSesion(idSesion);
+        } else {
+          throw new Error('ID de sesión no encontrado');
+        }
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(data => {
+      this.loadData(this.selectedArea);
+    }, error => {
+      console.error('Error loading EEG data:', error);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadData(area: string): void {
+    this.EegService.obtenerEEGPorSesion(this.id_sesion).subscribe((data: any) => {
+      const datosPorBanda: { [key in BandType]: any[] } = {
+          Delta: [],
+          Theta: [],
+          Alpha: [],
+          Beta: [],
+          Gamma: []
+      };
+      data.data_area_bandas_psd.forEach((item: { area: string; banda: BandType; canal: any; data: any; }) => {
+        if (item.area === area) {
+          datosPorBanda[item.banda].push({
+            name: item.canal,
+            data: item.data
+          });
+        }
+      });
+      Object.keys(datosPorBanda).forEach(banda => {
+        this.charts[banda as BandType] = this.createChartConfig(banda as BandType, datosPorBanda[banda as BandType]);
+      });
+    });
+  }
+
+  createChartConfig(title: BandType, series: Highcharts.SeriesOptionsType[]): Highcharts.Options {
+    return {
+      chart: {
+        type: 'column',
+        zooming: {
+          type: 'x'
+        },
+      },
+      title: {
+        text: 'Potencia Relativa de la Banda ' + title
+      },
+      series: series
+    };
+  }
+
+  onAreaChange(event: any): void {
+    this.selectedArea = event.target.value;
+    this.loadData(this.selectedArea);
+  }
 }
+
+// Define a type for the band names
+type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';

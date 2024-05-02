@@ -14,7 +14,7 @@
       </button>
     </div>
   </div>
-  <app-info-paciente  [id_sesion]="idSesion"></app-info-paciente>
+  <app-info-paciente [id_sesion]="idSesion"></app-info-paciente>
   <div class="search">
     <div class="fecha-consulta-seccion">
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
@@ -113,6 +113,7 @@
         <div class="seccion">
         <div id="spectrogramDiv" style="width:100%; height:600px;"></div>
         </div>
+        <app-area-band-visualization [id_sesion]="idSesion"></app-area-band-visualization>
     </div>
     <div *ngIf="activeGraphTab === 'pr-band'">
       <div class="space"></div>
