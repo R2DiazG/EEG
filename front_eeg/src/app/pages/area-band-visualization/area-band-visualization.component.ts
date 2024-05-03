@@ -333,6 +333,7 @@ export class AreaBandVisualizationComponent implements OnDestroy {
 // Define a type for the band names
 type BandType = 'Delta' | 'Theta' | 'Alpha' | 'Beta' | 'Gamma';
 */
+/*
 import { Component, OnInit, Input } from '@angular/core';
 import { EegService } from '../../services/sesiones/eeg.service';
 import * as Highcharts from 'highcharts';
@@ -378,4 +379,92 @@ export class AreaBandVisualizationComponent implements OnInit {
     };
   }
 }
+*/
+import { Component, OnInit, Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { EegService } from '../../services/sesiones/eeg.service';
+import * as Highcharts from 'highcharts';
+import Exporting from 'highcharts/modules/exporting';
 
+// Define the type for the EEG data bands
+interface EEGDataBand {
+  area: string;
+  banda: string;
+  data: number[];
+  pointStart: number;
+  pointInterval: number;
+}
+
+// Enable Highcharts exporting module
+Exporting(Highcharts);
+
+@Component({
+  selector: 'app-area-band-visualization',
+  templateUrl: './area-band-visualization.component.html',
+  styleUrls: ['./area-band-visualization.component.scss']
+})
+export class AreaBandVisualizationComponent implements OnInit, AfterViewInit {
+  @Input() id_sesion!: number;
+  public selectedArea: string = 'Frontal izq';
+  public readyToRender: boolean = false; // Controls rendering of Highcharts
+
+  constructor(private eegService: EegService, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.readyToRender = false;
+  }
+
+  ngAfterViewInit(): void {
+    this.readyToRender = true;
+    this.cdr.detectChanges(); // Manually trigger change detection
+    this.loadEegData(this.id_sesion);
+  }
+
+  loadEegData(id_sesion: number): void {
+    this.eegService.obtenerDataAreaBandasPSD(id_sesion).subscribe(dataAreasBandasPsd => {
+      const groupedData = this.groupDataByBand(dataAreasBandasPsd);
+      Object.keys(groupedData).forEach(band => {
+        this.createChart(band, groupedData[band]);
+      });
+    });
+  }
+
+  groupDataByBand(data: EEGDataBand[]): Record<string, EEGDataBand[]> {
+    return data.reduce((acc, item) => {
+      if (!acc[item.banda]) {
+        acc[item.banda] = [];
+      }
+      acc[item.banda].push(item);
+      return acc;
+    }, {} as Record<string, EEGDataBand[]>);
+  }
+
+  createChart(band: string, data: EEGDataBand[]): void {
+    const chartId = `${band.toLowerCase()}Chart`;
+    if (document.getElementById(chartId)) { // Ensure the element exists in the DOM
+      Highcharts.chart(chartId, this.createChartConfig(band, data));
+    }
+  }
+
+  createChartConfig(title: string, data: EEGDataBand[]): Highcharts.Options {
+    return {
+      chart: {
+        type: 'line' // Specify the type of chart
+      },
+      title: {
+        text: `Potencia Relativa de la Banda ${title}`
+      },
+      series: [{
+        type: 'line', // Explicitly define the series type
+        name: title,
+        data: data.map(item => item.data),
+        pointStart: data[0]?.pointStart,
+        pointInterval: data[0]?.pointInterval
+      }] as Highcharts.SeriesOptionsType[] // Cast to SeriesOptionsType if necessary
+    };
+  }
+
+  onAreaChange(event: any): void {
+    this.selectedArea = event.target.value;
+    this.loadEegData(this.id_sesion);
+  }
+}

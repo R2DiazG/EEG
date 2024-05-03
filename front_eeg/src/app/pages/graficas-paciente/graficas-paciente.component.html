@@ -110,7 +110,7 @@
     </div>
     <div *ngIf="activeGraphTab === 'psd-band'">
         <div class="space"></div>
-        <app-area-band-visualization [id_sesion]="idSesion"></app-area-band-visualization>
+        <app-area-band-visualization [id_sesion]="idSesion" *ngIf="activeGraphTab === 'psd-band'"></app-area-band-visualization>
     </div>
     <div *ngIf="activeGraphTab === 'pr-band'">
       <div class="space"></div>

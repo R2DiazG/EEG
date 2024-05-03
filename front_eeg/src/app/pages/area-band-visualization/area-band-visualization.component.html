@@ -44,8 +44,7 @@
         [options]="charts[chartKey]">
     </highcharts-chart>
 </div> -->
-<!-- area-band-visualization.component.html -->
-<div class="chart-container">
+<div class="chart-container" *ngIf="readyToRender">
     <select [(ngModel)]="selectedArea" (change)="loadEegData(id_sesion)">
       <option value="Frontal izq">Frontal izq</option>
       <option value="Frontal der">Frontal der</option>
@@ -65,4 +64,5 @@
     <div id="betaChart" class="chart"></div>
     <div id="gammaChart" class="chart full-width"></div>
   </div>
+  
   
