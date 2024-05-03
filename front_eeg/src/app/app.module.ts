@@ -37,7 +37,6 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
-import { AreaBandVisualizationComponent } from './pages/area-band-visualization/area-band-visualization.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
@@ -59,8 +58,7 @@ import { HighchartsChartModule } from 'highcharts-angular';
     CrearMedicamentoDialogComponent,
     DropMedicamentosDialogComponent,
     UsuarioComponent,
-    AdminRegistraPsicologoComponent,
-    AreaBandVisualizationComponent
+    AdminRegistraPsicologoComponent
   ],
   imports: [
     BrowserModule,

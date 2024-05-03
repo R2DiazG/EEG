@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/drop-medicamentos-dialog.component';
 import * as Highcharts from 'highcharts/highstock';
 import * as d3 from 'd3';
+import { id } from 'date-fns/locale';
 //import * as Plotly from 'plotly.js-dist-min';
 //import { Data } from 'plotly.js-dist-min';
 //import { Layout } from 'plotly.js-dist-min';
@@ -40,6 +41,14 @@ interface EEGDataPSD {
 
 interface EEGDataPSDArray {
   channelsData: EEGDataPSD[];
+}
+
+interface EEGDataBand {
+  area: string;
+  banda: string;
+  data: number[];
+  pointStart: number;
+  pointInterval: number;
 }
 
 @Component({
@@ -83,6 +92,7 @@ export class GraficasPacienteComponent implements OnInit {
   private plotly: any;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  areaSeleccionada!: string;
 
   constructor(
     private eegService: EegService,
@@ -397,9 +407,13 @@ cargarDatos() {
     this.cargarDatosNormalizedEEG();
   } if (this.activeGraphTab === 'psd') {
     this.cargarDatosEEG();
-  }if (this.activeGraphTab === 'stft') {
+  }if (this.activeGraphTab === 'psd-band') {
+    this.cargarPSDAreaBandas(this.idSesion, 'Frontal izq');
+  }if (this.activeGraphTab === 'pr-band') {
+    this.cargarPRAreaBandas(this.idSesion, 'Frontal izq');
+  }
+  if (this.activeGraphTab === 'stft') {
     this.cargarDatosSTFT();
-
   }
 }
 
@@ -739,4 +753,114 @@ cargarDatos() {
       .attr('height', rectHeight)
       .attr('fill', d => d3.interpolateInferno(Number(d))); // Cast 'd' to a number
   }
+
+  cargarPSDAreaBandas(idSesion: number, areaSeleccionada: string): void {
+    this.eegService.obtenerDataAreaBandasPSD(idSesion).subscribe({
+      next: (response: any[]) => {
+        const datosPSDBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
+        console.log('Datos de Áreas de Bandas PSD:', datosPSDBandas);
+        
+        if (datosPSDBandas && datosPSDBandas.length > 0) {
+          console.log('Tipo del primer elemento del array real:', typeof datosPSDBandas[0]);
+          console.log('Primer elemento para verificar estructura:', datosPSDBandas[0]);
+        }
+
+        const datosFiltrados = datosPSDBandas.filter((dato: { hasOwnProperty: (arg0: string) => any; area: string; }) => {
+          const hasArea = dato.hasOwnProperty('area');
+          console.log('Tiene propiedad "area"?', hasArea, 'Comparando', dato.area, 'con', areaSeleccionada);
+          return hasArea && dato.area === areaSeleccionada;
+        });
+
+        console.log('Datos de Áreas de Bandas PSD FILTRADOS:', datosFiltrados);
+        this.procesarYMostrarPSDAreaBandas(datosFiltrados);
+      },
+      error: (error) => console.error('Error al obtener datos de Áreas de Bandas PSD:', error)
+    });
+  }
+  
+  procesarYMostrarPSDAreaBandas(bandas: EEGDataBand[]): void {
+    bandas.forEach(banda => {
+      const options: Highcharts.Options = {
+        chart: {
+          type: 'line',
+          renderTo: `banda${banda.banda}`  // Asegúrate que los contenedores HTML tienen IDs correctos
+        },
+        title: {
+          text: `Densidad Espectral de Potencia para ${banda.banda}`
+        },
+        xAxis: {
+          title: {
+            text: 'Frecuencia (Hz)'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Potencia (dB/Hz)'
+          }
+        },
+        series: [{
+          type: 'line', // Add the 'type' property with the value 'line'
+          name: banda.banda,
+          data: banda.data.map((value, index) => [banda.pointStart + index * banda.pointInterval, value])
+        }]
+      };
+      Highcharts.chart(options);
+    });
+  }
+  
+  cargarPRAreaBandas(idSesion: number, areaSeleccionada: string): void {
+    this.eegService.obtenerDataAreaBandasPR(idSesion).subscribe({
+      next: (response: any[]) => {
+        const datosPRBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
+        console.log('Datos de Áreas de Bandas PR:', datosPRBandas);
+        
+        if (datosPRBandas && datosPRBandas.length > 0) {
+          console.log('Tipo del primer elemento del array real:', typeof datosPRBandas[0]);
+          console.log('Primer elemento para verificar estructura:', datosPRBandas[0]);
+        }
+
+        const datosFiltrados = datosPRBandas.filter((dato: { hasOwnProperty: (arg0: string) => any; area: string; }) => {
+          const hasArea = dato.hasOwnProperty('area');
+          console.log('Tiene propiedad "area"?', hasArea, 'Comparando', dato.area, 'con', areaSeleccionada);
+          return hasArea && dato.area === areaSeleccionada;
+        });
+
+        console.log('Datos de Áreas de Bandas PR FILTRADOS:', datosFiltrados);
+        this.procesarYMostrarPRAreaBandas(datosFiltrados);
+      },
+      error: (error) => console.error('Error al obtener datos de Áreas de Bandas PR:', error)
+    });
+  }
+  
+  procesarYMostrarPRAreaBandas(bandas: EEGDataBand[]): void {
+    bandas.forEach(banda => {
+      const options: Highcharts.Options = {
+        chart: {
+          type: 'column',
+          renderTo: `banda${banda.banda}`  // Asegúrate que los contenedores HTML tienen IDs correctos
+        },
+        title: {
+          text: `Poder Relativo para ${banda.banda}`
+        },
+        xAxis: {
+          title: {
+            text: 'Frecuencia (Hz)'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Potencia (dB/Hz)'
+          }
+        },
+        series: [{
+          type: 'column', // Add the 'type' property with the value 'line'
+          name: banda.banda,
+          data: banda.data.map((value, index) => [banda.pointStart + index * banda.pointInterval, value])
+        }]
+      };
+      Highcharts.chart(options);
+    });
+  }
+  
+
 }

@@ -361,3 +361,14 @@ $blue: #2492FF;
       border-radius: 8px;
       padding: 1rem;
     }
+
+    .grid {
+      display: flex;
+      margin: 2rem;
+      gap: 20px; // Añade un espacio entre cada gráfico para una mejor separación visual
+    
+      > div {
+        width: 50%;
+        float: center;
+      }
+    }

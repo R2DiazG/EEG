@@ -89,11 +89,11 @@
       </div>
   </div>
   <div class="tab-menu">
-    <button class="tab" (click)="setActiveGraphTab('eeg')" [class.active]="activeGraphTab === 'eeg'">EEG</button>
-    <button class="tab" (click)="setActiveGraphTab('psd')" [class.active]="activeGraphTab === 'psd'">PSD</button>
-    <button class="tab" (click)="setActiveGraphTab('psd-band')" [class.active]="activeGraphTab === 'psd-band'">PSD por banda</button>
-    <button class="tab" (click)="setActiveGraphTab('pr-band')" [class.active]="activeGraphTab === 'pr-band'">PR por banda</button>
-    <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">STFT</button>
+    <button class="tab" (click)="setActiveGraphTab('eeg')" [class.active]="activeGraphTab === 'eeg'">Electroencefalograma</button>
+    <button class="tab" (click)="setActiveGraphTab('psd')" [class.active]="activeGraphTab === 'psd'">Densidad Espectral de Potencia</button>
+    <button class="tab" (click)="setActiveGraphTab('psd-band')" [class.active]="activeGraphTab === 'psd-band'">Densidad Espectral de Potencia por Banda</button>
+    <button class="tab" (click)="setActiveGraphTab('pr-band')" [class.active]="activeGraphTab === 'pr-band'">Potencia Relativa por Banda</button>
+    <!-- <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">STFT</button> -->
   </div>
   <div class="tab-content">
     <div *ngIf="activeGraphTab === 'eeg'">
@@ -109,15 +109,63 @@
         </div>
     </div>
     <div *ngIf="activeGraphTab === 'psd-band'">
-        <div class="space"></div>
-        <app-area-band-visualization [id_sesion]="idSesion" *ngIf="activeGraphTab === 'psd-band'"></app-area-band-visualization>
+      <div class="space"></div>
+      <!-- Dropdown para seleccionar el área -->
+      <select [(ngModel)]="areaSeleccionada" (change)="cargarPSDAreaBandas(idSesion, areaSeleccionada)">
+        <option disabled selected>Seleccionar area a visualizar</option>
+        <option value="Frontal izq">Frontal izquierda</option>
+        <option value="Frontal der">Frontal der</option>
+        <option value="Frontal centro">Frontal centro</option>
+        <option value="Central">Central</option>
+        <option value="Temporal izq">Temporal izq</option>
+        <option value="Temporal der">Temporal der</option>
+        <option value="Parietal izq">Parietal izq</option>
+        <option value="Parietal der">Parietal der</option>
+        <option value="Parietal centro">Parietal centro</option>
+        <option value="Occipital izq">Occipital izq</option>
+        <option value="Occipital der">Occipital der</option>
+      </select>
+      <div class="seccion">
+        <div class="grid">
+          <div id="bandaDelta"></div>
+          <div id="bandaTheta"></div>
+        </div>
+        <div class="grid">
+          <div id="bandaAlpha"></div>
+          <div id="bandaBeta"></div>
+        </div>
+        <div id="bandaGamma" style="width:100%; height:400px;"></div>
+      </div>
     </div>
     <div *ngIf="activeGraphTab === 'pr-band'">
       <div class="space"></div>
+      <!-- Dropdown para seleccionar el área -->
+      <select [(ngModel)]="areaSeleccionada" (change)="cargarPRAreaBandas(idSesion, areaSeleccionada)">
+        <option disabled selected>Seleccionar area a visualizar</option>
+        <option value="Frontal izq">Frontal izquierda</option>
+        <option value="Frontal der">Frontal der</option>
+        <option value="Frontal centro">Frontal centro</option>
+        <option value="Central">Central</option>
+        <option value="Temporal izq">Temporal izq</option>
+        <option value="Temporal der">Temporal der</option>
+        <option value="Parietal izq">Parietal izq</option>
+        <option value="Parietal der">Parietal der</option>
+        <option value="Parietal centro">Parietal centro</option>
+        <option value="Occipital izq">Occipital izq</option>
+        <option value="Occipital der">Occipital der</option>
+      </select>
       <div class="seccion">
-      <div id="spectrogramDiv" style="width:100%; height:600px;"></div>
+        <div class="grid">
+          <div id="bandaDelta"></div>
+          <div id="bandaTheta"></div>
+        </div>
+        <div class="grid">
+          <div id="bandaAlpha"></div>
+          <div id="bandaBeta"></div>
+        </div>
+        <div id="bandaGamma" style="width:100%; height:400px;"></div>
       </div>
-  </div>
+    </div>
   <div *ngIf="activeGraphTab === 'prob'">
     <div class="space"></div>
     <div class="seccion">
