@@ -1,76 +1,70 @@
 .sidebar {
-  background: #333;
-  color: white;
-  min-height: 100vh;
-  height: 100%;
-  width: 15rem; // Ancho fijo del sidebar
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto; // Permite scroll en Y si el contenido es más largo que la pantalla
-  position: fixed; // Sidebar fijo en la pantalla
-  left: 0; // Alineado a la izquierda
-  top: 0; // Alineado a la parte superior
-  z-index: 100; // Asegúrate de que el sidebar tenga un z-index alto para que esté por encima del contenido
-  transition: transform 0.3s ease-in-out; // Transición suave al abrir/cerrar
-
-  .sidebar-header {
-      padding: 1rem;
-      text-align: center;
-      h2 {
-          margin: 0;
-      }
-  }
-
-  .nav-menu {
-      display: flex;
-      flex-direction: column;
-      .nav-link {
-          padding: 1rem;
-          color: white;
-          text-decoration: none;
-          &:hover, &.active {
-              background: yellow;
-              color: black;
-          }
-      }
-      .user-info {
-          display: flex;
-          padding-left: 3rem;
-          flex-direction: column;
-          margin-top: 1rem;
-          margin-left: 1rem;
-          padding: 1rem;
-      }
-  }
-}
-
-.sidebar-toggle {
-  display: none;// Asegúrate de que siempre se muestre para poder alternar el sidebar
-  position: fixed;
-  top: .2rem; // Alineado a la parte superior
-  left: .2rem; // Alineado a la izquierda
-  z-index: 101; // Asegúrate de que el botón de alternancia tenga un z-index más alto que el sidebar
-  // Estilos adicionales que puedas necesitar para el botón
-}
-
-// Ajustes responsivos para el sidebar y el contenido principal
-@media (max-width: 768px) {
-  .sidebar {
-      width: 100%; // El sidebar puede ocupar toda la pantalla en móviles
-      transform: translateX(-100%); // Sidebar oculto por defecto, movido a la izquierda fuera de la pantalla
-
-      &:hover, &.active {
-          transform: translateX(0); // Muestra el sidebar cuando está activo
+    background: #333;
+    color: white;
+    min-height: 100vh;
+    height: 100%;
+    width: 15rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: transform 0.3s ease-in-out;
+  
+    .sidebar-header {
+        padding: 1rem;
+        text-align: center;
+        h2 {
+            margin: 0;
         }
+    }
+  
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        .nav-link {
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            &:hover, &.active {
+                background: yellow;
+                color: black;
+            }
+        }
+    }
   }
-
-  .content {
-      margin-left: 0; // Sin margen cuando el sidebar está oculto para que el contenido utilice todo el ancho de la pantalla
-      // Asegúrate de aplicar la clase .content al contenedor principal de tu contenido
-  }
-
+  
   .sidebar-toggle {
-      display: block; // Asegúrate de que el botón de alternancia esté visible en pantallas pequeñas
+    display: none;
+    position: fixed;
+    top: .2rem;
+    left: .2rem;
+    z-index: 101;
+    cursor: pointer;
   }
-
-}
+  
+  @media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        transform: translateX(-100%);
+  
+        &:hover, &.active {
+            transform: translateX(0);
+        }
+    }
+  
+    .content {
+        margin-left: 0;
+    }
+  
+    .sidebar-toggle {
+        display: block;
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        border: none;
+    }
+  }
+  

@@ -38,8 +38,11 @@
 
       <ng-container matColumnDef="numero_de_sesiones">
         <th mat-header-cell *matHeaderCellDef> Número de Sesiones </th>
-        <td mat-cell *matCellDef="let element">{{element.numero_de_sesiones}}</td>
+        <td mat-cell *matCellDef="let element">
+          {{element.numero_de_sesiones}} {{element.numero_de_sesiones === 1 ? 'sesión' : 'sesiones'}}
+        </td>
       </ng-container>
+      
 
       <ng-container matColumnDef="notas_ultima_sesion">
         <th mat-header-cell *matHeaderCellDef> Notas Última Sesión </th>

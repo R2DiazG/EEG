@@ -168,6 +168,9 @@
             <div *ngIf="isEditMode">
               <label for="educationLevel">Escolaridad:</label>
               <a>
+                <input type="radio" name="educationLevel" value="Otro" [(ngModel)]="patient.escolaridad"> Sin estudios
+              </a>
+              <a>
                 <input type="radio" name="educationLevel" value="Primaria" [(ngModel)]="patient.escolaridad"> Primaria
               </a>
               <a>
@@ -184,9 +187,6 @@
               </a>
               <a>
                 <input type="radio" name="educationLevel" value="Doctorado" [(ngModel)]="patient.escolaridad"> Doctorado
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="Otro" [(ngModel)]="patient.escolaridad"> Sin estudios
               </a>
             </div>
             <br>

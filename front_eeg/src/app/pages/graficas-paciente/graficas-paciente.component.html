@@ -39,9 +39,9 @@
         <div class="left">
           <div class="info-eeg">
               <p>Fecha: <strong>{{fecha_consulta}}</strong></p>
-              <p>Resumen de la sesión: <strong>{{resumen_sesion_actual}}</strong></p>
               <p>Estado general: <strong>{{estado_general}}</strong></p>
               <p>Estado especifico: <strong> {{estado_especifico}}</strong></p>
+              <p>Resumen de la sesión: <strong>{{resumen_sesion_actual}}</strong></p>
               <!-- Mostrar las Notas del Psicólogo -->
               <div *ngIf="notas_psicologo && !isAddingNote" class="nota-display">
                 <p>Observaciones de la sesión: <strong>{{ notas_psicologo }}</strong></p>

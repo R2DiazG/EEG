@@ -841,7 +841,9 @@ def obtener_pacientes_agrupados_por_psicologo():
                 notas_ultima_sesion = sesiones[0].notas_psicologo if sesiones else ""
                 pacientes_list.append({
                     'id_paciente': paciente.id_paciente,
-                    'nombre': f"{paciente.nombre} {paciente.apellido_paterno} {paciente.apellido_materno}",
+                    'nombre': paciente.nombre,
+                    'apellido_paterno': paciente.apellido_paterno,
+                    'apellido_materno': paciente.apellido_materno or "",
                     'fecha_nacimiento': paciente.fecha_nacimiento.strftime('%Y-%m-%d'),
                     'edad': edad,
                     'numero_de_sesiones': numero_de_sesiones,
