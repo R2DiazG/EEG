@@ -216,7 +216,67 @@
         </div>
       </div>
       <div *ngIf="activeTab === 'prob'">
-        <h2>Contenido de Pre-diagnóstico</h2>
+        <div class="seccion">
+          <div class="space"></div>
+          <div class="info-eeg">
+            <p>Fecha: <strong>{{fecha_consulta}}</strong></p>
+            <p>Estado general: <strong>{{estado_general}}</strong></p>
+            <p>Estado especifico: <strong> {{estado_especifico}}</strong></p>
+            <p>Resumen de la sesión: <strong>{{resumen_sesion_actual}}</strong></p>
+            <!-- Mostrar las Notas del Psicólogo -->
+            <div *ngIf="notas_psicologo" class="nota-display">
+              <p>Observaciones de la sesión: <strong>{{ notas_psicologo }}</strong></p>
+            </div>
+        </div>
+        </div>
+        <div class="seccion">
+        <div class="space"></div>
+        <div class="table-pre-diagnostico">
+          <table>
+            <caption style="caption-side: top; text-align: center;"><h2>Tabla de Resultados</h2></caption>
+            <thead>
+                <tr>
+                    <th>Patrón</th>
+                    <th>Cantidad Presentes</th>
+                    <th>Porcentaje de Presencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Picos Epileptiformes</td>
+                    <td><!-- Añadir cantidad aquí --> </td>
+                    <td><!-- Añadir porcentaje aquí --> 32.7%</td>
+                </tr>
+                <tr>
+                    <td>Descargas Periódicas Lateralizadas (LPD)</td>
+                    <td><!-- Añadir cantidad aquí --></td>
+                    <td><!-- Añadir porcentaje aquí --> 10.3%</td>
+                </tr>
+                <tr>
+                    <td>Descargas Periódicas Generalizadas (GDP)</td>
+                    <td><!-- Añadir cantidad aquí --></td>
+                    <td><!-- Añadir porcentaje aquí --> 11.7%</td>
+                </tr>
+                <tr>
+                    <td>Actividad Delta Rítmica Lateralizada (LRD)</td>
+                    <td><!-- Añadir cantidad aquí --></td>
+                    <td><!-- Añadir porcentaje aquí --> 10.6%</td>
+                </tr>
+                <tr>
+                    <td>Actividad Delta Rítmica Generalizada (GRDA)</td>
+                    <td><!-- Añadir cantidad aquí --></td>
+                    <td><!-- Añadir porcentaje aquí --> 18.3%</td>
+                </tr>
+                <tr>
+                    <td>Otros</td>
+                    <td><!-- Añadir cantidad aquí --></td>
+                    <td><!-- Añadir porcentaje aquí --> 16.4%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        </div>
+        </div>
       </div>
     </div>
   </div>
