@@ -216,6 +216,52 @@ $blue: #2492FF;
       }
     }
 
+    .dropdown {
+      position: relative;
+      margin: 1rem 1rem 1rem 0;
+      width: 50%; // Asegura que el contenedor ocupe el ancho disponible
+      padding: 10px 15px 15px 15px; // Ajusta el padding según necesites
+      border: 1px solid #ddd; // Un borde gris claro
+      border-radius: 4px; // Bordes redondeados
+      select {
+        width: 100%;
+        padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
+        border: 1px solid #ddd; // Un borde gris claro
+        border-radius: 4px; // Bordes redondeados
+        background-color: #fff; // Fondo blanco
+        font-size: 16px; // Tamaño de la fuente a tu gusto
+          &:focus {
+              outline: none;
+              border-color: #888; // Color de borde más oscuro al enfocar
+          }
+  
+          option {
+              color: #333; // Color más oscuro para mejor legibilidad
+          }
+  
+          option:disabled {
+              color: #ccc; // Color más claro para opciones deshabilitadas
+          }
+      }
+  
+      // Estilizando el ícono de la flecha
+      &:after {
+          content: '\25BC'; // Ícono de flecha hacia abajo
+          position: absolute;
+          right: 8px; // Ajusta el posicionamiento derecho para alinear con el diseño
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none; // Asegura que el ícono no sea clickable
+          color: #333; // Color del ícono
+          font-size: 14px;
+      }
+  
+      // Cambio de ícono cuando el select está activo
+      &:focus-within:after {
+          content: '\25B2'; // Cambia a ícono de flecha hacia arriba cuando está abierto
+      }
+  }  
+  
     .table-container {
       overflow-y: auto;
       max-height: 61vh; // Puedes ajustar esto según sea necesario

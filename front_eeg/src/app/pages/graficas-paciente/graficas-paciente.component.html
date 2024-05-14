@@ -111,19 +111,21 @@
     <div *ngIf="activeGraphTab === 'psd-band'">
       <div class="space"></div>
       <!-- Dropdown para seleccionar el área -->
-      <select [(ngModel)]="areaSeleccionada" (change)="cargarPSDAreaBandas(idSesion, areaSeleccionada)">
+      <label>Seleccionar área a visualizar</label>
+      <br>
+      <select [(ngModel)]="areaSeleccionada" (change)="cargarPSDAreaBandas(idSesion, areaSeleccionada)" class="dropdown" >
         <option disabled selected>Seleccionar area a visualizar</option>
         <option value="Frontal izq">Frontal izquierda</option>
-        <option value="Frontal der">Frontal der</option>
+        <option value="Frontal der">Frontal derecha</option>
         <option value="Frontal centro">Frontal centro</option>
         <option value="Central">Central</option>
-        <option value="Temporal izq">Temporal izq</option>
-        <option value="Temporal der">Temporal der</option>
-        <option value="Parietal izq">Parietal izq</option>
-        <option value="Parietal der">Parietal der</option>
+        <option value="Temporal izq">Temporal izquierda</option>
+        <option value="Temporal der">Temporal derecha</option>
+        <option value="Parietal izq">Parietal izquierda</option>
+        <option value="Parietal der">Parietal derecha</option>
         <option value="Parietal centro">Parietal centro</option>
-        <option value="Occipital izq">Occipital izq</option>
-        <option value="Occipital der">Occipital der</option>
+        <option value="Occipital izq">Occipital izquierda</option>
+        <option value="Occipital der">Occipital derecha</option>
       </select>
       <div class="seccion">
         <div class="grid">
@@ -140,19 +142,20 @@
     <div *ngIf="activeGraphTab === 'pr-band'">
       <div class="space"></div>
       <!-- Dropdown para seleccionar el área -->
-      <select [(ngModel)]="areaSeleccionada" (change)="cargarPRAreaBandas(idSesion, areaSeleccionada)">
+      <label>Seleccionar área a visualizar</label>
+      <select [(ngModel)]="areaSeleccionada" (change)="cargarPRAreaBandas(idSesion, areaSeleccionada)" class="dropdown">
         <option disabled selected>Seleccionar area a visualizar</option>
         <option value="Frontal izq">Frontal izquierda</option>
-        <option value="Frontal der">Frontal der</option>
+        <option value="Frontal der">Frontal derecha</option>
         <option value="Frontal centro">Frontal centro</option>
         <option value="Central">Central</option>
-        <option value="Temporal izq">Temporal izq</option>
-        <option value="Temporal der">Temporal der</option>
-        <option value="Parietal izq">Parietal izq</option>
-        <option value="Parietal der">Parietal der</option>
+        <option value="Temporal izq">Temporal izquierda</option>
+        <option value="Temporal der">Temporal derecha</option>
+        <option value="Parietal izq">Parietal izquierda</option>
+        <option value="Parietal der">Parietal derecha</option>
         <option value="Parietal centro">Parietal centro</option>
-        <option value="Occipital izq">Occipital izq</option>
-        <option value="Occipital der">Occipital der</option>
+        <option value="Occipital izq">Occipital izquierda</option>
+        <option value="Occipital der">Occipital derecha</option>
       </select>
       <div class="seccion">
         <div class="grid">
