@@ -170,58 +170,58 @@ cargarMedicamentos() {
 }
 
 onDeleteSesion(): void {
-  // Asumiendo que this.idPaciente y this.idSesion están disponibles en el contexto
   if (!this.idPaciente || this.idSesion === null) {
     console.error('Error: ID de paciente o sesión no disponible.');
-    return; // Salir temprano si falta algún ID
-  }
-
-  // Verifica el estado de confirmación de eliminación almacenado en el componente
-  if (!this.isConfirm && !this.isDeleteInitiated) {
-    this.isDeleteInitiated = true;
-    this.cdr.detectChanges();
-    // Establece un timeout para revertir el estado si no hay confirmación
-    setTimeout(() => {
-      if (!this.isConfirm) { // Si aún no está confirmado, revertir
-        this.isDeleteInitiated = false;
-        this.cdr.detectChanges();
-      }
-    }, 3000);
     return;
   }
 
-  // Si el usuario ya confirmó la eliminación
+  if (!this.isConfirm && !this.isDeleteInitiated) {
+    this.isDeleteInitiated = true;
+    this.cdr.detectChanges();
+    this.setTimeoutToRevertState(); // Extraemos la lógica de timeout a una función
+    return;
+  }
+
   if (this.isConfirm) {
     this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
       next: () => {
         console.log('Sesion eliminada con éxito.');
-        this.isDeleted = true;
-        this.isConfirm = false; // Restablece el estado de confirmación
-        this.isDeleteInitiated = false; // Restablece el estado de inicio de eliminación
-        this.getLastSession(this.idPaciente); // Actualizar la vista para reflejar la eliminación
-        this.cdr.detectChanges();
+        this.resetDeleteState(true); // Reset y actualización de vista post-eliminación
       },
       error: (error) => {
         console.error('Error al eliminar la sesion:', error);
-        this.isConfirm = false;
-        this.isDeleteInitiated = false;
-        this.cdr.detectChanges();
+        this.resetDeleteState(false); // Solo resetea el estado sin cargar nueva sesión
       }
     });
   } else {
-    // Solicitar confirmación en el segundo clic
-    this.isConfirm = true;
-    this.cdr.detectChanges();
-    // Si el usuario no confirma dentro de 3 segundos, revertir
-    setTimeout(() => {
-      if (!this.isDeleted) { // Si no se ha eliminado, revertir
-        this.isConfirm = false;
-        this.isDeleteInitiated = false;
-        this.cdr.detectChanges();
-      }
-    }, 3000);
+    this.requestConfirmation();
   }
 }
+
+private setTimeoutToRevertState() {
+  setTimeout(() => {
+    if (!this.isConfirm) {
+      this.resetDeleteState(false);
+    }
+  }, 3000);
+}
+
+private requestConfirmation() {
+  this.isConfirm = true;
+  this.cdr.detectChanges();
+  this.setTimeoutToRevertState();
+}
+
+private resetDeleteState(success: boolean) {
+  this.isConfirm = false;
+  this.isDeleteInitiated = false;
+  this.isDeleted = success;
+  this.cdr.detectChanges();
+  if (success) {
+    this.getLastSession(this.idPaciente);
+  }
+}
+
 
 iniciarEdicion() {
   this.notasPsicologoEdit = this.notas_psicologo; // Carga las notas existentes para edición
@@ -340,7 +340,9 @@ cargarDatosDeEeg(idSesion: number): void {
 onSesionChange() {
   console.log('Sesión seleccionada:', this.selectedSesionId);
   if (this.selectedSesionId != null) {
-    this.router.navigateByUrl(`/graficas-paciente/${this.selectedSesionId}`);
+    this.router.navigate([`/graficas-paciente/${this.selectedSesionId}`]).then(() => {
+      this.cdr.detectChanges();  // Asegura que Angular detecta el cambio en el modelo
+    });
   }
 }
 

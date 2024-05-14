@@ -16,6 +16,7 @@
   </div>
   <app-info-paciente [id_sesion]="idSesion"></app-info-paciente>
   <div class="search">
+    <label>Seleccionar fecha de sesion</label>
     <div class="fecha-consulta-seccion">
       <select [(ngModel)]="selectedSesionId" (change)="onSesionChange()">
         <option disabled selected>Seleccionar fecha de sesion</option>
@@ -78,12 +79,12 @@
             </button>
           </div>
           <div class="form-actions">
-            <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && isConfirm}" title="Eliminar sesion" >
+            <button class="button-eliminar" (click)="onDeleteSesion()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}" title="Eliminar sesion" >
               <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
-              <i class="icon fas fa-question-circle" *ngIf="isConfirm && isDeleted"></i>
-              <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
-              <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
-            </button>
+            <i class="icon fas fa-question-circle" *ngIf="isConfirm && !isDeleted"></i>
+            <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
+            <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
+          </button>
           </div>
         </div>
       </div>
@@ -114,7 +115,7 @@
       <label>Seleccionar área a visualizar</label>
       <br>
       <select [(ngModel)]="areaSeleccionada" (change)="cargarPSDAreaBandas(idSesion, areaSeleccionada)" class="dropdown" >
-        <option disabled selected>Seleccionar area a visualizar</option>
+        <option disabled>Seleccionar area a visualizar</option>
         <option value="Frontal izq">Frontal izquierda</option>
         <option value="Frontal der">Frontal derecha</option>
         <option value="Frontal centro">Frontal centro</option>
@@ -143,8 +144,9 @@
       <div class="space"></div>
       <!-- Dropdown para seleccionar el área -->
       <label>Seleccionar área a visualizar</label>
+      <br>
       <select [(ngModel)]="areaSeleccionada" (change)="cargarPRAreaBandas(idSesion, areaSeleccionada)" class="dropdown">
-        <option disabled selected>Seleccionar area a visualizar</option>
+        <option disabled>Seleccionar area a visualizar</option>
         <option value="Frontal izq">Frontal izquierda</option>
         <option value="Frontal der">Frontal derecha</option>
         <option value="Frontal centro">Frontal centro</option>
