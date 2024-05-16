@@ -406,6 +406,7 @@ cargarDatos() {
     case 'prob':
       // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
       this.cargarCaracteristicas();
+      this.cargarDatosNormalizedEEGConAnomalias();
       break;
   }
 
