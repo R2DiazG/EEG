@@ -946,14 +946,28 @@ cargarDatos() {
       const extraPadding = 0.2;
       const series = names.map((name, index) => {
         return {
+          type: 'line', // Asegúrate de que cada serie tiene el tipo especificado
           name: name,
           data: data[index].map((point, i) => [i, point + offset * index]),
-          anomalyData: anomalies.filter(anomaly => anomaly.channel === name)
+          marker: {
+            enabled: true,
+            radius: 5,
+            states: {
+              hover: {
+                enabled: true,
+                lineColor: 'red'
+              }
+            }
+          },
+          zones: [{
+            value: Number.MAX_VALUE,
+            color: 'black'
+          }]
         };
       });
       const options: Options = {
         chart: {
-          renderTo: 'eeg_anomaly',
+          renderTo: 'eeg',
           type: 'line',
           zooming: {
             type: 'x'
@@ -1002,24 +1016,7 @@ cargarDatos() {
             }
           }
         },
-        series: series.map(serie => ({
-          ...serie,
-          marker: {
-            enabled: true,
-            radius: 5,
-            states: {
-              hover: {
-                enabled: true,
-                lineColor: 'red'
-              }
-            }
-          },
-          data: serie.data,
-          zones: [{
-            value: Number.MAX_VALUE,
-            color: 'black'
-          }]
-        })) as Highcharts.SeriesOptionsType[]
+        series: series as SeriesOptionsType[]
       };
       Highcharts.chart('eeg_anomaly', options);
     } catch (error) {
