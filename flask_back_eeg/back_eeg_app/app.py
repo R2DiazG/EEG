@@ -1598,7 +1598,8 @@ def obtener_eegs_por_sesion(id_sesion):
                 'data_psd': eeg.data_psd,
                 'data_stft': eeg.data_stft,
                 'data_area_bandas_psd': eeg.data_area_bandas_psd,
-                'data_area_bandas_pr': eeg.data_area_bandas_pr
+                'data_area_bandas_pr': eeg.data_area_bandas_pr,
+                'caracteristicas': eeg.caracteristicas
             } for eeg in normalized_eegs]
         }
         logging.info('Sesión y EEGs obtenidos exitosamente para la sesión %s', id_sesion)
