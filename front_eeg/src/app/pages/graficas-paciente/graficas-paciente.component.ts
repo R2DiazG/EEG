@@ -962,7 +962,7 @@ cargarDatos() {
               const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
               return anomaly ? `<span style="color: black;">●</span>` : null;
             },
-            x: 0 // Add the 'x' property to the object ●
+            x: 0 // Add the 'x' property to the object
           }
         };
       });
