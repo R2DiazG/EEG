@@ -931,12 +931,6 @@ cargarDatos() {
     return anomalies;
   }
 
-  private chart: Highcharts.Chart | null = null;
-  private onChartLoad(this: Highcharts.Chart): void {
-    // Guardar la referencia del gráfico en la variable `chart`
-    const component = this.options.chart as unknown as GraficasPacienteComponent;
-    component.chart = this;
-  }
   procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalizedString: EEGData, anomalies: EEGAnomaly[] = []): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalizedString);
@@ -974,15 +968,12 @@ cargarDatos() {
       });
       const options: Options = {
         chart: {
-          renderTo: 'eeg_anomaly',
+          renderTo: 'eeg',
           type: 'line',
           zooming: {
             type: 'x'
           },
-          height: 1000,
-          events: {
-            load: this.onChartLoad.bind(this)
-          }
+          height: 1000
         },
         title: {
           text: 'Visualización de Datos EEG Normalizados con Anomalías'
@@ -1020,25 +1011,9 @@ cargarDatos() {
         },
         series: series as SeriesOptionsType[]
       };
-      this.chart = Highcharts.chart('eeg_anomaly', options);
+      Highcharts.chart('eeg_anomaly', options);
     } catch (error) {
       console.error('Error al procesar los datos EEG normalizados:', error);
-    }
-  }
-  deselectAllSeries(): void {
-    if (this.chart) {
-      this.chart.series.forEach(series => {
-        series.setVisible(false, false); // Segundo argumento `false` para evitar redibujar hasta el final
-      });
-      this.chart.redraw();
-    }
-  }
-  selectAllSeries(): void {
-    if (this.chart) {
-      this.chart.series.forEach(series => {
-        series.setVisible(true, false); // Segundo argumento `false` para evitar redibujar hasta el final
-      });
-      this.chart.redraw();
     }
   }
 }
