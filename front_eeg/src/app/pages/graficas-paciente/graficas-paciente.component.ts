@@ -932,6 +932,11 @@ cargarDatos() {
   }
 
   private chart: Highcharts.Chart | null = null;
+  private onChartLoad(this: Highcharts.Chart): void {
+    // Guardar la referencia del gráfico en la variable `chart`
+    const component = this.options.chart as unknown as GraficasPacienteComponent;
+    component.chart = this;
+  }
   procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalizedString: EEGData, anomalies: EEGAnomaly[] = []): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalizedString);
@@ -976,10 +981,7 @@ cargarDatos() {
           },
           height: 1000,
           events: {
-            load: function() {
-              // Guardar la referencia del gráfico en la variable `chart`
-              this.chart = this;
-            }.bind(this) // Asegurarse de que `this` se refiere al componente
+            load: this.onChartLoad.bind(this)
           }
         },
         title: {
