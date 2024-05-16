@@ -406,7 +406,6 @@ cargarDatos() {
     case 'prob':
       // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
       this.cargarCaracteristicas();
-      this.cargarDatosNormalizedEEGConAnomalias();
       break;
   }
 
@@ -946,24 +945,24 @@ cargarDatos() {
       const offset = amplitudeRange * 0.5;
       const extraPadding = 0.2;
       const series = names.map((name, index) => {
+        const anomalyData = anomalies
+          .filter(anomaly => anomaly.channel === name)
+          .map(anomaly => ({ x: anomaly.index, y: anomaly.value + offset * index }));
         return {
           type: 'line', // Asegúrate de que cada serie tiene el tipo especificado
           name: name,
           data: data[index].map((point, i) => [i, point + offset * index]),
           marker: {
-            enabled: true,
-            radius: 5,
-            states: {
-              hover: {
-                enabled: true,
-                lineColor: 'red'
-              }
-            }
+            enabled: false
           },
-          zones: [{
-            value: Number.MAX_VALUE,
-            color: 'black'
-          }]
+          dataLabels: {
+            enabled: true,
+            useHTML: true,
+            formatter: function() {
+              const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
+              return anomaly ? `<span style="color: black;">●</span>` : null;
+            }
+          }
         };
       });
       const options: Options = {
@@ -1006,15 +1005,7 @@ cargarDatos() {
             animation: {
               duration: 1000
             },
-            marker: {
-              enabled: false
-            },
             lineWidth: 2,
-            events: {
-              click: function (event) {
-                // Maneja el clic en las anomalías, si es necesario
-              }
-            }
           }
         },
         series: series as SeriesOptionsType[]
