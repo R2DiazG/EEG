@@ -16,10 +16,14 @@ from mne.io import read_raw_edf
 from mne.filter import filter_data
 from mne.preprocessing import ICA, create_eog_epochs
 from sklearn.decomposition import PCA
-from scipy.signal import stft
+from scipy.signal import stft, butter, sosfilt, welch
+from scipy.stats
+from keras.models import load_model
+import xgboost as xgb
 import os
 import mne
 import json
+import time
 import logging
 import numpy as np
 import pandas as pd
@@ -1260,6 +1264,53 @@ def eliminar_paciente(id_usuario, id_paciente):
 #––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––#
 ################################################################ Procesamiento de EEG ################################################################
 # INCOMPLETO – Falta trabajar en varias partes de este código, no va a funcionar tal como está
+def load_data_from_json(data):
+    return json.loads(data)
+
+def Filtering(data, fs=200):
+    sos = butter(2, 0.1, 'hp', fs=fs, output='sos')  # Filtro pasa alto
+    filtered_data = sosfilt(sos, data)
+    return filtered_data
+
+def single_channel(data, fs=200, features_per_channel=23):
+    mean_val = np.mean(data)
+    std_val = np.std(data)
+    max_val = np.max(data)
+    min_val = np.min(data)
+    median_val = np.median(data)
+    skewness = scipy.stats.skew(data)
+    kurtosis = scipy.stats.kurtosis(data)
+    percentile25 = np.percentile(data, 25)
+    percentile75 = np.percentile(data, 75)
+    nperseg = min(1024, len(data))
+    freqs, psd = welch(data, fs=fs, nperseg=nperseg)
+    num_percentiles = features_per_channel - 9
+    psd_percentiles = np.percentile(psd, np.linspace(0, 100, num=num_percentiles))
+    features = [mean_val, std_val, max_val, min_val, median_val, skewness, kurtosis, percentile25, percentile75, *psd_percentiles]
+    return np.array(features)
+
+def process_eeg_data_from_json(data, num_channels=19, features_per_channel=23):
+    all_features = []
+    for channel_data in data:
+        filtered_data = Filtering(channel_data)
+        channel_features = single_channel(filtered_data, features_per_channel=features_per_channel)
+        all_features.append(channel_features)
+    combined_features = np.concatenate(all_features)
+    return combined_features[:-5]
+
+def load_models():
+    xgb_model = xgb.XGBClassifier()
+    xgb_model.load_model('/models/modelo_xgb.json')  # Carga del modelo XGBoost
+    return xgb_model
+
+def make_predictions(xgb_model, features):
+    start_time = time.time()
+    features = features.reshape(1, -1)
+    predictions_xgb = xgb_model.predict_proba(features)
+    print("Predicciones XGBoost:", predictions_xgb)
+    print("Tiempo de predicción XGBoost:", time.time() - start_time)
+    return predictions_xgb
+
 @app.route('/sesiones/nueva', methods=['POST'])
 @jwt_required()
 def crear_nueva_sesion():
@@ -1460,6 +1511,11 @@ def crear_nueva_sesion():
                     })
             data_area_bandas_psd_json = json.dumps(data_for_highcharts_areas_bandas)
             data_area_bandas_pr_json = json.dumps(data_for_highcharts_areas_bandas_power_rel)
+            datos_procesados = load_data_from_json(datos_procesados_json)
+            features = process_eeg_data_from_json(datos_procesados['data'])
+            xgb_model = load_models()
+            prediction = make_predictions(xgb_model, features)
+            caracteristicas_json = json.dumps(prediction.tolist())
             nuevo_normalized_eeg = NormalizedEEG(
                 id_sesion=nueva_sesion.id_sesion,
                 fecha_hora_procesado=datetime.now(timezone.utc),
@@ -1467,7 +1523,8 @@ def crear_nueva_sesion():
                 data_psd=datos_psd_json,  # Here we store the PSD data
                 data_stft=data_stft_json,  # Here we store the STFT data
                 data_area_bandas_psd=data_area_bandas_psd_json, # Here we store the data of the PSD by area and band
-                data_area_bandas_pr=data_area_bandas_pr_json # Here we store the data of the relative power by area and band
+                data_area_bandas_pr=data_area_bandas_pr_json, # Here we store the data of the relative power by area and band
+                caracteristicas=caracteristicas_json # Here we store the prediction of the model
             )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')

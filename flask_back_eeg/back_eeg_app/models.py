@@ -199,6 +199,7 @@ class Sesion(db.Model):
     normalized_eegs = db.relationship('NormalizedEEG', backref='sesion', lazy='dynamic', cascade='all, delete-orphan')
     medicamentos = db.relationship('Medicamento', secondary=sesion_medicamento, backref=db.backref('sesiones', lazy='dynamic'))
 
+
 # Model for Raw EEG
 class RawEEG(db.Model):
     __tablename__ = 'raw_eeg'
@@ -218,3 +219,4 @@ class NormalizedEEG(db.Model):
     data_stft = db.Column(db.JSON)
     data_area_bandas_psd = db.Column(db.JSON)
     data_area_bandas_pr = db.Column(db.JSON)
+    caracteristicas = db.Column(db.Text)
