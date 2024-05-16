@@ -1299,7 +1299,7 @@ def process_eeg_data_from_json(data, num_channels=19, features_per_channel=23):
     return combined_features[:-5]
 
 def load_models():
-    model_path = os.path.join(os.path.dirname(__file__), '/models/modelo_xgb.json')  # Ajusta según la estructura de tu proyecto
+    model_path = os.path.join(os.path.dirname(__file__), 'modelo_xgb.json')  # Ajusta según la estructura de tu proyecto
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"El modelo especificado no fue encontrado en la ruta: {model_path}")
     xgb_model = xgb.XGBClassifier()
