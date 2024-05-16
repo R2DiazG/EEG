@@ -21,10 +21,10 @@ import { id } from 'date-fns/locale';
 
 declare var Plotly: any;
 
-interface SeriesOptions {
-  name: string;
-  data: number[];
-  yAxis: number;
+interface EEGAnomaly {
+  index: number;
+  value: number;
+  channel: string;
 }
 
 interface EEGData {
@@ -134,6 +134,8 @@ ngOnInit() {
                 this.cargarMedicamentos();
                 this.cargarDatosSTFT();
                 this.cargarCaracteristicas();
+                this.cargarDatosNormalizedEEG();
+                this.cargarDatosNormalizedEEGConAnomalias();
                 // Cargar datos de la sesión de EEG directamente aquí
                 this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
               } else {
@@ -764,7 +766,7 @@ cargarDatos() {
       next: (response: any[]) => {
         const datosPSDBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
         console.log('Datos de Áreas de Bandas PSD:', datosPSDBandas);
-        
+
         if (datosPSDBandas && datosPSDBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPSDBandas[0]);
           console.log('Primer elemento para verificar estructura:', datosPSDBandas[0]);
@@ -782,7 +784,7 @@ cargarDatos() {
       error: (error) => console.error('Error al obtener datos de Áreas de Bandas PSD:', error)
     });
   }
-  
+
   procesarYMostrarPSDAreaBandas(bandas: EEGDataBand[]): void {
     bandas.forEach(banda => {
       const options: Highcharts.Options = {
@@ -812,13 +814,13 @@ cargarDatos() {
       Highcharts.chart(options);
     });
   }
-  
+
   cargarPRAreaBandas(idSesion: number, areaSeleccionada: string): void {
     this.eegService.obtenerDataAreaBandasPR(idSesion).subscribe({
       next: (response: any[]) => {
         const datosPRBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
         console.log('Datos de Áreas de Bandas PR:', datosPRBandas);
-        
+
         if (datosPRBandas && datosPRBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPRBandas[0]);
           console.log('Primer elemento para verificar estructura:', datosPRBandas[0]);
@@ -836,7 +838,7 @@ cargarDatos() {
       error: (error) => console.error('Error al obtener datos de Áreas de Bandas PR:', error)
     });
   }
-  
+
   procesarYMostrarPRAreaBandas(bandas: EEGDataBand[]): void {
     bandas.forEach(banda => {
       const options: Highcharts.Options = {
@@ -866,7 +868,7 @@ cargarDatos() {
       Highcharts.chart(options);
     });
   }
-  
+
   cargarCaracteristicas(): void {
     if (this.idSesion) {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
@@ -884,5 +886,144 @@ cargarDatos() {
     } else {
       console.error('ID de sesión es nulo');
     }
-  }  
+  }
+
+  cargarDatosNormalizedEEGConAnomalias(): void {
+    if (this.idSesion) {
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response) => {
+          if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+            const dataNormalizedString = response.normalized_eegs[0].data_normalized;
+            try {
+              const dataNormalized = JSON.parse(dataNormalizedString);
+              const anomalies = this.detectAnomalies(dataNormalized); // Detectar anomalías
+              this.procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized, anomalies);
+            } catch (error) {
+              console.error('Error al parsear los datos EEG normalizados:', error);
+            }
+          } else {
+            console.error('No se encontraron EEGs normalizados para esta sesión.');
+          }
+        },
+        error: (error) => console.error('Error al obtener datos EEG normalizados:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
+  }
+
+  detectAnomalies(dataNormalized: EEGData, threshold: number = 3): EEGAnomaly[] {
+    const anomalies: EEGAnomaly[] = [];
+    dataNormalized.data.forEach((channelData, channelIndex) => {
+      const channelName = dataNormalized.names[channelIndex];
+      const mean = channelData.reduce((a, b) => a + b, 0) / channelData.length;
+      const stdDev = Math.sqrt(channelData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / channelData.length);
+      channelData.forEach((value, index) => {
+        if (Math.abs(value - mean) > threshold * stdDev) {
+          anomalies.push({
+            index: index,
+            value: value,
+            channel: channelName,
+          });
+        }
+      });
+    });
+    return anomalies;
+  }
+
+  procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalizedString: EEGData, anomalies: EEGAnomaly[] = []): void {
+    try {
+      console.log('Datos EEG normalizados:', dataNormalizedString);
+      const { names, data } = dataNormalizedString;
+      let maxAmplitude = Number.MIN_SAFE_INTEGER;
+      let minAmplitude = Number.MAX_SAFE_INTEGER;
+      data.forEach(channelData => {
+        maxAmplitude = Math.max(maxAmplitude, ...channelData);
+        minAmplitude = Math.min(minAmplitude, ...channelData);
+      });
+      const amplitudeRange = maxAmplitude - minAmplitude;
+      const offset = amplitudeRange * 0.5;
+      const extraPadding = 0.2;
+      const series = names.map((name, index) => {
+        return {
+          name: name,
+          data: data[index].map((point, i) => [i, point + offset * index]),
+          anomalyData: anomalies.filter(anomaly => anomaly.channel === name)
+        };
+      });
+      const options: Options = {
+        chart: {
+          renderTo: 'eeg_anomaly',
+          type: 'line',
+          zooming: {
+            type: 'x'
+          },
+          height: 1000
+        },
+        title: {
+          text: 'Visualización de Datos EEG Normalizados con Anomalías'
+        },
+        xAxis: {
+          title: {
+            text: 'Número de Muestra'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Amplitud (µV)'
+          },
+          labels: {
+            formatter: function () {
+              const index = Math.round((this.value as number) / offset);
+              return names[index] || '';
+            }
+          },
+          tickInterval: offset,
+          min: -extraPadding,
+          max: offset * (names.length - 1) + extraPadding,
+        },
+        tooltip: {
+          shared: true,
+          valueDecimals: 8
+        },
+        plotOptions: {
+          series: {
+            animation: {
+              duration: 1000
+            },
+            marker: {
+              enabled: false
+            },
+            lineWidth: 2,
+            events: {
+              click: function (event) {
+                // Maneja el clic en las anomalías, si es necesario
+              }
+            }
+          }
+        },
+        series: series.map(serie => ({
+          ...serie,
+          marker: {
+            enabled: true,
+            radius: 5,
+            states: {
+              hover: {
+                enabled: true,
+                lineColor: 'red'
+              }
+            }
+          },
+          data: serie.data,
+          zones: [{
+            value: Number.MAX_VALUE,
+            color: 'black'
+          }]
+        })) as Highcharts.SeriesOptionsType[]
+      };
+      Highcharts.chart('eeg_anomaly', options);
+    } catch (error) {
+      console.error('Error al procesar los datos EEG normalizados:', error);
+    }
+  }
 }
