@@ -17,9 +17,9 @@ from mne.filter import filter_data
 from mne.preprocessing import ICA, create_eog_epochs
 from sklearn.decomposition import PCA
 from scipy.signal import stft, butter, sosfilt, welch
-from scipy.stats
-from keras.models import load_model
+#from keras.models import load_model
 import xgboost as xgb
+import scipy.stats
 import os
 import mne
 import json
