@@ -90,6 +90,7 @@ export class GraficasPacienteComponent implements OnInit {
 
   //EEG
   private plotly: any;
+  caracteristicas: number[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   areaSeleccionada!: string;
@@ -132,6 +133,7 @@ ngOnInit() {
                 this.cargarDatosEEG();
                 this.cargarMedicamentos();
                 this.cargarDatosSTFT();
+                this.cargarCaracteristicas();
                 // Cargar datos de la sesión de EEG directamente aquí
                 this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
               } else {
@@ -401,6 +403,7 @@ cargarDatos() {
       break;
     case 'prob':
       // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
+      this.cargarCaracteristicas();
       break;
   }
 
@@ -864,5 +867,22 @@ cargarDatos() {
     });
   }
   
-
+  cargarCaracteristicas(): void {
+    if (this.idSesion) {
+      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+        next: (response: any) => {
+          console.log('Datos caracteristicas:', response);
+          if (response.normalized_eegs.length > 0) {
+            const caracteristicasString = response.normalized_eegs[0].caracteristicas;
+            this.caracteristicas = JSON.parse(caracteristicasString)[0].map((num: number) =>
+              parseFloat((num * 100).toFixed(1))
+            );
+          }
+        },
+        error: (error: any) => console.error('Error al obtener datos de EEG:', error)
+      });
+    } else {
+      console.error('ID de sesión es nulo');
+    }
+  }  
 }
