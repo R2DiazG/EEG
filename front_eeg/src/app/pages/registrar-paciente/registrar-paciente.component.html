@@ -364,6 +364,14 @@
                 <br>
               </div>
 
+              <label for="relativeSuburb">Colonia:</label>
+              <input type="text" id="relativeSuburb" placeholder="Colonia Falsa" name="relativeSuburb" [(ngModel)]="patient.contacto_emergencia.colonia" required #relativeSuburb="ngModel">
+              <div *ngIf="relativeSuburb.invalid && relativeSuburb.touched" class="error">
+                La colonia es obligatoria.
+                <br>
+                <br>
+              </div>
+
               <label for="relativeCity">Ciudad:</label>
               <input type="text" id="relativeCity" placeholder="Ciudad Falsa" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required #relativeCity="ngModel">
               <div *ngIf="relativeCity.invalid && relativeCity.touched" class="error">

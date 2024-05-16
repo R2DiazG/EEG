@@ -521,9 +521,10 @@ def crear_medicamento():
         nombre_comercial = datos.get('nombre_comercial')
         principio_activo = datos.get('principio_activo')
         presentacion = datos.get('presentacion')
+        dosis = datos.get('dosis')
         if not nombre_comercial or not principio_activo or not presentacion:
             return jsonify({'mensaje': 'Faltan datos necesarios para crear el medicamento'}), 400
-        nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion)
+        nuevo_medicamento = Medicamento(nombre_comercial=nombre_comercial, principio_activo=principio_activo, presentacion=presentacion, dosis=dosis)
         db.session.add(nuevo_medicamento)
         db.session.commit()
         logging.info('Medicamento creado exitosamente: %s', nuevo_medicamento.nombre_comercial)
@@ -553,7 +554,8 @@ def obtener_medicamentos():
             'id_medicamento': medicamento.id_medicamento,
             'nombre_comercial': medicamento.nombre_comercial,
             'principio_activo': medicamento.principio_activo,
-            'presentacion': medicamento.presentacion
+            'presentacion': medicamento.presentacion,
+            'dosis': medicamento.dosis
         } for medicamento in medicamentos]
         logging.info('Medicamentos obtenidos exitosamente')
         return jsonify(resultado), 200
@@ -585,7 +587,8 @@ def obtener_medicamento_por_id(id_medicamento):
             'id_medicamento': medicamento.id_medicamento,
             'nombre_comercial': medicamento.nombre_comercial,
             'principio_activo': medicamento.principio_activo,
-            'presentacion': medicamento.presentacion
+            'presentacion': medicamento.presentacion,
+            'dosis': medicamento.dosis
         }), 200
     except Exception as e:
         logging.error('Error al obtener el medicamento %s: %s', id_medicamento, e)
@@ -621,6 +624,7 @@ def actualizar_medicamento(id_medicamento):
         medicamento.nombre_comercial = datos.get('nombre_comercial', medicamento.nombre_comercial)
         medicamento.principio_activo = datos.get('principio_activo', medicamento.principio_activo)
         medicamento.presentacion = datos.get('presentacion', medicamento.presentacion)
+        medicamento.dosis = datos.get('dosis', medicamento.dosis)
         db.session.commit()
         logging.info('Medicamento %s actualizado exitosamente', id_medicamento)
         return jsonify({'mensaje': 'Medicamento actualizado exitosamente'}), 200
@@ -691,6 +695,7 @@ def obtener_medicamentos_por_paciente(id_paciente):
                     'nombre_comercial': medicamento.nombre_comercial,
                     'principio_activo': medicamento.principio_activo,
                     'presentacion': medicamento.presentacion,
+                    'dosis': medicamento.dosis,
                     'fecha_sesion': fecha_sesion,
                     'notas_psicologo': notas_psicologo
                 })
@@ -771,6 +776,7 @@ def crear_paciente_para_usuario(id_usuario):
                 telefono=contacto_data['telefono'],
                 correo_electronico=contacto_data.get('correo_electronico', ''),
                 direccion=contacto_data.get('direccion', ''),
+                colonia=contacto_data.get('colonia', ''),
                 ciudad=contacto_data.get('ciudad', ''),
                 estado=contacto_data.get('estado', ''),
                 codigo_postal=contacto_data.get('codigo_postal', ''),
@@ -941,6 +947,7 @@ def obtener_detalles_paciente(id_paciente):
                 'telefono': ce.telefono,
                 'correo_electronico': ce.correo_electronico or "",
                 'direccion': ce.direccion or "",
+                'colonia': ce.colonia or "",
                 'ciudad': ce.ciudad or "",
                 'estado': ce.estado or "",
                 'codigo_postal': ce.codigo_postal or "",
@@ -1150,6 +1157,7 @@ def actualizar_contacto_emergencia(paciente, datos_contacto):
         contacto.telefono = datos_contacto.get('telefono', contacto.telefono)
         contacto.correo_electronico = datos_contacto.get('correo_electronico', contacto.correo_electronico)
         contacto.direccion = datos_contacto.get('direccion', contacto.direccion)
+        contacto.colonia = datos_contacto.get('colonia', contacto.colonia)
         contacto.ciudad = datos_contacto.get('ciudad', contacto.ciudad)
         contacto.estado = datos_contacto.get('estado', contacto.estado)
         contacto.codigo_postal = datos_contacto.get('codigo_postal', contacto.codigo_postal)

@@ -41,6 +41,7 @@ export class UpdatePaciente {
             codigo_postal?: string;
             correo_electronico: string;
             direccion: string;
+            colonia: string;
             estado: string;
             notas: string;
             pais: string;

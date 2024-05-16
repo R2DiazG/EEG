@@ -151,6 +151,7 @@ export class EditarPacienteComponent implements OnInit {
         telefono: data.contacto_emergencia.telefono,
         correo_electronico: data.contacto_emergencia.correo_electronico,
         direccion: data.contacto_emergencia.direccion,
+        colonia: data.contacto_emergencia.colonia,
         ciudad: data.contacto_emergencia.ciudad,
         estado: data.contacto_emergencia.estado,
         codigo_postal: data.contacto_emergencia.codigo_postal,

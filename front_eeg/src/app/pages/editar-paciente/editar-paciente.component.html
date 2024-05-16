@@ -353,6 +353,17 @@
               <input type="text" id="address0" name="address0" [(ngModel)]="patient.direcciones[0].calle_numero" required>
             </ng-template>
 
+            <!-- Colonia -->
+            <div *ngIf="!isEditMode; else editColonia" class="respuesta">
+              <label>Colonia:</label>
+              {{patient.direcciones[0].colonia}}
+            </div>
+            <br>
+            <ng-template #editColonia>
+              <label for="colonia0">Colonia:</label>
+              <input type="text" id="colonia0" name="colonia0" [(ngModel)]="patient.direcciones[0].colonia" required>
+            </ng-template>
+
             <!-- Ciudad -->
             <div *ngIf="!isEditMode; else editCiudad" class="respuesta">
               <label>Ciudad:</label>

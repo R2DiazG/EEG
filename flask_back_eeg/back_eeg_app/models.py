@@ -96,6 +96,7 @@ class ContactoEmergencia(db.Model):
     telefono = db.Column(db.String(20), nullable=False)
     correo_electronico = db.Column(db.String(255))
     direccion = db.Column(db.String(255))
+    colonia = db.Column(db.String(255))
     ciudad = db.Column(db.String(255))
     estado = db.Column(db.String(255))
     codigo_postal = db.Column(db.String(20))
@@ -156,6 +157,7 @@ class Medicamento(db.Model):
     nombre_comercial = db.Column(db.String(255))
     principio_activo = db.Column(db.String(255))
     presentacion = db.Column(db.String(255))
+    dosis = db.Column(db.String(255))
 
 # Model for Comments
 class MetricaDesempeno(db.Model):
