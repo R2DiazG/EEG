@@ -578,6 +578,16 @@
               <input type="text" id="relativeAddress" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required>
             </ng-template>
 
+            <div *ngIf="!isEditMode; else editRelativeColonia" class="respuesta">
+              <label>Colonia:</label>
+              {{patient.contacto_emergencia.colonia}}
+            </div>
+            <br>
+            <ng-template #editRelativeColonia>
+              <label for="relativeColonia">Colonia:</label>
+              <input type="text" id="relativeColonia" name="relativeColonia" [(ngModel)]="patient.contacto_emergencia.colonia" required>
+            </ng-template>
+
             <div *ngIf="!isEditMode; else editRelativeCity" class="respuesta">
               <label>Ciudad:</label>
               {{patient.contacto_emergencia.ciudad}}
