@@ -27,6 +27,17 @@ class Usuario(db.Model):
     aprobacion = db.Column(db.Boolean, nullable=False)
     id_rol = db.Column(db.Integer, db.ForeignKey('roles.id_rol'))
 
+# Model for Password Reset Tokens
+class PasswordResetToken(db.Model):
+    __tablename__ = 'password_reset_tokens'
+    id = db.Column(db.Integer, primary_key=True)
+    correo = db.Column(db.String(255), db.ForeignKey('usuarios.correo'), nullable=False)
+    token = db.Column(db.String(255), nullable=False, unique=True)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    requested_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    used = db.Column(db.Boolean, default=False, nullable=False)
+    usuario = db.relationship('Usuario', backref=db.backref('password_reset_tokens', lazy=True))
+
 # Model for Genders
 class Genero(db.Model):
     __tablename__ = 'generos'
