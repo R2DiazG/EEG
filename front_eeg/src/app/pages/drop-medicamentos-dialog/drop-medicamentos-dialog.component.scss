@@ -9,58 +9,108 @@ $blue: #2492FF;
   padding: 20px;
 }
 
-ng-select {
-  width: 55%;
+.select-container {
+  position: relative;
   margin-bottom: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#medicamentosInput {
+  width: 60%;
+  padding: 10px;
+  font-size: 1.2rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
 
-  &:not(.ng-select-opened) .ng-select-container .ng-value-container .ng-placeholder {
-    /* Solo muestra el placeholder cuando no hay nada seleccionado y el ng-select no está abierto */
-    visibility: visible;
-  }
+#medicamentosList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  //border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+}
 
-  .ng-select-container {
-    border: none;
-  }
+.hidden {
+  display: none;
+}
 
-  .ng-value-container {
-    align-items: center;
-  }
+#medicamentosList li {
+  padding: 10px;
+  cursor: pointer;
+}
 
-  .ng-placeholder {
-    /* Por defecto oculta el placeholder, se muestra según la regla anterior */
-    visibility: hidden;
-  }
+#medicamentosList li:hover {
+  background-color: #f5f5f5;
+}
 
-  .ng-value {
-    background-color: #e4e4e4;
-    display: inline-block;
-    margin: 0 10px 0 0;
-    padding: 3px 10px;
-    border-radius: 15px;
-  }
+.selected-container {
+  margin-bottom: 20px;
+}
 
-  .ng-input input {
-    width: 100%;
-    padding: 8px;
-  }
+.selected-medicamentos {
+  display: flex;
+  flex-wrap: wrap;
+}
 
-  .ng-option {
-    padding: 10px;
-    &:hover {
-      background-color: #f5f5f5;
-    }
-  }
+.medicamento-tag {
+  background-color: #e4e4e4;
+  display: inline-flex;
+  align-items: center;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 1.2rem;
+}
+
+.close-btn {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
 }
 
-.add{
+.add,
+.less {
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.5rem;
+  background-color: transparent;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+.add:hover {
+  background-color: #38b87c;
+  color: white;
+}
+
+.less:hover {
+  background-color: #2492ff;
+  color: white;
+}
+
+
+.add,
+.less {
+  padding: 0.5rem;
+  border: none;
+  font-size: 1.5rem;
+  background-color: transparent;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+.add {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,19 +120,21 @@ ng-select {
   background-color: transparent;
   margin: 0.5rem;
   cursor: pointer;
-  //margin-bottom: 20px;
 }
-  .add {
-    color: $bg;
-    margin-right: 10px;
-    &:hover {
+
+.add {
+  color: $bg;
+  margin-right: 10px;
+  &:hover {
     background-color: $green;
     color: white;
-    .text { color: white; }
+    .text {
+      color: white;
+    }
   }
 }
 
-.less{
+.less {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,14 +144,17 @@ ng-select {
   background-color: transparent;
   margin: 0.5rem;
   cursor: pointer;
-  //margin-bottom: 20px;
 }
-  .less {
-    color: $bg;
-    margin-right: 10px;
-    &:hover {
+
+.less {
+  color: $bg;
+  margin-right: 10px;
+  &:hover {
     background-color: $blue;
     color: white;
-    .text { color: white; }
+    .text {
+      color: white;
+    }
   }
 }
+
