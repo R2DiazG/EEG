@@ -24,16 +24,9 @@ export class PacienteService {
     return headers;
   }
 
-  crearPaciente(idUsuario: number, pacienteFormData: FormData): Observable<any> {
+  crearPaciente(idUsuario: number, formData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    //return this.http.post(url, pacienteFormData, { headers: this.getHeaders() }); // Modificar para soportar FormData
-    return this.http.post(url, FormData).pipe(
-      map(response => response),
-      catchError(error => {
-        console.error("Error al crear el paciente:", error);
-        return throwError(() => new Error(`Error al crear el paciente: ${error.message}`));
-      })
-    );
+    return this.http.post(url, formData); // No añadas headers aquí, Angular manejará los headers de FormData automáticamente
   }
 
   obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {

@@ -20,13 +20,13 @@ export class RegistrarPacienteComponent implements OnInit {
   mediaRecorder!: MediaRecorder;
   audioUrl!: string;
   recording: boolean = false;
-  audioBlob!: Blob;
+  audioFile!: File;
   tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string, audio_filename: string } = {
     consentimiento: 1,
     fecha_registro: this.fechaActual,
-    audio_filename: ''
+    audio_filename: 'consentimiento.mp3'
   };
 
   constructor(
@@ -143,8 +143,9 @@ export class RegistrarPacienteComponent implements OnInit {
         audioChunks.push(event.data);
       };
       this.mediaRecorder.onstop = () => {
-        this.audioBlob = new Blob(audioChunks);
-        this.audioUrl = URL.createObjectURL(this.audioBlob);
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+        this.audioFile = new File([audioBlob], 'consentimiento.mp3', { type: 'audio/mp3' });
+        this.audioUrl = URL.createObjectURL(this.audioFile);
         stream.getTracks().forEach(track => track.stop());
       };
       this.recording = true;
@@ -185,52 +186,21 @@ export class RegistrarPacienteComponent implements OnInit {
     this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(this.patient)], { type: 'application/json' }));
-    if (this.audioUrl) {
-      fetch(this.audioUrl)
-        .then(response => response.blob())
-        .then(blob => {
-          const audioFile = new File([blob], 'consentimiento.mp3', { type: 'audio/mp3' });
-          formData.append('audio_consentimiento', audioFile);
-          if (this.id_usuario) {
-            // Debug: Log the FormData content
-            formData.forEach((value, key) => {
-              console.log(`FormData key: ${key}, value:`, value);
-            });
-            this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
-              next: (response) => {
-                console.log('Paciente registrado con éxito', response);
-                this.router.navigate(['/lista-pacientes']);
-              },
-              error: (error) => {
-                console.error('Error al registrar el paciente', error);
-              }
-            });
-          } else {
-            console.error('ID de usuario no definido.');
-          }
-        })
-        .catch(error => {
-          console.error('Error al convertir el audio a Blob', error);
-        });
+    if (this.audioFile) {
+      formData.append('audio_consentimiento', this.audioFile);
+    }
+    if (this.id_usuario) {
+      this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
+        next: (response) => {
+          console.log('Paciente registrado con éxito', response);
+          this.router.navigate(['/lista-pacientes']);
+        },
+        error: (error) => {
+          console.error('Error al registrar el paciente', error);
+        }
+      });
     } else {
-      console.error('No hay URL de audio disponible');
-      if (this.id_usuario) {
-        // Debug: Log the FormData content
-        formData.forEach((value, key) => {
-          console.log(`FormData key: ${key}, value:`, value);
-        });
-        this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
-          next: (response) => {
-            console.log('Paciente registrado con éxito', response);
-            this.router.navigate(['/lista-pacientes']);
-          },
-          error: (error) => {
-            console.error('Error al registrar el paciente', error);
-          }
-        });
-      } else {
-        console.error('ID de usuario no definido.');
-      }
+      console.error('ID de usuario no definido.');
     }
   }
 }
