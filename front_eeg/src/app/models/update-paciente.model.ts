@@ -49,4 +49,9 @@ export class UpdatePaciente {
             telefono: string;
         } = {} as any;
 
+        consentimientos: {
+            consentimiento: number; 
+            fecha_registro: string;
+            audio_filename: string;
+        }[] = [];
 }

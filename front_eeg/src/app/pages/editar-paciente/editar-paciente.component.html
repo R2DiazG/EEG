@@ -652,7 +652,12 @@
             <div>
               <label>Consentimiento:</label>
               <a>{{ getConsentimientoDisplay() }}</a>
-              <!-- <audio *ngIf="patient.consentimientos.audioUrl" [src]="patient.consentimientos.audioUrl" controls></audio> -->
+              <br>
+              <br>
+              <audio *ngIf="patient.consentimientos.length > 0" controls>
+                <source [src]="getAudioUrl(patient.consentimientos[0].audio_filename)" type="audio/mpeg">
+                Tu navegador no soporta la reproducción de audio.
+              </audio>
             </div>
           </div>
         </div>

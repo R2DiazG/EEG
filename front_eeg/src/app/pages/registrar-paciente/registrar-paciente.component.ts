@@ -187,8 +187,8 @@ export class RegistrarPacienteComponent implements OnInit {
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(this.patient)], { type: 'application/json' }));
     if (this.audioBlob) {
-      formData.append('audio_consentimiento', this.audioBlob, 'consentimiento.wav');
-      this.consentimientoTemporal.audio_filename = 'consentimiento.wav'; // Ensure filename is sent
+      formData.append('audio_consentimiento', this.audioBlob, 'consentimiento.mp3');
+      this.consentimientoTemporal.audio_filename = 'consentimiento.mp3'; // Ensure filename is sent
     }
 
     if (this.id_usuario) {

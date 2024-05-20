@@ -23,6 +23,7 @@ export class EditarPacienteComponent implements OnInit {
   tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoDisplay: string = "Consentimiento grabado (haz clic para reproducir)";
+  private apiUrl = 'http://127.0.0.1:5000';
 
   constructor(
     private router: Router,
@@ -104,19 +105,19 @@ export class EditarPacienteComponent implements OnInit {
   getOcupationDisplay(occupation: string | undefined): string {
     return occupation ?? 'No especificado'; // Si 'occupation' es null o undefined, devuelve 'No especificado'
   }
-  getConsentimientoDisplay(): string { 
-    {
-        return 'Consentimiento dado';
+
+  getConsentimientoDisplay(): string {
+    if (this.patient.consentimientos && this.patient.consentimientos.length > 0) {
+      return 'Consentimiento dado el ' + this.patient.consentimientos[0].fecha_registro;
     }
     return 'No se ha proporcionado consentimiento';
   }
 
-//   getConsentimientoDisplay(): string {
-//     if (this.patient.consentimientos && this.patient.consentimientos.audioUrl) {
-//         return 'Consentimiento grabado el ' + formatDate(this.patient.consentimientos.fecha_registro, 'longDate', 'en-US');
-//     }
-//     return 'No se ha proporcionado consentimiento';
-// }
+  getAudioUrl(filename: string): string {
+    const normalizedFilename = filename.replace(/\\/g, '/');
+    const url = `${this.apiUrl}/${normalizedFilename}`;
+    return url;
+  }
 
   // Asegúrate de tener una función para mapear los datos recibidos al modelo InfoPaciente
   private mapToUpdatePaciente(data: any): UpdatePaciente {
@@ -158,8 +159,13 @@ export class EditarPacienteComponent implements OnInit {
         pais: data.contacto_emergencia.pais,
         notas: data.contacto_emergencia.notas,
       },
-      // Asume que hay consentimientos que se pueden mapear directamente
+      consentimientos: data.consentimientos.map((consent: any) => ({
+        consentimiento: consent.consentimiento,
+        fecha_registro: consent.fecha_registro,
+        audio_filename: consent.audio_filename
+      }))
     };
+    console.log('Datos del paciente mapeados:', mapped);
     return mapped;
   }
   

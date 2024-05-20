@@ -6,10 +6,11 @@ import json
 import uuid
 import time
 import logging
+import mimetypes
 import sendgrid
 import numpy as np
 import pandas as pd
-from flask import Flask, jsonify, request, url_for, Response
+from flask import Flask, jsonify, request, url_for, Response, send_from_directory
 from flask_cors import CORS, cross_origin
 from extensions import db, migrate, jwt, bcrypt
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity
@@ -56,6 +57,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 token_secret_key = os.getenv('TOKEN_SECRET_KEY')
 
 # Initialize the logger
+logging.basicConfig(level=logging.DEBUG)
 s = URLSafeTimedSerializer(token_secret_key)
 
 # Initialize the extensions
@@ -826,18 +828,6 @@ def crear_paciente_para_usuario(id_usuario):
             )
             db.session.add(contacto_emergencia)
             print(contacto_emergencia)
-        # if 'consentimientos' in datos:
-        #     for consentimiento in datos['consentimientos']:
-        #         audio_consentimiento = None
-        #         if audio_file and audio_file.filename == consentimiento['audio_filename']:
-        #             audio_consentimiento = audio_file.read()
-        #         nuevo_consentimiento = Consentimiento(
-        #             consentimiento=bool(int(consentimiento['consentimiento'])),
-        #             fecha_registro=consentimiento['fecha_registro'],
-        #             id_paciente=nuevo_paciente.id_paciente,
-        #             audio_consentimiento=audio_consentimiento
-        #         )
-        #         db.session.add(nuevo_consentimiento)
         if 'consentimientos' in datos:
             for consentimiento in datos['consentimientos']:
                 audio_filename = None
@@ -1042,7 +1032,8 @@ def obtener_detalles_paciente(id_paciente):
             } for direccion in paciente.direcciones],
             'consentimientos': [{
                 'consentimiento': consent.consentimiento, 
-                'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
+                'fecha_registro': consent.fecha_registro.strftime('%Y-%m-%d %H:%M:%S'),
+                'audio_filename': consent.audio_filename
             } for consent in paciente.consentimientos],
             'contacto_emergencia': contacto_emergencia_info
         }
@@ -1051,6 +1042,24 @@ def obtener_detalles_paciente(id_paciente):
     except Exception as e:
         logging.error('Error al obtener detalles del paciente %s: %s', id_paciente, e)
         return jsonify({'mensaje': 'Error interno del servidor'}), 500
+    
+@app.route('/consentimientos/<path:filename>')
+def serve_audio_file(filename):
+    logging.debug(f'Trying to serve file: {filename}')
+    audio_directory = os.path.join(os.getcwd(), 'consentimientos')
+    logging.debug(f'Audio directory: {audio_directory}')
+    file_path = os.path.join(audio_directory, filename)
+    logging.debug(f'Full file path: {file_path}')
+    
+    if os.path.exists(file_path):
+        logging.debug(f'File exists: {file_path}')
+        mime_type, _ = mimetypes.guess_type(file_path)
+        with open(file_path, 'rb') as f:
+            data = f.read()
+        return Response(data, mimetype=mime_type)
+    else:
+        logging.error(f'File does not exist: {file_path}')
+        return f"Error: file {file_path} does not exist", 404
 
 @app.route('/usuarios/<int:id_usuario>/pacientes/<int:id_paciente>', methods=['PUT'])
 @jwt_required()
