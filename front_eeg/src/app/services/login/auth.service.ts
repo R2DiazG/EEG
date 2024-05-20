@@ -10,6 +10,7 @@ export class AuthService {
   private loginUrl = 'http://127.0.0.1:5000/login';
   private forgotPasswordUrl = 'http://127.0.0.1:5000/solicitar_cambio_contraseña';
   private currentUserUrl = 'http://127.0.0.1:5000/usuario/actual';
+  private resetPasswordUrl = 'http://127.0.0.1:5000/resetear_contrasena'; // Nueva URL para restablecer contraseña
 
   constructor(private http: HttpClient) { }
 
@@ -51,6 +52,19 @@ export class AuthService {
           console.error("Error al obtener el usuario actual:", error);
           return throwError(() => new Error(`Error al obtener el usuario actual: ${error.message}`));
         })        
+      );
+  }
+
+  resetPassword(token: string, nuevaContrasena: string): Observable<any> {
+    return this.http.post<any>(`${this.resetPasswordUrl}/${token}`, { nueva_contrasena: nuevaContrasena })
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        catchError(error => {
+          console.error("Error al resetear la contraseña:", error);
+          return throwError(() => new Error(`Error al resetear la contraseña: ${error.message}`));
+        })
       );
   }
 

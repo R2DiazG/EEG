@@ -15,6 +15,7 @@ import { ListaPsicologosComponent } from './pages/lista-psicologos/lista-psicolo
 import { RoleGuard } from './services/guard/guards/role.guard';
 import { MedicamentosComponent } from './pages/medicamentos/medicamentos.component';
 import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
+import { RestablecerContraComponent } from './pages/restablecer-contra/restablecer-contra.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contra', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
+  { path: 'restablecer-contra', component: RestablecerContraComponent},
   { path: 'admin-registra-psicologo', component: AdminRegistraPsicologoComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
   { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
   { path: '**', redirectTo: '/login' },
