@@ -779,7 +779,9 @@ def crear_paciente_para_usuario(id_usuario):
     """
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
-    datos = request.get_json()
+    datos = request.form.to_dict()
+    audio_files = request.files.getlist('audio_consentimientos')
+    #datos = request.get_json()
     print(datos)
     try:
         nuevo_paciente = Paciente(
@@ -820,12 +822,17 @@ def crear_paciente_para_usuario(id_usuario):
             print(contacto_emergencia)
         if 'consentimientos' in datos:
             for consentimiento in datos['consentimientos']:
-                if consentimiento['consentimiento'] == '1': 
-                    print('soy true')
-                    nuevo_consentimiento = Consentimiento(consentimiento=1, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
-                else:
-                    print('soy false')
-                    nuevo_consentimiento = Consentimiento(consentimiento=0, fecha_registro=consentimiento['fecha_registro'], id_paciente=nuevo_paciente.id_paciente)
+                audio_consentimiento = None
+                for audio_file in audio_files:
+                    if audio_file.filename == consentimiento['audio_filename']:
+                        audio_consentimiento = audio_file.read()
+                        break
+                nuevo_consentimiento = Consentimiento(
+                    consentimiento=bool(int(consentimiento['consentimiento'])),
+                    fecha_registro=consentimiento['fecha_registro'],
+                    id_paciente=nuevo_paciente.id_paciente,
+                    audio_consentimiento=audio_consentimiento
+                )
                 db.session.add(nuevo_consentimiento)
         # Add the phone numbers, emails and addresses
         if 'telefonos' in datos:

@@ -160,6 +160,7 @@ class Consentimiento(db.Model):
     id_paciente = db.Column(db.Integer, db.ForeignKey('pacientes.id_paciente'), nullable=False)
     consentimiento = db.Column(db.Boolean, nullable=False)
     fecha_registro = db.Column(db.DateTime, nullable=False)
+    audio_consentimiento = db.Column(db.LargeBinary)
 
 # Model for Medicines
 class Medicamento(db.Model):

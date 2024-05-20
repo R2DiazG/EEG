@@ -23,9 +23,9 @@ export class PacienteService {
     return headers;
   }
 
-  crearPaciente(idUsuario: number, paciente: any): Observable<any> {
+  crearPaciente(idUsuario: number, pacienteFormData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    return this.http.post(url, paciente, { headers: this.getHeaders() });
+    return this.http.post(url, pacienteFormData, { headers: this.getHeaders(true) }); // Modificar para soportar FormData
   }
 
   obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {
@@ -52,7 +52,7 @@ export class PacienteService {
     const url = `${this.apiUrl}/admin/pacientes/${idPaciente}`;
     return this.http.delete(url, { headers: this.getHeaders() });
   }
-  
+
   eliminarPaciente(idUsuario: number, idPaciente: number): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes/${idPaciente}`;
     return this.http.delete(url, { headers: this.getHeaders() });
