@@ -936,7 +936,6 @@ cargarDatos() {
     return anomalies;
   }
 
-
   procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized: EEGData[], anomalies: EEGAnomaly[] = []): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalized);
