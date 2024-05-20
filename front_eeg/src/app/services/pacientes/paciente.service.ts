@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 
@@ -25,7 +25,14 @@ export class PacienteService {
 
   crearPaciente(idUsuario: number, pacienteFormData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    return this.http.post(url, pacienteFormData, { headers: this.getHeaders() }); // Modificar para soportar FormData
+    //return this.http.post(url, pacienteFormData, { headers: this.getHeaders() }); // Modificar para soportar FormData
+    return this.http.post(url, FormData).pipe(
+      map(response => response),
+      catchError(error => {
+        console.error("Error al crear el paciente:", error);
+        return throwError(() => new Error(`Error al crear el paciente: ${error.message}`));
+      })
+    );
   }
 
   obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {

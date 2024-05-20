@@ -48,4 +48,5 @@ export class UpdatePaciente {
             parentesco: string;
             telefono: string;
         } = {} as any;
+
 }
