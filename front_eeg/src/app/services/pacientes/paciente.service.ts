@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { UpdatePaciente } from '../../models/update-paciente.model';
+import { th } from 'date-fns/locale';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,7 @@ export class PacienteService {
 
   obtenerPacientesPorUsuario(idUsuario: number): Observable<any[]> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
+    console.log(this.getHeaders());
     return this.http.get<any[]>(url, { headers: this.getHeaders() });
   }
 

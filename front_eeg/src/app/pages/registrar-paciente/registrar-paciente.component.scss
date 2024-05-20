@@ -191,10 +191,46 @@ button{
 }
 
 .botones-container {
-  width: 35%;
   display: flex;
-  justify-content: space-between;
-  margin: 1rem;
+  align-items: center;
+  justify-content: center;
+
+  .audio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    background-color: green;
+    margin: 0.5rem;
+    cursor: pointer;
+    color: white;
+
+    .fas {
+      font-size: 1.5rem;
+    }
+
+    &.recording {
+      background-color: red;
+
+      .fas.fa-stop-circle {
+        display: inline-block;
+      }
+
+      .fas.fa-play {
+        display: none;
+      }
+    }
+
+    &.reset {
+      background-color: orange;
+
+      &:disabled {
+        background-color: grey;
+        cursor: not-allowed;
+      }
+    }
+  }
 }
 
 .audio {

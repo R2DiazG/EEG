@@ -410,27 +410,36 @@
     </div>
   </div>
 
-        <!-- Consentimiento del paciente -->
+  <!-- Consentimiento del paciente -->
   <div *ngIf="activeTab === 'consent'">
     <div class="form-section">
       <div class="seccion">
               <div class="audio-recorder">
                 <p>Doy mi autorización para utilizar mi información:</p>
                 <br>
-                <audio #audioControl [src]="audioUrl" controls></audio>
                 <div class="botones-container">
-                <button type="button" (click)="startRecording()" [disabled]="recording" class="audio" title="Empezar a grabar" >
-                  <!-- Iniciar Grabación -->
-                  <i class="fas fa-play" aria-hidden="true"></i>
-                </button>
-                <button type="button" (click)="stopRecording()" [disabled]="!recording" class="audio" title="Parar grabacion">
-                  <!-- Detener Grabación -->
-                  <i class="fas fa-stop-circle" aria-hidden="true"></i>
-                </button>
-                <button type="button" (click)="resetRecording()" [disabled]="!audioUrl" class="audio" title="Volver a grabar" >
-                  <!-- Reiniciar Grabación -->
-                  <i class="fas fa-refresh" aria-hidden="true"></i>
-                </button>
+                  <audio *ngIf="audioUrl" controls>
+                    <source [src]="audioUrl" type="audio/mpeg">
+                    Tu navegador no soporta la reproducción de audio.
+                  </audio>
+                  <button
+                    type="button"
+                    (click)="recording ? stopRecording() : startRecording()"
+                    class="audio"
+                    [ngClass]="{'recording': recording}"
+                    title="{{recording ? 'Parar grabación' : 'Iniciar grabación'}}"
+                  >
+                    <i class="fas" [ngClass]="{'fa-stop-circle': recording, 'fa-play': !recording}" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="resetRecording()"
+                    [disabled]="!audioUrl"
+                    class="audio reset"
+                    title="Volver a grabar"
+                  >
+                    <i class="fas fa-refresh" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
       </div>

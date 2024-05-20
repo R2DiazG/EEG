@@ -131,14 +131,14 @@ export class RegistrarPacienteComponent implements OnInit {
     this.router.navigate(['/lista-pacientes']);
   }
 
-  startRecording() {
+  startRecording(): void {
     if (this.recording) {
       return;
     }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.start();
-      const audioChunks: BlobPart[] | undefined = [];
+      const audioChunks: BlobPart[] = [];
       this.mediaRecorder.ondataavailable = event => {
         audioChunks.push(event.data);
       };
@@ -153,14 +153,14 @@ export class RegistrarPacienteComponent implements OnInit {
     });
   }
 
-  stopRecording() {
+  stopRecording(): void {
     if (this.mediaRecorder) {
       this.mediaRecorder.stop();
       this.recording = false;
     }
   }
 
-  resetRecording() {
+  resetRecording(): void {
     if (this.audioUrl) {
       URL.revokeObjectURL(this.audioUrl);
     }
@@ -183,27 +183,41 @@ export class RegistrarPacienteComponent implements OnInit {
   registerPatient(): void {
     this.patient.consentimientos.push(this.consentimientoTemporal);
     this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
-
+  
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(this.patient)], { type: 'application/json' }));
-    if (this.audioBlob) {
-      formData.append('audio_consentimiento', this.audioBlob, 'consentimiento.mp3');
-      this.consentimientoTemporal.audio_filename = 'consentimiento.mp3'; // Ensure filename is sent
-    }
-
-    if (this.id_usuario) {
-      console.log('Registrando paciente con datos:', this.patient);
-      this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
-        next: (response) => {
-          console.log('Paciente registrado con éxito', response);
-          this.router.navigate(['/lista-pacientes']);
-        },
-        error: (error) => {
-          console.error('Error al registrar el paciente', error);
-        }
-      });
+  
+    if (this.audioUrl) {
+      fetch(this.audioUrl)
+        .then(response => response.blob())
+        .then(blob => {
+          const audioFile = new File([blob], 'consentimiento.mp3', { type: 'audio/mp3' });
+          formData.append('audio_consentimiento', audioFile);
+  
+          if (this.id_usuario) {
+            // Debug: Log the FormData content
+            formData.forEach((value, key) => {
+              console.log(`FormData key: ${key}, value:`, value);
+            });
+  
+            this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
+              next: (response) => {
+                console.log('Paciente registrado con éxito', response);
+                this.router.navigate(['/lista-pacientes']);
+              },
+              error: (error) => {
+                console.error('Error al registrar el paciente', error);
+              }
+            });
+          } else {
+            console.error('ID de usuario no definido.');
+          }
+        })
+        .catch(error => {
+          console.error('Error al convertir el audio a Blob', error);
+        });
     } else {
-      console.error('ID de usuario no definido.');
+      console.error('No hay URL de audio disponible');
     }
-  }
+  }  
 }
