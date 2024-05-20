@@ -150,25 +150,7 @@ def solicitar_cambio_contrasena():
         <head>
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-          <!--[if !mso]><!-->
           <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-          <!--<![endif]-->
-          <!--[if (gte mso 9)|(IE)]>
-          <xml>
-            <o:OfficeDocumentSettings>
-              <o:AllowPNG/>
-              <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-          </xml>
-          <![endif]-->
-          <!--[if (gte mso 9)|(IE)]>
-          <style type="text/css">
-            body {width: 600px;margin: 0 auto;}
-            table {border-collapse: collapse;}
-            table, td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
-            img {-ms-interpolation-mode: bicubic;}
-          </style>
-          <![endif]-->
           <style type="text/css">
             body, p, div {
               font-family: inherit;
