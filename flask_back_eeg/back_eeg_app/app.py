@@ -1543,6 +1543,15 @@ def crear_nueva_sesion():
                 'Beta': (12, 30),
                 'Gamma': (30, 100)
             }
+            area_data = {}
+            for area, channels in areas.items():
+                indices = [raw.ch_names.index(ch) for ch in channels if ch in raw.ch_names]
+                if len(indices) == 1:
+                    area_data[area] = raw.get_data()[indices[0]].tolist()
+                else:
+                    area_data[area] = np.mean(raw.get_data()[indices], axis=0).tolist()
+            data_areas = [{'area': area, 'data': data} for area, data in area_data.items()]
+            data_areas_json = json.dumps(data_areas)
             area_band_psds = {}
             area_band_power_rel = {}
             for area, channels in areas.items():
@@ -1596,6 +1605,7 @@ def crear_nueva_sesion():
                 data_area_bandas_psd=data_area_bandas_psd_json, # Here we store the data of the PSD by area and band
                 data_area_bandas_pr=data_area_bandas_pr_json, # Here we store the data of the relative power by area and band
                 caracteristicas=caracteristicas_json # Here we store the prediction of the model
+                data_areas=data_areas_json # Here we store the data of the areas
             )
             db.session.add(nuevo_normalized_eeg)
             logging.info('Datos procesados almacenados en NormalizedEEG')

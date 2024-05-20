@@ -233,3 +233,4 @@ class NormalizedEEG(db.Model):
     data_area_bandas_psd = db.Column(db.JSON)
     data_area_bandas_pr = db.Column(db.JSON)
     caracteristicas = db.Column(db.Text)
+    data_areas = db.Column(db.JSON)

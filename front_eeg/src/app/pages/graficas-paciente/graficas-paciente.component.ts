@@ -308,7 +308,7 @@ cargarDatosDeEeg(idSesion: number): void {
         this.estado_especifico = datosEeg.detalle_sesion.estado_especifico
           .replace(/_/g, ' ')
           .split(',')
-          .map((phrase: string) => 
+          .map((phrase: string) =>
             phrase.trim().split(' ')
               .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ')
@@ -898,7 +898,7 @@ cargarDatos() {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response) => {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const dataNormalizedString = response.normalized_eegs[0].data_normalized;
+            const dataNormalizedString = response.normalized_eegs[0].data_area;
             try {
               const dataNormalized = JSON.parse(dataNormalizedString);
               const anomalies = this.detectAnomalies(dataNormalized); // Detectar anomalías
