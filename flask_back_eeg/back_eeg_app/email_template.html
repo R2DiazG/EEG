@@ -4,15 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restablecer Contraseña</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #666666;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .header p {
+            margin: 0;
+        }
+        .logo {
+            display: block;
+            margin: 20px auto;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+            background-color: #FDFBFE;
+        }
+        .content h2 {
+            color: #666666;
+        }
+        .content p {
+            margin: 20px 0;
+            color: #666666;
+        }
+        .content a {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #666666;
+            background-color: #FFF500;
+            border: 1px solid #FBCA5B;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+        }
+        .footer strong {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <p>Laboratorio de Electroencefalografía de la Universidad de Monterrey</p>
-    <h2>Hemos recibido una solicitud para restablecer su contraseña del laboratorio de EEG.</h2>
-    <p><strong>Proteger sus datos es importante para nosotros.</strong></p>
-    <p>Por favor, haga clic en el botón a continuación para comenzar.</p>
-    <a href="{link}" style="display: inline-block; padding: 10px 20px; margin: 10px 0; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Restablecer Contraseña</a>
-    <p>Si no solicitó un cambio de contraseña, por favor contáctenos <strong>INMEDIATAMENTE</strong> para que podamos mantener segura su cuenta.</p>
-    <p>Llama a <strong>+52 81 1268 3182</strong></p>
-    <p>o Email a <strong>eeglabudem@gmail.com</strong></p>
+    <div class="container">
+        <div class="header">
+            <p>Laboratorio de Electroencefalografía de la Universidad de Monterrey</p>
+        </div>
+        <img src="logo.png" alt="UDEM Logo" class="logo" width="100">
+        <div class="content">
+            <h2>Hemos recibido una solicitud para restablecer su contraseña del laboratorio de EEG.</h2>
+            <p><strong>Proteger sus datos es importante para nosotros.</strong></p>
+            <p>Por favor, haga clic en el botón a continuación para comenzar.</p>
+            <a href="{link}">Restablecer Contraseña</a>
+        </div>
+        <div class="footer">
+            <p>Si no solicitó un cambio de contraseña, por favor contáctenos <strong>INMEDIATAMENTE</strong> para que podamos mantener segura su cuenta.</p>
+            <p>Llama a <strong>+52 81 1268 3182</strong></p>
+            <p>o Email a <strong>eeglabudem@gmail.com</strong></p>
+        </div>
+    </div>
 </body>
 </html>
