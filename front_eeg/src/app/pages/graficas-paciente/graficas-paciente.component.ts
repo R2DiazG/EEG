@@ -761,7 +761,7 @@ cargarDatos() {
   cargarPSDAreaBandas(idSesion: number, areaSeleccionada: string): void {
     this.eegService.obtenerDataAreaBandasPSD(idSesion).subscribe({
       next: (response: any[]) => {
-        const datosPSDBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
+        const datosPSDBandas = response[0];
         console.log('Datos de Áreas de Bandas PSD:', datosPSDBandas);
         if (datosPSDBandas && datosPSDBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPSDBandas[0]);
@@ -784,7 +784,7 @@ cargarDatos() {
       const options: Highcharts.Options = {
         chart: {
           type: 'line',
-          renderTo: `banda${banda.banda}`  // Asegúrate que los contenedores HTML tienen IDs correctos
+          renderTo: `banda${banda.banda}`
         },
         title: {
           text: `Densidad Espectral de Potencia para ${banda.banda}`
@@ -800,7 +800,7 @@ cargarDatos() {
           }
         },
         series: [{
-          type: 'line', // Add the 'type' property with the value 'line'
+          type: 'line',
           name: banda.banda,
           data: banda.data.map((value, index) => [banda.pointStart + index * banda.pointInterval, value])
         }]
@@ -812,7 +812,7 @@ cargarDatos() {
   cargarPRAreaBandas(idSesion: number, areaSeleccionada: string): void {
     this.eegService.obtenerDataAreaBandasPR(idSesion).subscribe({
       next: (response: any[]) => {
-        const datosPRBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
+        const datosPRBandas = response[0];
         console.log('Datos de Áreas de Bandas PR:', datosPRBandas);
         if (datosPRBandas && datosPRBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPRBandas[0]);
@@ -835,7 +835,7 @@ cargarDatos() {
       const options: Highcharts.Options = {
         chart: {
           type: 'column',
-          renderTo: `banda${banda.banda}`  // Asegúrate que los contenedores HTML tienen IDs correctos
+          renderTo: `banda${banda.banda}`
         },
         title: {
           text: `Poder Relativo para ${banda.banda}`
@@ -851,7 +851,7 @@ cargarDatos() {
           }
         },
         series: [{
-          type: 'column', // Add the 'type' property with the value 'line'
+          type: 'column',
           name: banda.banda,
           data: banda.data.map((value, index) => [banda.pointStart + index * banda.pointInterval, value])
         }]
@@ -887,7 +887,7 @@ cargarDatos() {
             const dataNormalizedString = response.normalized_eegs[0].data_areas;
             try {
               const dataNormalized = JSON.parse(dataNormalizedString);
-              const anomalies = this.detectAnomalies(dataNormalized); // Detectar anomalías
+              const anomalies = this.detectAnomalies(dataNormalized);
               this.procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized, anomalies);
             } catch (error) {
               console.error('Error al parsear los datos EEG normalizados:', error);
@@ -940,7 +940,7 @@ cargarDatos() {
           .filter(anomaly => anomaly.area === area)
           .map(anomaly => ({ x: anomaly.index, y: anomaly.value + offset * index }));
         return {
-          type: 'line', // Asegúrate de que cada serie tiene el tipo especificado
+          type: 'line',
           name: area,
           data: data[index].map((point, i) => [i, point + offset * index]),
           marker: {
@@ -953,7 +953,7 @@ cargarDatos() {
               const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
               return anomaly ? `<span style="color: black;">●</span>` : null;
             },
-            x: 0 // Add the 'x' property to the object
+            x: 0
           }
         };
       });

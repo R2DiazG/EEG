@@ -1524,17 +1524,17 @@ def crear_nueva_sesion():
             # Area-band processing step
             # Define areas and frequency bands
             areas = {
-                'Frontal izq': ['Fp1', 'F3', 'F7'],
-                'Frontal der': ['Fp2', 'F4', 'F8'],
-                'Frontal centro': ['Fz'],
+                'Frontal Izquierdo': ['Fp1', 'F3', 'F7'],
+                'Frontal Derrecho': ['Fp2', 'F4', 'F8'],
+                'Frontal Centro': ['Fz'],
                 'Central': ['Cz', 'C3', 'C4'],
-                'Temporal izq': ['T3', 'T5'],
-                'Temporal der': ['T4', 'T6'],
-                'Parietal izq': ['P3'],
-                'Parietal der': ['P4'],
-                'Parietal centro': ['Pz'],
-                'Occipital izq': ['O1'],
-                'Occipital der': ['O2']
+                'Temporal Izquierdo': ['T3', 'T5'],
+                'Temporal Derecho': ['T4', 'T6'],
+                'Parietal Izquierdo': ['P3'],
+                'Parietal Derecho': ['P4'],
+                'Parietal Centro': ['Pz'],
+                'Occipital Izquierdo': ['O1'],
+                'Occipital Derecho': ['O2']
             }
             bandas = {
                 'Delta': (0.5, 4),
