@@ -146,7 +146,7 @@ def solicitar_cambio_contrasena():
         # Generate the reset link
         link = f"http://localhost:4200/restablecer-contraseña/{token}"
         # HTML content for the email
-        with open('email_template_best.html', 'r', encoding='utf-8') as file:
+        with open('email_template.html', 'r', encoding='utf-8') as file:
             html_content = file.read()
         # Enviar el correo usando SendGrid
         sg = sendgrid.SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
@@ -193,7 +193,8 @@ def resetear_contraseña(token):
         reset_token = PasswordResetToken.query.filter_by(token=token).first()
         if not reset_token:
             return jsonify({"msg": "Token inválido."}), 400
-        if reset_token.expires_at < datetime.now(timezone.utc):
+        current_time = datetime.now(timezone.utc)
+        if reset_token.expires_at < current_time:
             return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
         if reset_token.used:
             return jsonify({"msg": "El enlace para restablecer la contraseña ya ha sido utilizado."}), 400
