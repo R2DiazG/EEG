@@ -934,7 +934,7 @@ cargarDatos() {
       });
       const amplitudeRange = maxAmplitude - minAmplitude;
       const offset = amplitudeRange * 0.5;
-      const extraPadding = 0.2 * amplitudeRange;  // Ajusta el relleno adicional en función del rango de amplitud
+      const extraPadding = 0.2;
       const series = areas.map((area, index) => {
         const anomalyData = anomalies
           .filter(anomaly => anomaly.area === area)
@@ -985,8 +985,8 @@ cargarDatos() {
             }
           },
           tickInterval: offset,
-          min: minAmplitude - extraPadding,  // Ajusta el valor mínimo del eje Y
-          max: maxAmplitude + offset * (areas.length - 1) + extraPadding,  // Ajusta el valor máximo del eje Y
+          min: -extraPadding,
+          max: offset * (areas.length - 1) + extraPadding,
         },
         tooltip: {
           shared: true,
