@@ -921,7 +921,7 @@ cargarDatos() {
     return anomalies;
   }
 
-  procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized: EEGData[], anomalies: EEGAnomaly[] = []): void {
+  procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalized);
       const areas = dataNormalized.map(areaData => areaData.area);
