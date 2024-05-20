@@ -38,6 +38,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { AdminRegistraPsicologoComponent } from './pages/admin-registra-psicologo/admin-registra-psicologo.component';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { RestablecerContraComponent } from './pages/restablecer-contra/restablecer-contra.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     CrearMedicamentoDialogComponent,
     DropMedicamentosDialogComponent,
     UsuarioComponent,
-    AdminRegistraPsicologoComponent
+    AdminRegistraPsicologoComponent,
+    RestablecerContraComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,34 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<div class="container">
+    <div class="header">
+        <img src="assets/img/logo.png"> <!--Agregar logo-->
+      </div>
+<div class="login-container">
+  <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
+    <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="contraseña">Contraseña</label>
+            <div class="input-group">
+              <input [type]="showPassword ? 'text' : 'password'" id="contraseña" class="form-control password" formControlName="contraseña" placeholder="Ponga su contraseña">
+              <button type="button" class="toggle-password" (click)="toggleShowPassword()">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirmarContrasena">Confirmar Contraseña</label>
+            <div class="input-group">
+              <input [type]="showPassword ? 'text' : 'password'" id="confirmarContrasena" class="form-control password" formControlName="confirmarContrasena" placeholder="Confirme su contraseña">
+              <button type="button" class="toggle-password" (click)="toggleShowPassword()">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+      <button type="button" (click)="cancelForgetPassword()">Cancelar</button>
+    </form>    
+  <div>
+  </div> 
+</div>
+</div>
