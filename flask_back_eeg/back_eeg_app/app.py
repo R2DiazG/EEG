@@ -165,6 +165,7 @@ def solicitar_cambio_contrasena():
     except Exception as e:
         logging.error('Error al solicitar el cambio de contraseña: %s', e)
         return jsonify({"msg": "Ocurrió el error: " + str(e)}), 500
+
 @app.route('/resetear_contrasena/<token>', methods=['POST'])
 def resetear_contraseña(token):
     """
@@ -193,7 +194,8 @@ def resetear_contraseña(token):
         reset_token = PasswordResetToken.query.filter_by(token=token).first()
         if not reset_token:
             return jsonify({"msg": "Token inválido."}), 400
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(timezone.utc)  # Current time with timezone awareness
+        # Compare the expiration time with the current time
         if reset_token.expires_at < current_time:
             return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
         if reset_token.used:
