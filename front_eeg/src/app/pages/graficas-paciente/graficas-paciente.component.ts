@@ -986,7 +986,7 @@ cargarDatos() {
           },
           tickInterval: offset,
           min: -extraPadding,
-          max: offset * (areas.length - 1) + extraPadding,
+          max: offset * (areas.length) + extraPadding,
         },
         tooltip: {
           shared: true,
