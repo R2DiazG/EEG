@@ -26,7 +26,12 @@ export class PacienteService {
 
   crearPaciente(idUsuario: number, formData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    return this.http.post(url, formData); // No añadas headers aquí, Angular manejará los headers de FormData automáticamente
+    // Obtén el token JWT del servicio AuthService
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.post(url, formData, { headers });
   }
 
   obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {
