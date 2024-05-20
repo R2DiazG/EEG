@@ -195,6 +195,9 @@ def resetear_contraseña(token):
         if not reset_token:
             return jsonify({"msg": "Token inválido."}), 400
         current_time = datetime.now(timezone.utc)  # Current time with timezone awareness
+        print(current_time)
+        print(reset_token.expires_at)
+        print(reset_token.requested_at)
         # Compare the expiration time with the current time
         if reset_token.expires_at < current_time:
             return jsonify({"msg": "El enlace para restablecer la contraseña ha expirado."}), 400
