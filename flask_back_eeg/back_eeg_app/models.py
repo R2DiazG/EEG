@@ -1,5 +1,5 @@
 from extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.dialects.mysql import JSON
 
 # Definition of the many-to-many relationship table between Sesion and Medicamento
@@ -34,7 +34,7 @@ class PasswordResetToken(db.Model):
     correo = db.Column(db.String(255), db.ForeignKey('usuarios.correo'), nullable=False)
     token = db.Column(db.String(255), nullable=False, unique=True)
     expires_at = db.Column(db.DateTime, nullable=False)
-    requested_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    requested_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     used = db.Column(db.Boolean, default=False, nullable=False)
     usuario = db.relationship('Usuario', backref=db.backref('password_reset_tokens', lazy=True))
 
