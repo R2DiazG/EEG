@@ -146,7 +146,7 @@ def solicitar_cambio_contrasena():
         # Generate the reset link
         link = f"http://localhost:4200/resetear_contrasena/{token}"
         # HTML content for the email
-        with open('email_template_best.html', 'r', encoding='utf-8') as file:
+        with open('email_template_prueba.html', 'r', encoding='utf-8') as file:
             html_content = file.read()
         # Enviar el correo usando SendGrid
         sg = sendgrid.SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
