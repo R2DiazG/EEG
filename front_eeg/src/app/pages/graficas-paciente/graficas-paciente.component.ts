@@ -24,7 +24,7 @@ declare var Plotly: any;
 interface EEGAnomaly {
   index: number;
   value: number;
-  channel: string;
+  area: string;
 }
 
 interface EEGData {
@@ -39,8 +39,9 @@ interface EEGDataPSD {
   pointInterval: number;
 }
 
-interface EEGDataPSDArray {
-  channelsData: EEGDataPSD[];
+interface EEGDataArea {
+  area: string;
+  data: number[];
 }
 
 interface EEGDataBand {
@@ -898,7 +899,7 @@ cargarDatos() {
       this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
         next: (response) => {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            const dataNormalizedString = response.normalized_eegs[0].data_area;
+            const dataNormalizedString = response.normalized_eegs[0].data_areas;
             try {
               const dataNormalized = JSON.parse(dataNormalizedString);
               const anomalies = this.detectAnomalies(dataNormalized); // Detectar anomalías
@@ -917,18 +918,17 @@ cargarDatos() {
     }
   }
 
-  detectAnomalies(dataNormalized: EEGData, threshold: number = 3): EEGAnomaly[] {
+  detectAnomalies(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
     const anomalies: EEGAnomaly[] = [];
-    dataNormalized.data.forEach((channelData, channelIndex) => {
-      const channelName = dataNormalized.names[channelIndex];
-      const mean = channelData.reduce((a, b) => a + b, 0) / channelData.length;
-      const stdDev = Math.sqrt(channelData.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / channelData.length);
-      channelData.forEach((value, index) => {
+    dataNormalized.forEach((areaData) => {
+      const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+      const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+      areaData.data.forEach((value, index) => {
         if (Math.abs(value - mean) > threshold * stdDev) {
           anomalies.push({
             index: index,
             value: value,
-            channel: channelName,
+            area: areaData.area,
           });
         }
       });
@@ -936,26 +936,28 @@ cargarDatos() {
     return anomalies;
   }
 
-  procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalizedString: EEGData, anomalies: EEGAnomaly[] = []): void {
+
+  procesarYMostrarDatosNormalizedEEGConAnomalias(dataNormalized: EEGData[], anomalies: EEGAnomaly[] = []): void {
     try {
-      console.log('Datos EEG normalizados:', dataNormalizedString);
-      const { names, data } = dataNormalizedString;
+      console.log('Datos EEG normalizados:', dataNormalized);
+      const areas = dataNormalized.map(areaData => areaData.area);
+      const data = dataNormalized.map(areaData => areaData.data);
       let maxAmplitude = Number.MIN_SAFE_INTEGER;
       let minAmplitude = Number.MAX_SAFE_INTEGER;
-      data.forEach(channelData => {
-        maxAmplitude = Math.max(maxAmplitude, ...channelData);
-        minAmplitude = Math.min(minAmplitude, ...channelData);
+      data.forEach(areaData => {
+        maxAmplitude = Math.max(maxAmplitude, ...areaData);
+        minAmplitude = Math.min(minAmplitude, ...areaData);
       });
       const amplitudeRange = maxAmplitude - minAmplitude;
       const offset = amplitudeRange * 0.5;
       const extraPadding = 0.2;
-      const series = names.map((name, index) => {
+      const series = areas.map((area, index) => {
         const anomalyData = anomalies
-          .filter(anomaly => anomaly.channel === name)
+          .filter(anomaly => anomaly.area === area)
           .map(anomaly => ({ x: anomaly.index, y: anomaly.value + offset * index }));
         return {
           type: 'line', // Asegúrate de que cada serie tiene el tipo especificado
-          name: name,
+          name: area,
           data: data[index].map((point, i) => [i, point + offset * index]),
           marker: {
             enabled: false
@@ -995,12 +997,12 @@ cargarDatos() {
           labels: {
             formatter: function () {
               const index = Math.round((this.value as number) / offset);
-              return names[index] || '';
+              return areas[index] || '';
             }
           },
           tickInterval: offset,
           min: -extraPadding,
-          max: offset * (names.length - 1) + extraPadding,
+          max: offset * (areas.length - 1) + extraPadding,
         },
         tooltip: {
           shared: true,
