@@ -36,8 +36,8 @@ load_dotenv()
 
 # Initialize the Flask application
 app = Flask(__name__)
-CORS(app)
-#CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+#CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
 
 # Configure the application
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
