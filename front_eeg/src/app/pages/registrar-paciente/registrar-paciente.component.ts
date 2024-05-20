@@ -11,6 +11,7 @@ import { CodigoPostalService } from '../../services/codigoPostal/codigo-postal.s
   templateUrl: './registrar-paciente.component.html',
   styleUrls: ['./registrar-paciente.component.scss']
 })
+
 export class RegistrarPacienteComponent implements OnInit {
   @ViewChild('audioControl') audioControl!: ElementRef;
   patient: InfoPaciente = new InfoPaciente();
@@ -183,23 +184,19 @@ export class RegistrarPacienteComponent implements OnInit {
   registerPatient(): void {
     this.patient.consentimientos.push(this.consentimientoTemporal);
     this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
-  
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(this.patient)], { type: 'application/json' }));
-  
     if (this.audioUrl) {
       fetch(this.audioUrl)
         .then(response => response.blob())
         .then(blob => {
           const audioFile = new File([blob], 'consentimiento.mp3', { type: 'audio/mp3' });
           formData.append('audio_consentimiento', audioFile);
-  
           if (this.id_usuario) {
             // Debug: Log the FormData content
             formData.forEach((value, key) => {
               console.log(`FormData key: ${key}, value:`, value);
             });
-  
             this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
               next: (response) => {
                 console.log('Paciente registrado con éxito', response);
@@ -218,6 +215,23 @@ export class RegistrarPacienteComponent implements OnInit {
         });
     } else {
       console.error('No hay URL de audio disponible');
+      if (this.id_usuario) {
+        // Debug: Log the FormData content
+        formData.forEach((value, key) => {
+          console.log(`FormData key: ${key}, value:`, value);
+        });
+        this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
+          next: (response) => {
+            console.log('Paciente registrado con éxito', response);
+            this.router.navigate(['/lista-pacientes']);
+          },
+          error: (error) => {
+            console.error('Error al registrar el paciente', error);
+          }
+        });
+      } else {
+        console.error('ID de usuario no definido.');
+      }
     }
-  }  
+  }
 }

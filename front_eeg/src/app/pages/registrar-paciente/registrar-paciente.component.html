@@ -12,16 +12,14 @@
       <div class="tab-menu">
         <button class="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
         <button class="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
-        <!-- <button class="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button> -->
         <button class="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Contacto de emergencia</button>
         <button class="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
       </div>
   <div class="tab-content">
         <!-- Información del paciente -->
     <div *ngIf="activeTab === 'infoPatient'">
-          <!-- <form (ngSubmit)="onSubmit()" ngForm> -->
           <div class="seccion">
-            <div class="form-section">              
+            <div class="form-section">
               <label for="firstName">Nombre:</label>
               <input type="text" id="firstName" placeholder="Juan"  name="firstName" [(ngModel)]="patient.nombre" required #firstName="ngModel">
               <div *ngIf="firstName.invalid && firstName.touched" class="error">
@@ -29,7 +27,6 @@
                 <br>
                 <br>
               </div>
-              
               <label for="lastName">Apellido paterno:</label>
               <input type="text" id="lastName" placeholder="Pérez"  name="lastName" [(ngModel)]="patient.apellido_paterno" required #lastName="ngModel">
               <div *ngIf="lastName.invalid && lastName.touched" class="error">
@@ -37,7 +34,6 @@
                 <br>
                 <br>
               </div>
-              
               <label for="surname">Apellido materno:</label>
               <input type="text" id="surname" placeholder="López"  name="surname"[(ngModel)]="patient.apellido_materno" required #surname="ngModel">
               <div *ngIf="surname.invalid && surname.touched" class="error">
@@ -57,22 +53,12 @@
               </div>
               </div>
               <br>
-              <!-- <label for="gender">Género:</label>
-              <div id="gender">
-                <a>
-                  <input type="radio" name="gender" value="1" [(ngModel)]="patient.id_genero"> Masculino
-                </a>
-                <a>
-                  <input type="radio" name="gender" value="2" [(ngModel)]="patient.id_genero"> Femenino
-                </a>
-              </div> -->
               <label for="gender">Género:</label>
               <br>
               <mat-radio-group aria-labelledby="gender" [(ngModel)]="patient.id_genero" name="gender">
                 <mat-radio-button value="1">Masculino</mat-radio-button>
                 <mat-radio-button value="2">Femenino</mat-radio-button>
               </mat-radio-group>
-
               <br>
           </div>
           <div class="seccion">
@@ -84,24 +70,7 @@
               <mat-radio-button value="3">Divorciado/a</mat-radio-button>
               <mat-radio-button value="4">Viudo/a</mat-radio-button>
             </mat-radio-group>
-
-              <!-- <label for="civilStatus">Estado civil:</label>
-              <div id="civilStatus">
-              <a>
-                <input type="radio" name="civilStatus" value="1" [(ngModel)]="patient.id_estado_civil"> Soltero/a
-              </a>
-              <a>
-                <input type="radio" name="civilStatus" value="2" [(ngModel)]="patient.id_estado_civil"> Casado/a
-              </a>
-              <a>
-                <input type="radio" name="civilStatus" value="3" [(ngModel)]="patient.id_estado_civil"> Divorciado/a
-              </a>
-              <a>
-                <input type="radio" name="civilStatus" value="4" [(ngModel)]="patient.id_estado_civil"> Viudo/a
-              </a>
-              </div> -->
               <br>
-    
               <label for="laterality">Lateralidad:</label>
               <br>
               <mat-radio-group aria-labelledby="laterality" [(ngModel)]="patient.id_lateralidad" name="laterality">
@@ -109,33 +78,7 @@
                 <mat-radio-button value="2">Diestro/a</mat-radio-button>
                 <mat-radio-button value="3">Ambidiestro/a</mat-radio-button>
               </mat-radio-group>
-
-              <!-- <div id="laterality">
-              <a>
-                <input type="radio" name="laterality" value="1" [(ngModel)]="patient.id_lateralidad"> Zurdo
-              </a>
-              <a>
-                <input type="radio" name="laterality" value="2" [(ngModel)]="patient.id_lateralidad"> Diestro
-              </a>
-              <a>
-                <input type="radio" name="laterality" value="3" [(ngModel)]="patient.id_lateralidad"> Ambidiestro
-              </a>
-              </div> -->
-
-              <!-- <label for="laterality">Lateralidad:</label>
-              <div id="laterality">
-              <a>
-                <input type="radio" name="laterality" value="1" [(ngModel)]="patient.id_lateralidad"> Zurdo
-              </a>
-              <a>
-                <input type="radio" name="laterality" value="2" [(ngModel)]="patient.id_lateralidad"> Diestro
-              </a>
-              <a>
-                <input type="radio" name="laterality" value="3" [(ngModel)]="patient.id_lateralidad"> Ambidiestro
-              </a>
-              </div> -->
               <br>
-
               <label for="educationLevel">Escolaridad:</label>
               <br>
               <mat-radio-group aria-label="Escolaridad" [(ngModel)]="patient.id_escolaridad" name="educationLevel">
@@ -147,33 +90,7 @@
                 <mat-radio-button value="5">Maestría</mat-radio-button>
                 <mat-radio-button value="6">Doctorado</mat-radio-button>
               </mat-radio-group>
-              
-              <!-- <label for="educationLevel">Escolaridad:</label>
-              <div id="educationLevel">
-              <a>
-                <input type="radio" name="educationLevel" value="1" [(ngModel)]="patient.id_escolaridad"> Primaria
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="2" [(ngModel)]="patient.id_escolaridad"> Secundaria
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="3" [(ngModel)]="patient.id_escolaridad"> Preparatoria
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="4" [(ngModel)]="patient.id_escolaridad"> Universidad
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="5" [(ngModel)]="patient.id_escolaridad"> Maestría
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="6" [(ngModel)]="patient.id_escolaridad"> Doctorado
-              </a>
-              <a>
-                <input type="radio" name="educationLevel" value="7" [(ngModel)]="patient.id_escolaridad"> Sin estudios
-              </a>
-              </div> -->
               <br>
-
               <label for="occupation">Ocupación:</label>
               <br>
               <mat-radio-group aria-label="Ocupación" [(ngModel)]="patient.id_ocupacion" name="occupation">
@@ -183,52 +100,29 @@
                 <mat-radio-button value="4">Independiente</mat-radio-button>
                 <mat-radio-button value="5">Desempleado</mat-radio-button>
               </mat-radio-group>
-              <!-- <label for="occupation">Ocupación:</label>
-              <div id="occupation">
-              <a>
-                <input type="radio" name="occupation" value="1" [(ngModel)]="patient.id_ocupacion"> Estudiante
-              </a>
-              <a>
-                <input type="radio" name="occupation" value="2" [(ngModel)]="patient.id_ocupacion"> Empleado
-              </a>
-              <a>
-                <input type="radio" name="occupation" value="3" [(ngModel)]="patient.id_ocupacion"> Empresario
-              </a>
-              <a>
-                <input type="radio" name="occupation" value="4" [(ngModel)]="patient.id_ocupacion"> Independiente
-              </a>
-              <a>
-                <input type="radio" name="occupation" value="5" [(ngModel)]="patient.id_ocupacion"> Desempleado
-              </a>
-              </div> -->
               <br>
           </div>
           <div class="tab-navigation-buttons">
-            <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
             <button class="acciones" (click)="changeTab('back')" disabled><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
             <button (click)="cancelButton()" class="acciones" title="Cancelar">
               <i class="fas fa-times" aria-hidden="true"></i>
             </button>
             <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
           </div>
-          <!-- </form> -->
   </div>
           <!-- Contacto del paciente -->
           <div *ngIf="activeTab === 'contactPatient'">
             <div class="form-section">
               <div class="seccion">
-                <!-- Gestión de múltiples teléfonos, siempre muestra al menos un campo -->
                 <div *ngFor="let phone of patient.telefonos; let i = index" class="phone">
                   <label for="phone{{i}}">Teléfono {{ i === 0 ? 'Celular' : i === 1 ? 'Casa' : 'Trabajo'}}:</label>
                   <input type="text" id="phone{{i}}" name="phone{{i}}" placeholder="5551234567" [(ngModel)]="phone.telefono">
                 </div>
-                
                 <div>
                   <button type="button" (click)="addPhone()" class="phoneB" title="Agregar otro número de telefono">
                     <i class="fas fa-plus" aria-hidden="true"></i>
                   </button>
                 </div>
-
                 <div *ngFor="let email of patient.correos_electronicos; let i = index" class="email">
                   <label for="email{{i}}">Correo electrónico:</label>
                   <input type="email" id="email{{i}}" name="email{{i}}" placeholder="juan.perez@gmail.com" [(ngModel)]="email.correo_electronico">
@@ -240,29 +134,20 @@
                 </div>
               </div>
               <div class="seccion">
-                <!-- Gestión de múltiples direcciones, siempre muestra al menos un campo -->
-                <!-- Este div contiene la lista de direcciones del paciente -->
               <div *ngFor="let address of patient.direcciones; let i = index" class="address">
                 <label for="postalCode{{i}}">Código postal:</label>
-                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345" (ngModelChange)="fillAddressData(i, 'patientAddress')">                
-                
+                <input type="text" id="postalCode{{i}}" name="postalCode{{i}}" [(ngModel)]="address.codigo_postal" placeholder="12345" (ngModelChange)="fillAddressData(i, 'patientAddress')">
                 <label for="streetNumber{{i}}">Calle y número:</label>
                 <input type="text" id="streetNumber{{i}}" name="streetNumber{{i}}" placeholder="Av. Siempre Viva 742" [(ngModel)]="address.calle_numero">
-                
                 <label for="suburb{{i}}">Colonia:</label>
                 <input type="text" id="suburb{{i}}" name="suburb{{i}}" placeholder="Springfield" [(ngModel)]="address.colonia">
-                
                 <label for="city{{i}}">Ciudad:</label>
                 <input type="text" id="city{{i}}" name="city{{i}}" placeholder="Springfield" [(ngModel)]="address.ciudad">
-                
                 <label for="state{{i}}">Estado:</label>
                 <input type="text" id="state{{i}}" name="state{{i}}" placeholder="Springfield" [(ngModel)]="address.estado">
-                
                 <label for="country{{i}}">País:</label>
                 <input type="text" id="country{{i}}" name="country{{i}}" placeholder="México" [(ngModel)]="address.pais">
               </div>
-
-              <!-- Este botón permite agregar direcciones adicionales a la lista -->
               <div>
                 <button type="button" (click)="addAddress()" class="addressB" title="Agregar otra dirección">
                   <i class="fas fa-plus" aria-hidden="true"></i>
@@ -271,28 +156,13 @@
               </div>
             </div>
             <div class="tab-navigation-buttons">
-              <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
               <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
               <button (click)="cancelButton()" class="acciones" title="Cancelar">
                 <i class="fas fa-times" aria-hidden="true"></i>
               </button>
               <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
             </div>
-          </div>          
-
-        <!-- Historial del paciente
-        <div *ngIf="activeTab === 'historyPatient'">
-          <form (ngSubmit)="onSubmit()" ngForm>
-            <h2>Informacion clinica</h2>
-            <div class="form-section">
-              <label for="medicalHistory">Historial médico:</label>
-              <textarea id="medicalHistory" name="medicalHistory"></textarea>
-            </div>
-            <button type="save">Guardar</button>
-          </form>
-        </div> -->
-
-        <!-- Información del familiar -->
+          </div>
   <div *ngIf="activeTab === 'infoFamily'">
     <div class="form-section">
       <div class="seccion">
@@ -303,7 +173,6 @@
                 <br>
                 <br>
               </div>
-              
               <label for="relativeLastName">Apellido paterno:</label>
               <input type="text" id="relativeLastName" placeholder="Ramos" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" required #relativeLastName="ngModel">
               <div *ngIf="relativeFirstName.invalid && relativeFirstName.touched" class="error">
@@ -311,7 +180,6 @@
                 <br>
                 <br>
               </div>
-              
               <label for="relativeSurname">Apellido materno:</label>
               <input type="text" id="relativeSurname" placeholder="Gómez" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" required #relativeSurname="ngModel">
               <div *ngIf="relativeSurname.invalid && relativeSurname.touched" class="error">
@@ -319,7 +187,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relationship">Parentesco:</label>
               <input type="text" id="relationship" placeholder="Madre" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" required #relationship="ngModel">
               <div *ngIf="relationship.invalid && relationship.touched" class="error">
@@ -329,7 +196,6 @@
               </div>
       </div>
       <div class="seccion">
-
               <label for="relativePhone">Teléfono:</label>
               <input type="text" id="relativePhone" placeholder="5559876543" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" required #relativePhone="ngModel">
               <div *ngIf="relativePhone.invalid && relativePhone.touched" class="error">
@@ -337,7 +203,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relativeEmail">Correo electrónico:</label>
               <input type="email" id="relativeEmail" placeholder="marta.ramos@hotmail.com" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" required #relativeEmail="ngModel">
               <div *ngIf="relativeEmail.invalid && relativeEmail.touched" class="error">
@@ -354,7 +219,7 @@
                 <br>
                 <br>
               </div>
-              
+
               <label for="relativeAddress">Dirección:</label>
               <input type="text" id="relativeAddress" placeholder="Calle Falsa 123" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" required #relativeAddress="ngModel">
               <div *ngIf="relativeAddress.invalid && relativeAddress.touched" class="error">
@@ -362,7 +227,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relativeSuburb">Colonia:</label>
               <input type="text" id="relativeSuburb" placeholder="Colonia Falsa" name="relativeSuburb" [(ngModel)]="patient.contacto_emergencia.colonia" required #relativeSuburb="ngModel">
               <div *ngIf="relativeSuburb.invalid && relativeSuburb.touched" class="error">
@@ -370,7 +234,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relativeCity">Ciudad:</label>
               <input type="text" id="relativeCity" placeholder="Ciudad Falsa" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" required #relativeCity="ngModel">
               <div *ngIf="relativeCity.invalid && relativeCity.touched" class="error">
@@ -378,7 +241,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relativeState">Estado:</label>
               <input type="text" id="relativeState" placeholder="Estado Falso" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" required #relativeState="ngModel">
               <div *ngIf="relativeState.invalid && relativeState.touched" class="error">
@@ -386,7 +248,6 @@
                 <br>
                 <br>
               </div>
-
               <label for="relativeCountry">Pais:</label>
               <input type="text" id="relativeCountry" placeholder="México" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" required #relativeCountry="ngModel">
               <div *ngIf="relativeCountry.invalid && relativeCountry.touched" class="error">
@@ -401,7 +262,6 @@
       </div>
     </div>
     <div class="tab-navigation-buttons">
-      <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
       <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
       <button (click)="cancelButton()" class="acciones" title="Cancelar">
         <i class="fas fa-times" aria-hidden="true"></i>
@@ -409,7 +269,6 @@
       <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
     </div>
   </div>
-
   <!-- Consentimiento del paciente -->
   <div *ngIf="activeTab === 'consent'">
     <div class="form-section">
@@ -449,14 +308,13 @@
         <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
         <button type="button" (click)="registerPatient()" class="registrar" title="Registrar">
           <i class="icon fas fa-save" aria-hidden="true"></i>
-       </button>
+        </button>
         <button (click)="cancelButton()" class="acciones" title="Cancelar">
           <i class="fas fa-times" aria-hidden="true"></i>
         </button>
         <button class="acciones" (click)="changeTab('next')" disabled><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
       </div>
   </div>
-        
 </div>
 </div>
 </div>
