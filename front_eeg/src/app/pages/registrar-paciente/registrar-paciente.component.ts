@@ -131,26 +131,27 @@ export class RegistrarPacienteComponent implements OnInit {
 
   startRecording(): void {
     if (this.recording) {
-      return;
+        return;
     }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      this.mediaRecorder = new MediaRecorder(stream);
-      this.mediaRecorder.start();
-      const audioChunks: BlobPart[] = [];
-      this.mediaRecorder.ondataavailable = event => {
-        audioChunks.push(event.data);
-      };
-      this.mediaRecorder.onstop = () => {
-        this.audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-        this.audioUrl = URL.createObjectURL(this.audioBlob);
-        this.recording = false;
-        stream.getTracks().forEach(track => track.stop());
-      };
-      this.recording = true;
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.start();
+        const audioChunks: BlobPart[] = [];
+        this.mediaRecorder.ondataavailable = event => {
+            audioChunks.push(event.data);
+        };
+        this.mediaRecorder.onstop = () => {
+            this.audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+            this.audioUrl = URL.createObjectURL(this.audioBlob);
+            console.log('Audio blob:', this.audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+        };
+        this.recording = true;
     }).catch(e => {
-      console.error('Error al obtener acceso al micrófono: ', e);
+        console.error('Error al obtener acceso al micrófono: ', e);
     });
   }
+
 
   stopRecording(): void {
     if (this.mediaRecorder) {
@@ -161,12 +162,12 @@ export class RegistrarPacienteComponent implements OnInit {
 
   resetRecording(): void {
     if (this.audioUrl) {
-      URL.revokeObjectURL(this.audioUrl);
+        URL.revokeObjectURL(this.audioUrl);
     }
     this.audioUrl = '';
     this.recording = false;
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      this.mediaRecorder.stop();
+        this.mediaRecorder.stop();
     }
   }
 
