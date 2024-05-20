@@ -190,19 +190,20 @@ export class RegistrarPacienteComponent implements OnInit {
         console.log('audioBlob:', this.audioBlob);
         console.log('Size:', this.audioBlob.size);
         console.log('Type:', this.audioBlob.type);
-        // Crear una URL temporal para reproducir el audio
-        const audioUrl = URL.createObjectURL(this.audioBlob);
-        const audioElement = new Audio(audioUrl);
-        audioElement.play().then(() => {
-            console.log('El audio se está reproduciendo correctamente.');
-        }).catch(error => {
-            console.error('Error al reproducir el audio:', error);
-        });
+        // Forzar el tipo MIME si está vacío
         const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
         formData.append('audio_consentimiento', audioFile);
     } else {
         console.error('audioBlob no está definido.');
     }
+    // Imprimir el contenido de formData
+    formData.forEach((value, key) => {
+        if (value instanceof File) {
+            console.log(`formData key: ${key}, file name: ${value.name}, size: ${value.size}, type: ${value.type}`);
+        } else {
+            console.log(`formData key: ${key}, value: ${value}`);
+        }
+    });
     if (this.id_usuario) {
         this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
             next: (response) => {
