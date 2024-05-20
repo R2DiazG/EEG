@@ -430,7 +430,19 @@ cargarDatos() {
   if(this.activeSectionTab === 'anomaly'){
     this.cargarDatosNormalizedEEGConAnomalias();
   }
-  if(this.activeSectionTab === 'anomaly_area'){
+  if(this.activeSectionTab === 'anomaly_area1'){
+    this.cargarDatosNormalizedEEGConAnomaliasArea();
+  }
+  if(this.activeSectionTab === 'anomaly_area2'){
+    this.cargarDatosNormalizedEEGConAnomaliasArea();
+  }
+  if(this.activeSectionTab === 'anomaly_area3'){
+    this.cargarDatosNormalizedEEGConAnomaliasArea();
+  }
+  if(this.activeSectionTab === 'anomaly_area4'){
+    this.cargarDatosNormalizedEEGConAnomaliasArea();
+  }
+  if(this.activeSectionTab === 'anomaly_area5'){
     this.cargarDatosNormalizedEEGConAnomaliasArea();
   }
 }
