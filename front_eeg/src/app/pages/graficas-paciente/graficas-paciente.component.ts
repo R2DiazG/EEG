@@ -1033,6 +1033,30 @@ cargarDatos() {
     }
   }
 
+  cargarDatosNormalizedEEGConAnomaliasFrontal(): void {
+    if (this.idSesion) {
+        this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+            next: (response) => {
+                if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+                    const dataNormalizedString = response.normalized_eegs[0].data_areas;
+                    try {
+                        const dataNormalized = JSON.parse(dataNormalizedString);
+                        const anomalies = this.detectAnomalies(dataNormalized);
+                        this.procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized, anomalies);
+                    } catch (error) {
+                        console.error('Error al parsear los datos EEG normalizados:', error);
+                    }
+                } else {
+                    console.error('No se encontraron EEGs normalizados para esta sesión.');
+                }
+            },
+            error: (error) => console.error('Error al obtener datos EEG normalizados:', error)
+        });
+    } else {
+        console.error('ID de sesión es nulo');
+    }
+}
+
 detectAnomaliesFrontal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
     const anomalies: EEGAnomaly[] = [];
     dataNormalized.forEach((areaData) => {
