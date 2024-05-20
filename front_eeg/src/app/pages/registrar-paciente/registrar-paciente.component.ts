@@ -187,21 +187,34 @@ export class RegistrarPacienteComponent implements OnInit {
     const formData = new FormData();
     formData.append('data', JSON.stringify(this.patient));
     if (this.audioBlob) {
-      const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
-      formData.append('audio_consentimiento', audioFile);
+        console.log('audioBlob:', this.audioBlob);
+        console.log('Size:', this.audioBlob.size);
+        console.log('Type:', this.audioBlob.type);
+        // Crear una URL temporal para reproducir el audio
+        const audioUrl = URL.createObjectURL(this.audioBlob);
+        const audioElement = new Audio(audioUrl);
+        audioElement.play().then(() => {
+            console.log('El audio se está reproduciendo correctamente.');
+        }).catch(error => {
+            console.error('Error al reproducir el audio:', error);
+        });
+        const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
+        formData.append('audio_consentimiento', audioFile);
+    } else {
+        console.error('audioBlob no está definido.');
     }
     if (this.id_usuario) {
-      this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
-        next: (response) => {
-          console.log('Paciente registrado con éxito', response);
-          this.router.navigate(['/lista-pacientes']);
-        },
-        error: (error) => {
-          console.error('Error al registrar el paciente', error);
-        }
-      });
+        this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
+            next: (response) => {
+                console.log('Paciente registrado con éxito', response);
+                this.router.navigate(['/lista-pacientes']);
+            },
+            error: (error) => {
+                console.error('Error al registrar el paciente', error);
+            }
+        });
     } else {
-      console.error('ID de usuario no definido.');
+        console.error('ID de usuario no definido.');
     }
   }
 }

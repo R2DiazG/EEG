@@ -832,14 +832,12 @@ def crear_paciente_para_usuario(id_usuario):
             for consentimiento in datos['consentimientos']:
                 audio_filename = None
                 if audio_file and audio_file.filename == consentimiento['audio_filename']:
-                    # Verificar y crear el directorio si no existe
                     upload_folder = 'consentimientos'
                     if not os.path.exists(upload_folder):
                         os.makedirs(upload_folder)
-                    # Generar un nombre de archivo único
                     unique_filename = f"{uuid.uuid4()}_{audio_file.filename}"
                     audio_filename = os.path.join(upload_folder, unique_filename)
-                    audio_file.save(audio_filename)  # Guarda el archivo en el sistema de archivos
+                    audio_file.save(audio_filename)
                 nuevo_consentimiento = Consentimiento(
                     consentimiento=bool(consentimiento['consentimiento']),
                     fecha_registro=consentimiento['fecha_registro'],
