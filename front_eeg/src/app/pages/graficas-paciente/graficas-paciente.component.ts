@@ -69,6 +69,7 @@ export class GraficasPacienteComponent implements OnInit {
   resumen_sesion_actual!: string;
   notas_psicologo!: string;
   activeGraphTab = 'eeg';
+  activeSectionTab = 'anomaly';
 
   // Notas del psicólogo
   isAddingNote: boolean = false;
@@ -390,6 +391,11 @@ setActiveGraphTab(tabName: string) {
   this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
 }
 
+setActiveSectionTab(tabName: string) {
+  this.activeSectionTab = tabName;
+  this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
+}
+
 cargarDatos() {
   switch(this.activeTab) {
     case 'detailsSesion':
@@ -419,6 +425,13 @@ cargarDatos() {
   }
   if (this.activeGraphTab === 'stft') {
     this.cargarDatosSTFT();
+  }
+
+  if(this.activeSectionTab === 'anomaly'){
+    this.cargarDatosNormalizedEEGConAnomalias();
+  }
+  if(this.activeSectionTab === 'anomaly_area'){
+    this.cargarDatosNormalizedEEGConAnomaliasArea();
   }
 }
 

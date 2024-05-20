@@ -281,10 +281,17 @@
         </div>
         </div>
         <div class="space"></div>
+        <div class="tab-menu">
+          <button class="tab" (click)="setActiveSectionTab('anomaly')" [class.active]="activeGraphTab === 'anomaly'">Visualizacion de EEG con Anomalias</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area')" [class.active]="activeGraphTab === 'anomaly_area'">Visualizacion de EEG cona Anomalias por Area</button>
+        </div>
+        <div class="tab-content">
+        <div *ngIf="activeSectionTab === 'anomaly'">
         <div class="seccion">
           <div id="eeg_anomaly" style="width:100%; height:1000px;"></div>
         </div>
-
+        </div>
+        <div *ngIf="activeSectionTab === 'anomaly_area'">
         <div class="space"></div>
         <div class="seccion">
           <div id="eeg_anomaly_frontal" style="width:100%; height:1000px;"></div>
@@ -304,6 +311,7 @@
         <div class="space"></div>
         <div class="seccion">
           <div id="eeg_anomaly_occipital" style="width:100%; height:1000px;"></div>
+        </div>
         </div>
       </div>
     </div>
