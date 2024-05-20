@@ -186,18 +186,15 @@ export class RegistrarPacienteComponent implements OnInit {
     const formData = new FormData();
     formData.append('data', JSON.stringify(this.patient));
     if (this.audioBlob) {
+        console.log('audioBlob:', this.audioBlob);
         const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
-        formData.append('audio_consentimiento', audioFile);
         console.log('Audio file appended:', audioFile);
+        formData.append('audio_consentimiento', audioFile);
     } else {
-        console.error('audioBlob no está definido.');
+        console.log('No audio file found');
     }
     formData.forEach((value, key) => {
-        if (value instanceof File) {
-            console.log(`formData key: ${key}, file name: ${value.name}, size: ${value.size}, type: ${value.type}`);
-        } else {
-            console.log(`formData key: ${key}, value: ${value}`);
-        }
+        console.log(`formData key: ${key}, value:`, value);
     });
     if (this.id_usuario) {
         this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
