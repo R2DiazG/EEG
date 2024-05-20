@@ -307,9 +307,13 @@ cargarDatosDeEeg(idSesion: number): void {
         this.estado_general = datosEeg.detalle_sesion.estado_general;
         this.estado_especifico = datosEeg.detalle_sesion.estado_especifico
           .replace(/_/g, ' ')
-          .split(' ')
-          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
+          .split(',')
+          .map((phrase: string) => 
+            phrase.trim().split(' ')
+              .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')
+          )
+          .join(', ');
         this.resumen_sesion_actual = datosEeg.detalle_sesion.resumen_sesion_actual;
         this.notas_psicologo = datosEeg.detalle_sesion.notas_psicologo;
       } else {
