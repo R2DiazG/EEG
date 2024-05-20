@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
     }
   
   onForgotPassword() {
-    this.router.navigate(['/olvide-contra']); // Navega a la ruta de olvidé contraseña
+    this.router.navigate(['/olvide-contraseña']); // Navega a la ruta de olvidé contraseña
   }
 
   registerUser() {
