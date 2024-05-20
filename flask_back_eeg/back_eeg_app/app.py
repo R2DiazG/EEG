@@ -782,11 +782,10 @@ def crear_paciente_para_usuario(id_usuario):
     """
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
-    #datos = request.form.to_dict()
-    #datos = request.get_json()
     datos_json = request.form.get('data')
-    print(datos_json)
     audio_file = request.files.get('audio_consentimiento')
+    print("Datos del paciente:", datos_json)
+    print("Archivo de audio:", audio_file)
     if datos_json:
         datos = json.loads(datos_json)
     else:
