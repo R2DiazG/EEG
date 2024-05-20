@@ -15,9 +15,6 @@ import { DropMedicamentosDialogComponent } from '../drop-medicamentos-dialog/dro
 import * as Highcharts from 'highcharts/highstock';
 import * as d3 from 'd3';
 import { id } from 'date-fns/locale';
-//import * as Plotly from 'plotly.js-dist-min';
-//import { Data } from 'plotly.js-dist-min';
-//import { Layout } from 'plotly.js-dist-min';
 
 declare var Plotly: any;
 
@@ -227,7 +224,6 @@ private resetDeleteState(success: boolean) {
   }
 }
 
-
 iniciarEdicion() {
   this.notasPsicologoEdit = this.notas_psicologo; // Carga las notas existentes para edición
   this.isAddingNote = true;
@@ -272,13 +268,10 @@ guardarNotasPsicologo(): void {
       next: (response) => {
         // Actualiza ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
         this.notas_psicologo = this.notasPsicologoEdit;
-
         // Oculta el input de texto después de guardar
         this.isAddingNote = false;
-
         // Si quieres limpiar el cuadro de edición después de guardar, descomenta la siguiente línea.
         // this.notasPsicologoEdit = '';
-
         console.log(response.mensaje);
       },
       error: (error) => {
@@ -374,7 +367,6 @@ onSesionChange() {
         idSesion: idSesion  // Asegúrate de pasar idSesion al diálogo
       }
     });
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Medicamentos seleccionados:', result);
@@ -739,7 +731,6 @@ cargarDatos() {
     const x = d3.scaleLinear()
       .domain(timesExtent) // Asumiendo que channelData.times es un array con el tiempo
       .range([0, width]);
-
     const y = d3.scaleLinear()
       .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
       .range([height, 0]);
@@ -772,18 +763,15 @@ cargarDatos() {
       next: (response: any[]) => {
         const datosPSDBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
         console.log('Datos de Áreas de Bandas PSD:', datosPSDBandas);
-
         if (datosPSDBandas && datosPSDBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPSDBandas[0]);
           console.log('Primer elemento para verificar estructura:', datosPSDBandas[0]);
         }
-
         const datosFiltrados = datosPSDBandas.filter((dato: { hasOwnProperty: (arg0: string) => any; area: string; }) => {
           const hasArea = dato.hasOwnProperty('area');
           console.log('Tiene propiedad "area"?', hasArea, 'Comparando', dato.area, 'con', areaSeleccionada);
           return hasArea && dato.area === areaSeleccionada;
         });
-
         console.log('Datos de Áreas de Bandas PSD FILTRADOS:', datosFiltrados);
         this.procesarYMostrarPSDAreaBandas(datosFiltrados);
       },
@@ -826,18 +814,15 @@ cargarDatos() {
       next: (response: any[]) => {
         const datosPRBandas = response[0]; // Accediendo al primer elemento si es un array encapsulado
         console.log('Datos de Áreas de Bandas PR:', datosPRBandas);
-
         if (datosPRBandas && datosPRBandas.length > 0) {
           console.log('Tipo del primer elemento del array real:', typeof datosPRBandas[0]);
           console.log('Primer elemento para verificar estructura:', datosPRBandas[0]);
         }
-
         const datosFiltrados = datosPRBandas.filter((dato: { hasOwnProperty: (arg0: string) => any; area: string; }) => {
           const hasArea = dato.hasOwnProperty('area');
           console.log('Tiene propiedad "area"?', hasArea, 'Comparando', dato.area, 'con', areaSeleccionada);
           return hasArea && dato.area === areaSeleccionada;
         });
-
         console.log('Datos de Áreas de Bandas PR FILTRADOS:', datosFiltrados);
         this.procesarYMostrarPRAreaBandas(datosFiltrados);
       },
