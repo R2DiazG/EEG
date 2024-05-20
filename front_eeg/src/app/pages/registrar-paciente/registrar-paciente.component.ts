@@ -185,31 +185,31 @@ export class RegistrarPacienteComponent implements OnInit {
     const formData = new FormData();
     formData.append('data', JSON.stringify(this.patient));
     if (this.audioBlob) {
-      const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
-      formData.append('audio_consentimiento', audioFile);
-      console.log('Audio file appended:', audioFile);
+        const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
+        formData.append('audio_consentimiento', audioFile);
+        console.log('Audio file appended:', audioFile);
     } else {
-      console.error('audioBlob no está definido.');
+        console.error('audioBlob no está definido.');
     }
     formData.forEach((value, key) => {
-      if (value instanceof File) {
-        console.log(`formData key: ${key}, file name: ${value.name}, size: ${value.size}, type: ${value.type}`);
-      } else {
-        console.log(`formData key: ${key}, value: ${value}`);
-      }
+        if (value instanceof File) {
+            console.log(`formData key: ${key}, file name: ${value.name}, size: ${value.size}, type: ${value.type}`);
+        } else {
+            console.log(`formData key: ${key}, value: ${value}`);
+        }
     });
     if (this.id_usuario) {
-      this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
-        next: (response) => {
-          console.log('Paciente registrado con éxito', response);
-          this.router.navigate(['/lista-pacientes']);
-        },
-        error: (error) => {
-          console.error('Error al registrar el paciente', error);
-        }
-      });
+        this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
+            next: (response) => {
+                console.log('Paciente registrado con éxito', response);
+                this.router.navigate(['/lista-pacientes']);
+            },
+            error: (error) => {
+                console.error('Error al registrar el paciente', error);
+            }
+        });
     } else {
-      console.error('ID de usuario no definido.');
+        console.error('ID de usuario no definido.');
     }
   }
 }
