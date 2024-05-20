@@ -56,8 +56,8 @@
               <label for="gender">Género:</label>
               <br>
               <mat-radio-group aria-labelledby="gender" [(ngModel)]="patient.id_genero" name="gender">
-                <mat-radio-button value="1">Masculino</mat-radio-button>
-                <mat-radio-button value="2">Femenino</mat-radio-button>
+                <mat-radio-button [value]="1">Masculino</mat-radio-button>
+                <mat-radio-button [value]="2">Femenino</mat-radio-button>
               </mat-radio-group>
               <br>
           </div>
@@ -65,40 +65,40 @@
             <label for="civilStatus">Estado civil:</label>
             <br>
             <mat-radio-group aria-labelledby="civilStatus" [(ngModel)]="patient.id_estado_civil" name="civilStatus">
-              <mat-radio-button value="1">Soltero/a</mat-radio-button>
-              <mat-radio-button value="2">Casado/a</mat-radio-button>
-              <mat-radio-button value="3">Divorciado/a</mat-radio-button>
-              <mat-radio-button value="4">Viudo/a</mat-radio-button>
+              <mat-radio-button [value]="1">Soltero/a</mat-radio-button>
+              <mat-radio-button [value]="2">Casado/a</mat-radio-button>
+              <mat-radio-button [value]="3">Divorciado/a</mat-radio-button>
+              <mat-radio-button [value]="4">Viudo/a</mat-radio-button>
             </mat-radio-group>
               <br>
               <label for="laterality">Lateralidad:</label>
               <br>
               <mat-radio-group aria-labelledby="laterality" [(ngModel)]="patient.id_lateralidad" name="laterality">
-                <mat-radio-button value="1">Zurdo/a</mat-radio-button>
-                <mat-radio-button value="2">Diestro/a</mat-radio-button>
-                <mat-radio-button value="3">Ambidiestro/a</mat-radio-button>
+                <mat-radio-button [value]="1">Zurdo/a</mat-radio-button>
+                <mat-radio-button [value]="2">Diestro/a</mat-radio-button>
+                <mat-radio-button [value]="3">Ambidiestro/a</mat-radio-button>
               </mat-radio-group>
               <br>
               <label for="educationLevel">Escolaridad:</label>
               <br>
               <mat-radio-group aria-label="Escolaridad" [(ngModel)]="patient.id_escolaridad" name="educationLevel">
-                <mat-radio-button value="7">Sin estudios</mat-radio-button>
-                <mat-radio-button value="1">Primaria</mat-radio-button>
-                <mat-radio-button value="2">Secundaria</mat-radio-button>
-                <mat-radio-button value="3">Preparatoria</mat-radio-button>
-                <mat-radio-button value="4">Universidad</mat-radio-button>
-                <mat-radio-button value="5">Maestría</mat-radio-button>
-                <mat-radio-button value="6">Doctorado</mat-radio-button>
+                <mat-radio-button [value]="7">Sin estudios</mat-radio-button>
+                <mat-radio-button [value]="1">Primaria</mat-radio-button>
+                <mat-radio-button [value]="2">Secundaria</mat-radio-button>
+                <mat-radio-button [value]="3">Preparatoria</mat-radio-button>
+                <mat-radio-button [value]="4">Universidad</mat-radio-button>
+                <mat-radio-button [value]="5">Maestría</mat-radio-button>
+                <mat-radio-button [value]="6">Doctorado</mat-radio-button>
               </mat-radio-group>
               <br>
               <label for="occupation">Ocupación:</label>
               <br>
               <mat-radio-group aria-label="Ocupación" [(ngModel)]="patient.id_ocupacion" name="occupation">
-                <mat-radio-button value="1">Estudiante</mat-radio-button>
-                <mat-radio-button value="2">Empleado</mat-radio-button>
-                <mat-radio-button value="3">Empresario</mat-radio-button>
-                <mat-radio-button value="4">Independiente</mat-radio-button>
-                <mat-radio-button value="5">Desempleado</mat-radio-button>
+                <mat-radio-button [value]="1">Estudiante</mat-radio-button>
+                <mat-radio-button [value]="2">Empleado</mat-radio-button>
+                <mat-radio-button [value]="3">Empresario</mat-radio-button>
+                <mat-radio-button [value]="4">Independiente</mat-radio-button>
+                <mat-radio-button [value]="5">Desempleado</mat-radio-button>
               </mat-radio-group>
               <br>
           </div>

@@ -11,7 +11,6 @@ import { CodigoPostalService } from '../../services/codigoPostal/codigo-postal.s
   templateUrl: './registrar-paciente.component.html',
   styleUrls: ['./registrar-paciente.component.scss']
 })
-
 export class RegistrarPacienteComponent implements OnInit {
   @ViewChild('audioControl') audioControl!: ElementRef;
   patient: InfoPaciente = new InfoPaciente();
