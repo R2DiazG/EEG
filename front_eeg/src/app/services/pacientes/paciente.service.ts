@@ -26,7 +26,6 @@ export class PacienteService {
 
   crearPaciente(idUsuario: number, formData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    // Obtén el token JWT del servicio AuthService
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`

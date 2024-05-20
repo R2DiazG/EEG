@@ -20,13 +20,14 @@ export class RegistrarPacienteComponent implements OnInit {
   mediaRecorder!: MediaRecorder;
   audioUrl!: string;
   recording: boolean = false;
-  audioFile!: File;
+  audioBlob!: Blob;
   tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
+  audioFile!: File;
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string, audio_filename: string } = {
     consentimiento: 1,
     fecha_registro: this.fechaActual,
-    audio_filename: 'consentimiento.mp3'
+    audio_filename: ''
   };
 
   constructor(
@@ -143,9 +144,8 @@ export class RegistrarPacienteComponent implements OnInit {
         audioChunks.push(event.data);
       };
       this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-        this.audioFile = new File([audioBlob], 'consentimiento.mp3', { type: 'audio/mp3' });
-        this.audioUrl = URL.createObjectURL(this.audioFile);
+        this.audioBlob = new Blob(audioChunks);
+        this.audioUrl = URL.createObjectURL(this.audioBlob);
         stream.getTracks().forEach(track => track.stop());
       };
       this.recording = true;
@@ -185,9 +185,10 @@ export class RegistrarPacienteComponent implements OnInit {
     this.patient.consentimientos.push(this.consentimientoTemporal);
     this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
     const formData = new FormData();
-    formData.append('data', new Blob([JSON.stringify(this.patient)], { type: 'application/json' }));
-    if (this.audioFile) {
-      formData.append('audio_consentimiento', this.audioFile);
+    formData.append('data', JSON.stringify(this.patient));
+    if (this.audioBlob) {
+      const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
+      formData.append('audio_consentimiento', audioFile);
     }
     if (this.id_usuario) {
       this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
