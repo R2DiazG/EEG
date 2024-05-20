@@ -5,7 +5,6 @@ import { PacienteService } from '../../services/pacientes/paciente.service';
 import { AuthService } from '../../services/login/auth.service';
 import { formatDate } from '@angular/common';
 import { CodigoPostalService } from '../../services/codigoPostal/codigo-postal.service';
-import * as Recorder from 'recorder-js'; // Import Recorder.js
 
 @Component({
   selector: 'app-registrar-paciente',
@@ -22,8 +21,7 @@ export class RegistrarPacienteComponent implements OnInit {
   audioUrl!: string;
   recording: boolean = false;
   audioBlob!: Blob;
-  recorder: any; // Add this line
-  audioContext: AudioContext;
+  tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoTemporal: { consentimiento: number; fecha_registro: string, audio_filename: string } = {
     consentimiento: 1,
@@ -36,12 +34,7 @@ export class RegistrarPacienteComponent implements OnInit {
     private authService: AuthService,
     private pacienteService: PacienteService,
     private codigoPostalService: CodigoPostalService
-  ) {
-    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    this.recorder = new Recorder(this.audioContext, {
-      numChannels: 1 // mono recording
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.getCurrentUser();
@@ -105,13 +98,11 @@ export class RegistrarPacienteComponent implements OnInit {
 
   fillAddressData(index: number, section: 'patientAddress' | 'emergencyContact') {
     let postalCode: string | undefined;
-
     if (section === 'patientAddress') {
       postalCode = this.patient.direcciones[index]?.codigo_postal;
     } else {
       postalCode = this.patient.contacto_emergencia?.codigo_postal;
     }
-
     if (postalCode) {
       this.codigoPostalService.getAddressByPostalCode(postalCode)
         .subscribe({
@@ -143,23 +134,29 @@ export class RegistrarPacienteComponent implements OnInit {
       return;
     }
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      this.recorder.init(stream);
-      this.recorder.start().then(() => {
-        this.recording = true;
-      });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.start();
+      const audioChunks: BlobPart[] = [];
+      this.mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+      };
+      this.mediaRecorder.onstop = () => {
+        this.audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+        this.audioUrl = URL.createObjectURL(this.audioBlob);
+        this.recording = false;
+        stream.getTracks().forEach(track => track.stop());
+      };
+      this.recording = true;
     }).catch(e => {
       console.error('Error al obtener acceso al micrófono: ', e);
     });
   }
 
   stopRecording(): void {
-    this.recorder.stop().then(({blob, buffer}) => {
-      this.audioBlob = blob;
-      this.audioUrl = URL.createObjectURL(this.audioBlob);
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
       this.recording = false;
-    }).catch(e => {
-      console.error('Error al detener la grabación: ', e);
-    });
+    }
   }
 
   resetRecording(): void {
@@ -168,8 +165,8 @@ export class RegistrarPacienteComponent implements OnInit {
     }
     this.audioUrl = '';
     this.recording = false;
-    if (this.recorder && this.recording) {
-      this.stopRecording();
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
     }
   }
 
@@ -185,10 +182,8 @@ export class RegistrarPacienteComponent implements OnInit {
   registerPatient(): void {
     this.patient.consentimientos.push(this.consentimientoTemporal);
     this.patient.telefonos = this.patient.telefonos.filter(phone => phone.telefono.trim() !== '');
-
     const formData = new FormData();
     formData.append('data', JSON.stringify(this.patient));
-
     if (this.audioBlob) {
       const audioFile = new File([this.audioBlob], 'consentimiento.mp3', { type: 'audio/mpeg' });
       formData.append('audio_consentimiento', audioFile);
@@ -196,7 +191,6 @@ export class RegistrarPacienteComponent implements OnInit {
     } else {
       console.error('audioBlob no está definido.');
     }
-
     formData.forEach((value, key) => {
       if (value instanceof File) {
         console.log(`formData key: ${key}, file name: ${value.name}, size: ${value.size}, type: ${value.type}`);
@@ -204,7 +198,6 @@ export class RegistrarPacienteComponent implements OnInit {
         console.log(`formData key: ${key}, value: ${value}`);
       }
     });
-
     if (this.id_usuario) {
       this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
         next: (response) => {
