@@ -48,7 +48,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 #app.config['MAIL_PORT'] = 587
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
-app.conifg['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
@@ -144,7 +144,7 @@ def solicitar_cambio_contrasena():
         db.session.add(reset_token)
         db.session.commit() 
         # Generate the reset link
-        link = url_for('resetear_contraseña', token=token, _external=True)
+        link = f"http://localhost:4200/resetear_contrasena/{token}"
         # HTML content for the email
         with open('email_template.html', 'r', encoding='utf-8') as file:
             html_content = file.read()
