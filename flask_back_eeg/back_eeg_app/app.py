@@ -1604,7 +1604,7 @@ def crear_nueva_sesion():
                 data_stft=data_stft_json,  # Here we store the STFT data
                 data_area_bandas_psd=data_area_bandas_psd_json, # Here we store the data of the PSD by area and band
                 data_area_bandas_pr=data_area_bandas_pr_json, # Here we store the data of the relative power by area and band
-                caracteristicas=caracteristicas_json # Here we store the prediction of the model
+                caracteristicas=caracteristicas_json, # Here we store the prediction of the model
                 data_areas=data_areas_json # Here we store the data of the areas
             )
             db.session.add(nuevo_normalized_eeg)
