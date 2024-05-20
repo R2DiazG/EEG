@@ -144,7 +144,7 @@ def solicitar_cambio_contrasena():
         db.session.add(reset_token)
         db.session.commit() 
         # Generate the reset link
-        link = f"http://localhost:4200/resetear_contrasena/{token}"
+        link = f"http://localhost:4200/restablecer-contraseña/{token}"
         # HTML content for the email
         with open('email_template_best.html', 'r', encoding='utf-8') as file:
             html_content = file.read()
