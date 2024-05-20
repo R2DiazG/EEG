@@ -192,6 +192,7 @@ export class RegistrarPacienteComponent implements OnInit {
     }
 
     if (this.id_usuario) {
+      console.log('Registrando paciente con datos:', this.patient);
       this.pacienteService.crearPaciente(this.id_usuario, formData).subscribe({
         next: (response) => {
           console.log('Paciente registrado con éxito', response);

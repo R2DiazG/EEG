@@ -158,6 +158,7 @@ export class EditarPacienteComponent implements OnInit {
         pais: data.contacto_emergencia.pais,
         notas: data.contacto_emergencia.notas,
       },
+      // Asume que hay consentimientos que se pueden mapear directamente
     };
     return mapped;
   }

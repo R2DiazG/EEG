@@ -58,6 +58,7 @@ export class InfoPaciente {
     */
     consentimientos: {
         consentimiento: number; 
-        fecha_registro: string
+        fecha_registro: string;
+        audio_filename: string;
     }[] = [];
 }

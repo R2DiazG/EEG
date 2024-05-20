@@ -3,6 +3,7 @@ import scipy.stats
 import os
 import mne
 import json
+import uuid
 import time
 import logging
 import sendgrid
@@ -779,10 +780,15 @@ def crear_paciente_para_usuario(id_usuario):
     """
     # Verify if the user exists
     usuario = Usuario.query.get_or_404(id_usuario)
-    datos = request.form.to_dict()
-    audio_files = request.files.getlist('audio_consentimientos')
+    #datos = request.form.to_dict()
     #datos = request.get_json()
-    print(datos)
+    datos_json = request.form.get('data')
+    print(datos_json)
+    audio_file = request.files.get('audio_consentimiento')
+    if datos_json:
+        datos = json.loads(datos_json)
+    else:
+        return jsonify({'msg': 'No se han proporcionado datos de paciente.'}), 400
     try:
         nuevo_paciente = Paciente(
             id_usuario=id_usuario,  # Use the ID of the user in the URL to create the patient for that user
@@ -820,18 +826,35 @@ def crear_paciente_para_usuario(id_usuario):
             )
             db.session.add(contacto_emergencia)
             print(contacto_emergencia)
+        # if 'consentimientos' in datos:
+        #     for consentimiento in datos['consentimientos']:
+        #         audio_consentimiento = None
+        #         if audio_file and audio_file.filename == consentimiento['audio_filename']:
+        #             audio_consentimiento = audio_file.read()
+        #         nuevo_consentimiento = Consentimiento(
+        #             consentimiento=bool(int(consentimiento['consentimiento'])),
+        #             fecha_registro=consentimiento['fecha_registro'],
+        #             id_paciente=nuevo_paciente.id_paciente,
+        #             audio_consentimiento=audio_consentimiento
+        #         )
+        #         db.session.add(nuevo_consentimiento)
         if 'consentimientos' in datos:
             for consentimiento in datos['consentimientos']:
-                audio_consentimiento = None
-                for audio_file in audio_files:
-                    if audio_file.filename == consentimiento['audio_filename']:
-                        audio_consentimiento = audio_file.read()
-                        break
+                audio_filename = None
+                if audio_file and audio_file.filename == consentimiento['audio_filename']:
+                    # Verificar y crear el directorio si no existe
+                    upload_folder = 'consentimientos'
+                    if not os.path.exists(upload_folder):
+                        os.makedirs(upload_folder)
+                    # Generar un nombre de archivo único
+                    unique_filename = f"{uuid.uuid4()}_{audio_file.filename}"
+                    audio_filename = os.path.join(upload_folder, unique_filename)
+                    audio_file.save(audio_filename)  # Guarda el archivo en el sistema de archivos
                 nuevo_consentimiento = Consentimiento(
-                    consentimiento=bool(int(consentimiento['consentimiento'])),
+                    consentimiento=bool(consentimiento['consentimiento']),
                     fecha_registro=consentimiento['fecha_registro'],
                     id_paciente=nuevo_paciente.id_paciente,
-                    audio_consentimiento=audio_consentimiento
+                    audio_filename=audio_filename
                 )
                 db.session.add(nuevo_consentimiento)
         # Add the phone numbers, emails and addresses

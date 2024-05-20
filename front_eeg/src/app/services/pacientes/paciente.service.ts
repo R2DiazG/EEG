@@ -25,7 +25,7 @@ export class PacienteService {
 
   crearPaciente(idUsuario: number, pacienteFormData: FormData): Observable<any> {
     const url = `${this.apiUrl}/usuarios/${idUsuario}/pacientes`;
-    return this.http.post(url, pacienteFormData, { headers: this.getHeaders(true) }); // Modificar para soportar FormData
+    return this.http.post(url, pacienteFormData, { headers: this.getHeaders() }); // Modificar para soportar FormData
   }
 
   obtenerPacientesAgrupadosPorPsicologo(): Observable<any> {
