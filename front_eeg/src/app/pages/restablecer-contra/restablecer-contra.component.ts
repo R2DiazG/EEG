@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../services/login/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,11 +8,11 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './restablecer-contra.component.html',
   styleUrls: ['./restablecer-contra.component.scss']
 })
-export class RestablecerContraComponent {
+export class RestablecerContraComponent implements OnInit {
 
   passwordForm: FormGroup;
   showPassword: boolean = false;
-  token: string;
+  token: string | null = null;
 
   constructor(
     private authService: AuthService, 
@@ -23,8 +23,10 @@ export class RestablecerContraComponent {
       contraseña: new FormControl('', [Validators.required, Validators.minLength(8)]),
       confirmarContrasena: new FormControl('', [Validators.required]),
     }, { validators: this.checkPasswords });
+  }
 
-    this.token = this.route.snapshot.paramMap.get('token') || '';
+  ngOnInit() {
+    this.token = this.route.snapshot.paramMap.get('token');
   }
 
   checkPasswords(group: AbstractControl): ValidationErrors | null {
@@ -33,14 +35,12 @@ export class RestablecerContraComponent {
     return pass === confirmPass ? null : { notSame: true };
   }
 
-  ngOnInit() {}
-
   toggleShowPassword() {
     this.showPassword = !this.showPassword;
   }
 
   onSubmit() {
-    if (this.passwordForm.valid) {
+    if (this.passwordForm.valid && this.token) {
       const nuevaContrasena = this.passwordForm.get('contraseña')!.value;
       this.authService.resetPassword(this.token, nuevaContrasena).subscribe({
         next: (response) => {

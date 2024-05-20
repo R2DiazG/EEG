@@ -30,7 +30,7 @@ const routes: Routes = [
   { path: 'registrar-psicologo', component: RegistrarPsicologoComponent },
   { path: 'olvide-contraseña', component: OlvideContraComponent },
   { path: 'medicamentos', component: MedicamentosComponent },
-  { path: 'restablecer-contraseña', component: RestablecerContraComponent},
+  { path: 'restablecer-contraseña/:token', component: RestablecerContraComponent},
   { path: 'admin-registra-psicologo', component: AdminRegistraPsicologoComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
   { path: 'lista-psicologos', component: ListaPsicologosComponent, canActivate: [RoleGuard], data: { expectedRole: 1 }},
   { path: '**', redirectTo: '/login' },
