@@ -1045,7 +1045,7 @@ cargarDatos() {
                         const anomalies = this.detectAnomalies(dataNormalized);
                         this.procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized, anomalies);
                     } catch (error) {
-                        console.error('Error al parsear los datos EEG normalizados:', error);
+                        console.error('Error al parsear los datos EEG data areas frontal:', error);
                     }
                 } else {
                     console.error('No se encontraron EEGs normalizados para esta sesión.');
