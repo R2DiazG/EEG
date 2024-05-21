@@ -1041,6 +1041,7 @@ cargarDatos() {
                     const dataNormalizedString = response.normalized_eegs[0].data_areas;
                     try {
                         const dataNormalized = JSON.parse(dataNormalizedString);
+                        console.log('EEG data areas:', dataNormalized);
                         const anomalies = this.detectAnomalies(dataNormalized);
                         this.procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized, anomalies);
                     } catch (error) {
