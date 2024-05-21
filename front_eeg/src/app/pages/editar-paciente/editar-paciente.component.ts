@@ -23,7 +23,7 @@ export class EditarPacienteComponent implements OnInit {
   tabsOrder: string[] = ['infoPatient', 'contactPatient', 'infoFamily', 'consent'];
 
   consentimientoDisplay: string = "Consentimiento grabado (haz clic para reproducir)";
-  private apiUrl = 'http://35.194.61.214:5000';
+  private apiUrl = 'http://127.0.0.1:5000';
 
   constructor(
     private router: Router,
