@@ -361,8 +361,8 @@ onSesionChange() {
 
   addMedication(idSesion: number): void {
     const dialogRef = this.dialog.open(DropMedicamentosDialogComponent, {
-      width: '50rem',
-      height: '15rem',
+      width: '55rem',
+      height: '25rem',
       data: {
         selectedMedicamentos: this.selectedMedicamentos,
         idSesion: idSesion  // Asegúrate de pasar idSesion al diálogo
