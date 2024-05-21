@@ -1101,7 +1101,7 @@ procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized: EEGDataAre
             this.mostrarGraficoFrontal('eeg_anomaly_frontal', frontalAreas, frontalData, frontalAnomalies, offset, extraPadding);
         }
     } catch (error) {
-        console.error('Error al procesar los datos EEG normalizados:', error);
+        console.error('Error al procesar los datos EEG data area frontal:', error);
     }
 }
 
