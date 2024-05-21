@@ -7,7 +7,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://35.225.46.139:5000/usuarios';
+  private apiUrl = 'http://35.194.61.214:5000/usuarios';
 
   constructor(
     private http: HttpClient,
