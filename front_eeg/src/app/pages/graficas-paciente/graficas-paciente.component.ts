@@ -136,7 +136,7 @@ ngOnInit() {
                 this.cargarDatosNormalizedEEG();
                 this.cargarDatosNormalizedEEGConAnomalias();
                 // Cargar datos de la sesión de EEG directamente aquí
-                this.cargarDatosDeEeg(this.idSesion); // Asumiendo que quieres los datos de EEG basados en el idSesion
+                this.cargarDatosDeEeg(this.idSesion);
               } else {
                 console.error('ID de paciente no encontrado para la sesión proporcionada.');
               }
@@ -157,8 +157,7 @@ ngAfterViewInit() {
 }
 
 cargarMedicamentos() {
-  // Asumiendo que tienes un idPaciente disponible
-  const idPaciente = this.idPaciente; // Debes definir cómo obtienes este ID
+  const idPaciente = this.idPaciente;
 
   this.medicamentoService.obtenerMedicamentosPorPaciente(idPaciente).subscribe({
     next: (medicamentos) => {
@@ -181,7 +180,7 @@ onDeleteSesion(): void {
   if (!this.isConfirm && !this.isDeleteInitiated) {
     this.isDeleteInitiated = true;
     this.cdr.detectChanges();
-    this.setTimeoutToRevertState(); // Extraemos la lógica de timeout a una función
+    this.setTimeoutToRevertState();
     return;
   }
 
@@ -242,17 +241,14 @@ getLastSession(idPaciente: number): void {
     next: (sesion) => {
       if (sesion) {
         console.log('La última sesión es:', sesion);
-        // Navega a una página de detalles de la sesión o muestra la información como necesites
         this.router.navigate(['/graficas-paciente', sesion.id_sesion]);
       } else {
         console.log('No se encontró la última sesión para este paciente.');
-        // Opcional: maneja el caso de que no haya más sesiones para mostrar
         this.router.navigate(['/lista-pacientes']);
       }
     },
     error: (error) => {
       console.error('Error al obtener la última sesión:', error);
-      // Considera manejar este error o mostrar un mensaje al usuario
     }
   });
 }
@@ -267,17 +263,14 @@ guardarNotasPsicologo(): void {
   if (this.idSesion && this.notasPsicologoEdit.trim()) {
     this.eegService.actualizarNotasPsicologoSesion(this.idSesion, this.notasPsicologoEdit).subscribe({
       next: (response) => {
-        // Actualiza ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
+        // Actualizamos ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
         this.notas_psicologo = this.notasPsicologoEdit;
         // Oculta el input de texto después de guardar
         this.isAddingNote = false;
-        // Si quieres limpiar el cuadro de edición después de guardar, descomenta la siguiente línea.
-        // this.notasPsicologoEdit = '';
         console.log(response.mensaje);
       },
       error: (error) => {
         console.error('Error al actualizar las notas del psicólogo:', error);
-        // Manejar errores, por ejemplo, mostrando un mensaje al usuario
       }
     });
   } else {
@@ -297,7 +290,6 @@ cargarDatosDeEeg(idSesion: number): void {
     next: (datosEeg) => {
       console.log(datosEeg)
       if (datosEeg) {
-        // Asume que la respuesta incluye las propiedades directamente
         this.fecha_consulta = datosEeg.detalle_sesion.fecha_consulta;
         this.estado_general = datosEeg.detalle_sesion.estado_general;
         this.estado_especifico = datosEeg.detalle_sesion.estado_especifico
@@ -334,7 +326,6 @@ cargarDatosDeEeg(idSesion: number): void {
         this.sesiones = data;
         this.fechaSesion = data[data.length-1.].fecha_consulta;
         console.log('Fecha de la última sesión:', this.fechaSesion);
-        // Opcionalmente, selecciona una sesión por defecto aquí
       },
       error: (error) => console.error('Error al obtener fechas de sesiones:', error)
     });
@@ -344,7 +335,7 @@ onSesionChange() {
   console.log('Sesión seleccionada:', this.selectedSesionId);
   if (this.selectedSesionId != null) {
     this.router.navigate([`/graficas-paciente/${this.selectedSesionId}`]).then(() => {
-      this.cdr.detectChanges();  // Asegura que Angular detecta el cambio en el modelo
+      this.cdr.detectChanges();
     });
   }
 }
@@ -365,14 +356,13 @@ onSesionChange() {
       height: '25rem',
       data: {
         selectedMedicamentos: this.selectedMedicamentos,
-        idSesion: idSesion  // Asegúrate de pasar idSesion al diálogo
+        idSesion: idSesion
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Medicamentos seleccionados:', result);
-        this.selectedMedicamentos = result; // Actualiza la lista con el resultado del diálogo
-        // Puede que también necesites llamar a un método para asociar estos medicamentos con la sesión en tu backend
+        this.selectedMedicamentos = result; // Actualizamos la lista con el resultado del diálogo
       }
     });
   }
@@ -383,37 +373,35 @@ onSesionChange() {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
-    this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
+    this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
   }
 
 setActiveGraphTab(tabName: string) {
   this.activeGraphTab = tabName;
-  this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
+  this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
 }
 
 setActiveSectionTab(tabName: string) {
   this.activeSectionTab = tabName;
-  this.cargarDatos(); // Llama a cargarDatos cada vez que se cambia el tab
+  this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
 }
 
 cargarDatos() {
   switch(this.activeTab) {
     case 'detailsSesion':
-      // Carga datos relacionados con los detalles de la sesión
+      // Cargamos datos relacionados con los detalles de la sesión
       this.cargarDatosDeEeg(this.idSesion);
       break;
     case 'meds':
-      // Carga el historial de medicamentos
+      // Cargamos el historial de medicamentos
       this.cargarMedicamentos();
       break;
     case 'prob':
-      // Aquí puedes añadir lógica para cargar datos para el pre-diagnóstico
       this.cargarCaracteristicas();
       this.cargarDatosNormalizedEEGConAnomalias();
       break;
   }
 
-  // Si tienes lógica específica para los tabs de EEG o PSD en `activeGraphTab`, puedes agregarla aquí también
   if (this.activeGraphTab === 'eeg') {
     this.cargarDatosNormalizedEEG();
   } if (this.activeGraphTab === 'psd') {
@@ -453,13 +441,12 @@ cargarDatos() {
         next: (response) => {
           console.log('Datos EEG normalizados:', response);
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-            // Obtén la cadena JSON de data_normalized del primer elemento del array normalized_eegs
             const dataNormalizedString = response.normalized_eegs[0].data_normalized;
             try {
               // Parsea la cadena JSON para convertirla en un objeto/array JavaScript
               const dataNormalized = JSON.parse(dataNormalizedString);
               console.log('EEG normalizados:', dataNormalized);
-              // Ahora que tienes dataNormalized como un objeto/array, puedes pasarlo a la función
+              // Ahora con dataNormalized como un objeto/array lo pasamos a la función
               this.procesarYMostrarDatosNormalizedEEG(dataNormalized);
             } catch (error) {
               console.error('Error al parsear los datos EEG normalizados:', error);
@@ -491,14 +478,14 @@ cargarDatos() {
         const amplitudeRange = maxAmplitude - minAmplitude;
         const offset = amplitudeRange * 0.5; // Un 10% del rango como desplazamiento
         const extraPadding = 0.2;
-        // Transforma los datos en series para Highcharts
+        // Transformamos los datos en series para Highcharts
         const series = names.map((name, index) => {
           return {
             name: name,
             data: data[index].map((point, i) => [i, point + offset * index]),
           };
         });
-        // Determina el rango mínimo y máximo para el eje Y basado en los desplazamientos aplicados
+        // Determinamos el rango mínimo y máximo para el eje Y basado en los desplazamientos aplicados
         let minOffsetApplied = Math.min(...series.map(serie => Math.min(...serie.data.map(point => point[1]))));
         let maxOffsetApplied = Math.max(...series.map(serie => Math.max(...serie.data.map(point => point[1]))));
         const options: Options = {
@@ -522,10 +509,6 @@ cargarDatos() {
             title: {
               text: 'Amplitud (µV)'
             },
-            /* subtitle: {
-              text: 'Grafica creada en ...',
-              align: 'left'
-            },  */
             labels: {
               formatter: function () {
                 // Calcula el índice basado en la posición actual y el desplazamiento fijo
@@ -535,17 +518,17 @@ cargarDatos() {
                 return names[index] || '';
               }
             },
-            tickInterval: offset, // Establece un intervalo de tick apropiado
+            tickInterval: offset, // Establecemos un intervalo de tick apropiado
             min: -extraPadding,
-            max: offset * (names.length-1) + extraPadding, // Ajusta el rango máximo según la cantidad de canales
+            max: offset * (names.length-1) + extraPadding, // Ajustamos el rango máximo según la cantidad de canales
           },
           accessibility: {
             screenReaderSection: {
                 beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{chartSubtitle}</div><div>{chartLongdesc}</div><div>{xAxisDescription}</div><div>{yAxisDescription}</div>'
             }
           },
-          exporting: { // Aquí se configura el botón de exportación
-            enabled: true // Habilita el botón de exportación
+          exporting: {
+            enabled: true
           },
           navigation: {
             buttonOptions: {
@@ -555,12 +538,9 @@ cargarDatos() {
           navigator: {
             maskInside: false
           },
-          /* rangeSelector: {
-            selected: 1
-          }, */
           stockTools: {
             gui: {
-              enabled: true, // Deshabilita la GUI por defecto para usar la personalizada
+              enabled: true,
             }
           },
           tooltip: {
@@ -671,8 +651,6 @@ cargarDatos() {
         title: {
           text: 'Frecuencia (Hz)'
         },
-        // Aquí ajustar según el pointStart y pointInterval si es necesario
-        // Esto puede requerir ajuste dependiendo de la configuración de las series
       },
       yAxis: {
         title: {
@@ -697,7 +675,7 @@ cargarDatos() {
       },
       series: series as SeriesOptionsType[]
     };
-    Highcharts.chart('processed', options); // Asegúrate de que 'processed' es el ID de tu contenedor en HTML
+    Highcharts.chart('processed', options);
   }
 
   cargarDatosSTFT(): void {
@@ -754,7 +732,7 @@ cargarDatos() {
     console.log('F',frequenciesExtent)
     // Escalas para los ejes X e Y
     const x = d3.scaleLinear()
-      .domain(timesExtent) // Asumiendo que channelData.times es un array con el tiempo
+      .domain(timesExtent)
       .range([0, width]);
     const y = d3.scaleLinear()
       .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
@@ -780,7 +758,7 @@ cargarDatos() {
       .attr('y', (_d, i) => y(channelData.frequencies[i % channelData.frequencies.length]))
       .attr('width', rectWidth)
       .attr('height', rectHeight)
-      .attr('fill', d => d3.interpolateInferno(Number(d))); // Cast 'd' to a number
+      .attr('fill', d => d3.interpolateInferno(Number(d)));
   }
 
   cargarPSDAreaBandas(idSesion: number, areaSeleccionada: string): void {
@@ -1061,45 +1039,45 @@ cargarDatos() {
     } else {
         console.error('ID de sesión es nulo');
     }
-}
+  }
 
-detectAnomaliesFrontal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
-    const anomalies: EEGAnomaly[] = [];
-    dataNormalized.forEach((areaData) => {
-        const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
-        const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
-        areaData.data.forEach((value, index) => {
-            if (Math.abs(value - mean) > threshold * stdDev) {
-                anomalies.push({
-                    index: index,
-                    value: value,
-                    area: areaData.area,
-                });
-            }
-        });
-    });
-    return anomalies;
-}
+  detectAnomaliesFrontal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
+      const anomalies: EEGAnomaly[] = [];
+      dataNormalized.forEach((areaData) => {
+          const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+          const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+          areaData.data.forEach((value, index) => {
+              if (Math.abs(value - mean) > threshold * stdDev) {
+                  anomalies.push({
+                      index: index,
+                      value: value,
+                      area: areaData.area,
+                  });
+              }
+          });
+      });
+      return anomalies;
+  }
 
-procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
-    try {
-        console.log('Datos EEG para area Frontal:', dataNormalized);
-        // Filtrar áreas que contengan 'Frontal'
-        const areaFrontalData = dataNormalized.filter(area => area.area.includes('Frontal'));
-        if (areaFrontalData.length > 0) {
-            const frontalAreas = areaFrontalData.map(area => area.area);
-            const frontalData = areaFrontalData.map(area => area.data);
-            const frontalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Frontal'));
-            this.mostrarGraficoFrontal('eeg_anomaly_frontal', frontalAreas, frontalData, frontalAnomalies);
-        } else {
-            console.error('No se encontraron áreas "Frontal" en los datos EEG normalizados.');
-        }
-    } catch (error) {
-        console.error('Error al procesar los datos EEG por area Frontal:', error);
-    }
-}
+  procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
+      try {
+          console.log('Datos EEG para area Frontal:', dataNormalized);
+          // Filtrar áreas que contengan 'Frontal'
+          const areaFrontalData = dataNormalized.filter(area => area.area.includes('Frontal'));
+          if (areaFrontalData.length > 0) {
+              const frontalAreas = areaFrontalData.map(area => area.area);
+              const frontalData = areaFrontalData.map(area => area.data);
+              const frontalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Frontal'));
+              this.mostrarGraficoFrontal('eeg_anomaly_frontal', frontalAreas, frontalData, frontalAnomalies);
+          } else {
+              console.error('No se encontraron áreas "Frontal" en los datos EEG normalizados.');
+          }
+      } catch (error) {
+          console.error('Error al procesar los datos EEG por area Frontal:', error);
+      }
+  }
 
-mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
+  mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
     const series = areas.map((area, index) => {
         const anomalyData = anomalies
             .filter(anomaly => anomaly.area === area)
@@ -1163,503 +1141,502 @@ mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anom
   }
 
 //--------------------------------------------- ANOMALIAS TEMPORALES ---------------------------------------------//
-cargarDatosNormalizedEEGConAnomaliasTemporal(): void {
-  if (this.idSesion) {
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-          next: (response) => {
-              if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-                  const dataNormalizedString = response.normalized_eegs[0].data_areas;
-                  try {
-                      const dataNormalized = JSON.parse(dataNormalizedString);
-                      console.log('EEG data areas:', dataNormalized);
-                      const anomalies = this.detectAnomaliesTemporal(dataNormalized);
-                      this.procesarYMostrarDatosNormalizedEEGConAnomaliasTemporal(dataNormalized, anomalies);
-                  } catch (error) {
-                      console.error('Error al parsear los datos EEG por area Temporal:', error);
-                  }
-              } else {
-                  console.error('No se encontraron EEGs por area para esta sesión.');
-              }
-          },
-          error: (error) => console.error('Error al obtener datos EEG por area Temporal:', error)
-      });
-  } else {
-      console.error('ID de sesión es nulo');
+  cargarDatosNormalizedEEGConAnomaliasTemporal(): void {
+    if (this.idSesion) {
+        this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+            next: (response) => {
+                if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+                    const dataNormalizedString = response.normalized_eegs[0].data_areas;
+                    try {
+                        const dataNormalized = JSON.parse(dataNormalizedString);
+                        console.log('EEG data areas:', dataNormalized);
+                        const anomalies = this.detectAnomaliesTemporal(dataNormalized);
+                        this.procesarYMostrarDatosNormalizedEEGConAnomaliasTemporal(dataNormalized, anomalies);
+                    } catch (error) {
+                        console.error('Error al parsear los datos EEG por area Temporal:', error);
+                    }
+                } else {
+                    console.error('No se encontraron EEGs por area para esta sesión.');
+                }
+            },
+            error: (error) => console.error('Error al obtener datos EEG por area Temporal:', error)
+        });
+    } else {
+        console.error('ID de sesión es nulo');
+    }
   }
-}
 
-detectAnomaliesTemporal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
-  const anomalies: EEGAnomaly[] = [];
-  dataNormalized.forEach((areaData) => {
-      const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
-      const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
-      areaData.data.forEach((value, index) => {
-          if (Math.abs(value - mean) > threshold * stdDev) {
-              anomalies.push({
-                  index: index,
-                  value: value,
-                  area: areaData.area,
-              });
-          }
-      });
-  });
-  return anomalies;
-}
-
-procesarYMostrarDatosNormalizedEEGConAnomaliasTemporal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
-  try {
-      console.log('Datos EEG para area Temporal:', dataNormalized);
-      // Filtrar áreas que contengan 'Temporal'
-      const areaTemporalData = dataNormalized.filter(area => area.area.includes('Temporal'));
-      if (areaTemporalData.length > 0) {
-          const temporalAreas = areaTemporalData.map(area => area.area);
-          const temporalData = areaTemporalData.map(area => area.data);
-          const temporalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Temporal'));
-          this.mostrarGraficoTemporal('eeg_anomaly_temporal', temporalAreas, temporalData, temporalAnomalies);
-      } else {
-          console.error('No se encontraron áreas "Temporal" en los datos EEG normalizados.');
-      }
-  } catch (error) {
-      console.error('Error al procesar los datos EEG por area Temporal:', error);
+  detectAnomaliesTemporal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
+    const anomalies: EEGAnomaly[] = [];
+    dataNormalized.forEach((areaData) => {
+        const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+        const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+        areaData.data.forEach((value, index) => {
+            if (Math.abs(value - mean) > threshold * stdDev) {
+                anomalies.push({
+                    index: index,
+                    value: value,
+                    area: areaData.area,
+                });
+            }
+        });
+    });
+    return anomalies;
   }
-}
 
-mostrarGraficoTemporal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
-  const series = areas.map((area, index) => {
-      const anomalyData = anomalies
-          .filter(anomaly => anomaly.area === area)
-          .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
-      return {
-          type: 'line',
-          name: area,
-          data: data[index].map((point, i) => [i, point]),
-          marker: {
-              enabled: false
-          },
-          dataLabels: {
-              enabled: true,
-              useHTML: true,
-              formatter: function (): any {
-                  const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
-                  return anomaly ? `<span style="color: black;">●</span>` : null;
-              },
-              x: 0
-          }
-      };
-  });
+  procesarYMostrarDatosNormalizedEEGConAnomaliasTemporal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
+    try {
+        console.log('Datos EEG para area Temporal:', dataNormalized);
+        // Filtrar áreas que contengan 'Temporal'
+        const areaTemporalData = dataNormalized.filter(area => area.area.includes('Temporal'));
+        if (areaTemporalData.length > 0) {
+            const temporalAreas = areaTemporalData.map(area => area.area);
+            const temporalData = areaTemporalData.map(area => area.data);
+            const temporalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Temporal'));
+            this.mostrarGraficoTemporal('eeg_anomaly_temporal', temporalAreas, temporalData, temporalAnomalies);
+        } else {
+            console.error('No se encontraron áreas "Temporal" en los datos EEG normalizados.');
+        }
+    } catch (error) {
+        console.error('Error al procesar los datos EEG por area Temporal:', error);
+    }
+  }
 
-  const options: Options = {
-      chart: {
-          renderTo: container,
-          type: 'line',
-          zooming: {
-              type: 'x'
-          },
-          height: 1000
-      },
-      title: {
-          text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Temporal'
-      },
-      xAxis: {
-          title: {
-              text: 'Número de Muestra'
-          }
-      },
-      yAxis: {
-          title: {
-              text: 'Amplitud (µV)'
-          }
-      },
-      tooltip: {
-          shared: true,
-          valueDecimals: 8
-      },
-      plotOptions: {
-          series: {
-              animation: {
-                  duration: 1000
-              },
-              lineWidth: 2,
-          }
-      },
-      series: series as SeriesOptionsType[]
-  };
-  Highcharts.chart(container, options);
-}
+  mostrarGraficoTemporal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
+    const series = areas.map((area, index) => {
+        const anomalyData = anomalies
+            .filter(anomaly => anomaly.area === area)
+            .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
+        return {
+            type: 'line',
+            name: area,
+            data: data[index].map((point, i) => [i, point]),
+            marker: {
+                enabled: false
+            },
+            dataLabels: {
+                enabled: true,
+                useHTML: true,
+                formatter: function (): any {
+                    const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
+                    return anomaly ? `<span style="color: black;">●</span>` : null;
+                },
+                x: 0
+            }
+        };
+    });
+
+    const options: Options = {
+        chart: {
+            renderTo: container,
+            type: 'line',
+            zooming: {
+                type: 'x'
+            },
+            height: 1000
+        },
+        title: {
+            text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Temporal'
+        },
+        xAxis: {
+            title: {
+                text: 'Número de Muestra'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Amplitud (µV)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueDecimals: 8
+        },
+        plotOptions: {
+            series: {
+                animation: {
+                    duration: 1000
+                },
+                lineWidth: 2,
+            }
+        },
+        series: series as SeriesOptionsType[]
+    };
+    Highcharts.chart(container, options);
+  }
 
 //--------------------------------------------- ANOMALIAS CENTRALES ----------------------------------------------//
-cargarDatosNormalizedEEGConAnomaliasCentral(): void {
-  if (this.idSesion) {
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-          next: (response) => {
-              if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-                  const dataNormalizedString = response.normalized_eegs[0].data_areas;
-                  try {
-                      const dataNormalized = JSON.parse(dataNormalizedString);
-                      console.log('EEG data areas:', dataNormalized);
-                      const anomalies = this.detectAnomaliesCentral(dataNormalized);
-                      this.procesarYMostrarDatosNormalizedEEGConAnomaliasCentral(dataNormalized, anomalies);
-                  } catch (error) {
-                      console.error('Error al parsear los datos EEG por area Central:', error);
-                  }
-              } else {
-                  console.error('No se encontraron EEGs por area para esta sesión.');
-              }
-          },
-          error: (error) => console.error('Error al obtener datos EEG por area Central:', error)
-      });
-  } else {
-      console.error('ID de sesión es nulo');
+  cargarDatosNormalizedEEGConAnomaliasCentral(): void {
+    if (this.idSesion) {
+        this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+            next: (response) => {
+                if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+                    const dataNormalizedString = response.normalized_eegs[0].data_areas;
+                    try {
+                        const dataNormalized = JSON.parse(dataNormalizedString);
+                        console.log('EEG data areas:', dataNormalized);
+                        const anomalies = this.detectAnomaliesCentral(dataNormalized);
+                        this.procesarYMostrarDatosNormalizedEEGConAnomaliasCentral(dataNormalized, anomalies);
+                    } catch (error) {
+                        console.error('Error al parsear los datos EEG por area Central:', error);
+                    }
+                } else {
+                    console.error('No se encontraron EEGs por area para esta sesión.');
+                }
+            },
+            error: (error) => console.error('Error al obtener datos EEG por area Central:', error)
+        });
+    } else {
+        console.error('ID de sesión es nulo');
+    }
   }
-}
 
-detectAnomaliesCentral(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
-  const anomalies: EEGAnomaly[] = [];
-  dataNormalized.forEach((areaData) => {
-      const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
-      const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
-      areaData.data.forEach((value, index) => {
-          if (Math.abs(value - mean) > threshold * stdDev) {
-              anomalies.push({
-                  index: index,
-                  value: value,
-                  area: areaData.area,
-              });
-          }
-      });
-  });
-  return anomalies;
-}
-
-procesarYMostrarDatosNormalizedEEGConAnomaliasCentral(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
-  try {
-      console.log('Datos EEG para area Central:', dataNormalized);
-      // Filtrar áreas que contengan 'Central'
-      const areaCentralData = dataNormalized.filter(area => area.area.includes('Central'));
-      if (areaCentralData.length > 0) {
-          const centralAreas = areaCentralData.map(area => area.area);
-          const centralData = areaCentralData.map(area => area.data);
-          const centralAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Central'));
-          this.mostrarGraficoCentral('eeg_anomaly_central', centralAreas, centralData, centralAnomalies);
-      } else {
-          console.error('No se encontraron áreas "Central" en los datos EEG normalizados.');
-      }
-  } catch (error) {
-      console.error('Error al procesar los datos EEG por area Central:', error);
+  detectAnomaliesCentral(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
+    const anomalies: EEGAnomaly[] = [];
+    dataNormalized.forEach((areaData) => {
+        const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+        const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+        areaData.data.forEach((value, index) => {
+            if (Math.abs(value - mean) > threshold * stdDev) {
+                anomalies.push({
+                    index: index,
+                    value: value,
+                    area: areaData.area,
+                });
+            }
+        });
+    });
+    return anomalies;
   }
-}
 
-mostrarGraficoCentral(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
-  const series = areas.map((area, index) => {
-      const anomalyData = anomalies
-          .filter(anomaly => anomaly.area === area)
-          .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
-      return {
-          type: 'line',
-          name: area,
-          data: data[index].map((point, i) => [i, point]),
-          marker: {
-              enabled: false
-          },
-          dataLabels: {
-              enabled: true,
-              useHTML: true,
-              formatter: function (): any {
-                  const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
-                  return anomaly ? `<span style="color: black;">●</span>` : null;
-              },
-              x: 0
-          }
-      };
-  });
+  procesarYMostrarDatosNormalizedEEGConAnomaliasCentral(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
+    try {
+        console.log('Datos EEG para area Central:', dataNormalized);
+        // Filtrar áreas que contengan 'Central'
+        const areaCentralData = dataNormalized.filter(area => area.area.includes('Central'));
+        if (areaCentralData.length > 0) {
+            const centralAreas = areaCentralData.map(area => area.area);
+            const centralData = areaCentralData.map(area => area.data);
+            const centralAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Central'));
+            this.mostrarGraficoCentral('eeg_anomaly_central', centralAreas, centralData, centralAnomalies);
+        } else {
+            console.error('No se encontraron áreas "Central" en los datos EEG normalizados.');
+        }
+    } catch (error) {
+        console.error('Error al procesar los datos EEG por area Central:', error);
+    }
+  }
 
-  const options: Options = {
-      chart: {
-          renderTo: container,
-          type: 'line',
-          zooming: {
-              type: 'x'
-          },
-          height: 1000
-      },
-      title: {
-          text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Central'
-      },
-      xAxis: {
-          title: {
-              text: 'Número de Muestra'
-          }
-      },
-      yAxis: {
-          title: {
-              text: 'Amplitud (µV)'
-          }
-      },
-      tooltip: {
-          shared: true,
-          valueDecimals: 8
-      },
-      plotOptions: {
-          series: {
-              animation: {
-                  duration: 1000
-              },
-              lineWidth: 2,
-          }
-      },
-      series: series as SeriesOptionsType[]
-  };
-  Highcharts.chart(container, options);
-}
+  mostrarGraficoCentral(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
+    const series = areas.map((area, index) => {
+        const anomalyData = anomalies
+            .filter(anomaly => anomaly.area === area)
+            .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
+        return {
+            type: 'line',
+            name: area,
+            data: data[index].map((point, i) => [i, point]),
+            marker: {
+                enabled: false
+            },
+            dataLabels: {
+                enabled: true,
+                useHTML: true,
+                formatter: function (): any {
+                    const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
+                    return anomaly ? `<span style="color: black;">●</span>` : null;
+                },
+                x: 0
+            }
+        };
+    });
+
+    const options: Options = {
+        chart: {
+            renderTo: container,
+            type: 'line',
+            zooming: {
+                type: 'x'
+            },
+            height: 1000
+        },
+        title: {
+            text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Central'
+        },
+        xAxis: {
+            title: {
+                text: 'Número de Muestra'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Amplitud (µV)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueDecimals: 8
+        },
+        plotOptions: {
+            series: {
+                animation: {
+                    duration: 1000
+                },
+                lineWidth: 2,
+            }
+        },
+        series: series as SeriesOptionsType[]
+    };
+    Highcharts.chart(container, options);
+  }
 
 //--------------------------------------------- ANOMALIAS PARIETALES ---------------------------------------------//
-cargarDatosNormalizedEEGConAnomaliasParietal(): void {
-  if (this.idSesion) {
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-          next: (response) => {
-              if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-                  const dataNormalizedString = response.normalized_eegs[0].data_areas;
-                  try {
-                      const dataNormalized = JSON.parse(dataNormalizedString);
-                      console.log('EEG data areas:', dataNormalized);
-                      const anomalies = this.detectAnomaliesParietal(dataNormalized);
-                      this.procesarYMostrarDatosNormalizedEEGConAnomaliasParietal(dataNormalized, anomalies);
-                  } catch (error) {
-                      console.error('Error al parsear los datos EEG por area Parietal:', error);
-                  }
-              } else {
-                  console.error('No se encontraron EEGs por area para esta sesión.');
-              }
-          },
-          error: (error) => console.error('Error al obtener datos EEG por area Parietal:', error)
-      });
-  } else {
-      console.error('ID de sesión es nulo');
+  cargarDatosNormalizedEEGConAnomaliasParietal(): void {
+    if (this.idSesion) {
+        this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+            next: (response) => {
+                if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+                    const dataNormalizedString = response.normalized_eegs[0].data_areas;
+                    try {
+                        const dataNormalized = JSON.parse(dataNormalizedString);
+                        console.log('EEG data areas:', dataNormalized);
+                        const anomalies = this.detectAnomaliesParietal(dataNormalized);
+                        this.procesarYMostrarDatosNormalizedEEGConAnomaliasParietal(dataNormalized, anomalies);
+                    } catch (error) {
+                        console.error('Error al parsear los datos EEG por area Parietal:', error);
+                    }
+                } else {
+                    console.error('No se encontraron EEGs por area para esta sesión.');
+                }
+            },
+            error: (error) => console.error('Error al obtener datos EEG por area Parietal:', error)
+        });
+    } else {
+        console.error('ID de sesión es nulo');
+    }
   }
-}
 
-detectAnomaliesParietal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
-  const anomalies: EEGAnomaly[] = [];
-  dataNormalized.forEach((areaData) => {
-      const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
-      const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
-      areaData.data.forEach((value, index) => {
-          if (Math.abs(value - mean) > threshold * stdDev) {
-              anomalies.push({
-                  index: index,
-                  value: value,
-                  area: areaData.area,
-              });
-          }
-      });
-  });
-  return anomalies;
-}
-
-procesarYMostrarDatosNormalizedEEGConAnomaliasParietal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
-  try {
-      console.log('Datos EEG para area Parietal:', dataNormalized);
-      // Filtrar áreas que contengan 'Parietal'
-      const areaParietalData = dataNormalized.filter(area => area.area.includes('Parietal'));
-      if (areaParietalData.length > 0) {
-          const parietalAreas = areaParietalData.map(area => area.area);
-          const parietalData = areaParietalData.map(area => area.data);
-          const parietalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Parietal'));
-          this.mostrarGraficoParietal('eeg_anomaly_parietal', parietalAreas, parietalData, parietalAnomalies);
-      } else {
-          console.error('No se encontraron áreas "Parietal" en los datos EEG normalizados.');
-      }
-  } catch (error) {
-      console.error('Error al procesar los datos EEG por area Parietal:', error);
+  detectAnomaliesParietal(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
+    const anomalies: EEGAnomaly[] = [];
+    dataNormalized.forEach((areaData) => {
+        const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+        const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+        areaData.data.forEach((value, index) => {
+            if (Math.abs(value - mean) > threshold * stdDev) {
+                anomalies.push({
+                    index: index,
+                    value: value,
+                    area: areaData.area,
+                });
+            }
+        });
+    });
+    return anomalies;
   }
-}
 
-mostrarGraficoParietal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
-  const series = areas.map((area, index) => {
-      const anomalyData = anomalies
-          .filter(anomaly => anomaly.area === area)
-          .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
-      return {
-          type: 'line',
-          name: area,
-          data: data[index].map((point, i) => [i, point]),
-          marker: {
-              enabled: false
-          },
-          dataLabels: {
-              enabled: true,
-              useHTML: true,
-              formatter: function (): any {
-                  const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
-                  return anomaly ? `<span style="color: black;">●</span>` : null;
-              },
-              x: 0
-          }
-      };
-  });
+  procesarYMostrarDatosNormalizedEEGConAnomaliasParietal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
+    try {
+        console.log('Datos EEG para area Parietal:', dataNormalized);
+        // Filtrar áreas que contengan 'Parietal'
+        const areaParietalData = dataNormalized.filter(area => area.area.includes('Parietal'));
+        if (areaParietalData.length > 0) {
+            const parietalAreas = areaParietalData.map(area => area.area);
+            const parietalData = areaParietalData.map(area => area.data);
+            const parietalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Parietal'));
+            this.mostrarGraficoParietal('eeg_anomaly_parietal', parietalAreas, parietalData, parietalAnomalies);
+        } else {
+            console.error('No se encontraron áreas "Parietal" en los datos EEG normalizados.');
+        }
+    } catch (error) {
+        console.error('Error al procesar los datos EEG por area Parietal:', error);
+    }
+  }
 
-  const options: Options = {
-      chart: {
-          renderTo: container,
-          type: 'line',
-          zooming: {
-              type: 'x'
-          },
-          height: 1000
-      },
-      title: {
-          text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Parietal'
-      },
-      xAxis: {
-          title: {
-              text: 'Número de Muestra'
-          }
-      },
-      yAxis: {
-          title: {
-              text: 'Amplitud (µV)'
-          }
-      },
-      tooltip: {
-          shared: true,
-          valueDecimals: 8
-      },
-      plotOptions: {
-          series: {
-              animation: {
-                  duration: 1000
-              },
-              lineWidth: 2,
-          }
-      },
-      series: series as SeriesOptionsType[]
-  };
-  Highcharts.chart(container, options);
-}
+  mostrarGraficoParietal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
+    const series = areas.map((area, index) => {
+        const anomalyData = anomalies
+            .filter(anomaly => anomaly.area === area)
+            .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
+        return {
+            type: 'line',
+            name: area,
+            data: data[index].map((point, i) => [i, point]),
+            marker: {
+                enabled: false
+            },
+            dataLabels: {
+                enabled: true,
+                useHTML: true,
+                formatter: function (): any {
+                    const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
+                    return anomaly ? `<span style="color: black;">●</span>` : null;
+                },
+                x: 0
+            }
+        };
+    });
+
+    const options: Options = {
+        chart: {
+            renderTo: container,
+            type: 'line',
+            zooming: {
+                type: 'x'
+            },
+            height: 1000
+        },
+        title: {
+            text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Parietal'
+        },
+        xAxis: {
+            title: {
+                text: 'Número de Muestra'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Amplitud (µV)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueDecimals: 8
+        },
+        plotOptions: {
+            series: {
+                animation: {
+                    duration: 1000
+                },
+                lineWidth: 2,
+            }
+        },
+        series: series as SeriesOptionsType[]
+    };
+    Highcharts.chart(container, options);
+  }
 
 //-------------------------------------------- ANOMALIAS OCCIPITALES ---------------------------------------------//
-cargarDatosNormalizedEEGConAnomaliasOccipital(): void {
-  if (this.idSesion) {
-      this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
-          next: (response) => {
-              if (response.normalized_eegs && response.normalized_eegs.length > 0) {
-                  const dataNormalizedString = response.normalized_eegs[0].data_areas;
-                  try {
-                      const dataNormalized = JSON.parse(dataNormalizedString);
-                      console.log('EEG data areas:', dataNormalized);
-                      const anomalies = this.detectAnomaliesOccipital(dataNormalized);
-                      this.procesarYMostrarDatosNormalizedEEGConAnomaliasOccipital(dataNormalized, anomalies);
-                  } catch (error) {
-                      console.error('Error al parsear los datos EEG por area Occipital:', error);
-                  }
-              } else {
-                  console.error('No se encontraron EEGs por area para esta sesión.');
-              }
-          },
-          error: (error) => console.error('Error al obtener datos EEG por area Occipital:', error)
-      });
-  } else {
-      console.error('ID de sesión es nulo');
+  cargarDatosNormalizedEEGConAnomaliasOccipital(): void {
+    if (this.idSesion) {
+        this.eegService.obtenerEEGPorSesion(this.idSesion).subscribe({
+            next: (response) => {
+                if (response.normalized_eegs && response.normalized_eegs.length > 0) {
+                    const dataNormalizedString = response.normalized_eegs[0].data_areas;
+                    try {
+                        const dataNormalized = JSON.parse(dataNormalizedString);
+                        console.log('EEG data areas:', dataNormalized);
+                        const anomalies = this.detectAnomaliesOccipital(dataNormalized);
+                        this.procesarYMostrarDatosNormalizedEEGConAnomaliasOccipital(dataNormalized, anomalies);
+                    } catch (error) {
+                        console.error('Error al parsear los datos EEG por area Occipital:', error);
+                    }
+                } else {
+                    console.error('No se encontraron EEGs por area para esta sesión.');
+                }
+            },
+            error: (error) => console.error('Error al obtener datos EEG por area Occipital:', error)
+        });
+    } else {
+        console.error('ID de sesión es nulo');
+    }
   }
-}
 
-detectAnomaliesOccipital(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
-  const anomalies: EEGAnomaly[] = [];
-  dataNormalized.forEach((areaData) => {
-      const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
-      const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
-      areaData.data.forEach((value, index) => {
-          if (Math.abs(value - mean) > threshold * stdDev) {
-              anomalies.push({
-                  index: index,
-                  value: value,
-                  area: areaData.area,
-              });
-          }
-      });
-  });
-  return anomalies;
-}
-
-procesarYMostrarDatosNormalizedEEGConAnomaliasOccipital(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
-  try {
-      console.log('Datos EEG para area Occipital:', dataNormalized);
-      // Filtrar áreas que contengan 'Occipital'
-      const areaOccipitalData = dataNormalized.filter(area => area.area.includes('Occipital'));
-      if (areaOccipitalData.length > 0) {
-          const occipitalAreas = areaOccipitalData.map(area => area.area);
-          const occipitalData = areaOccipitalData.map(area => area.data);
-          const occipitalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Occipital'));
-          this.mostrarGraficoOccipital('eeg_anomaly_occipital', occipitalAreas, occipitalData, occipitalAnomalies);
-      } else {
-          console.error('No se encontraron áreas "Occipital" en los datos EEG normalizados.');
-      }
-  } catch (error) {
-      console.error('Error al procesar los datos EEG por area Occipital:', error);
+  detectAnomaliesOccipital(dataNormalized: EEGDataArea[], threshold: number = 3): EEGAnomaly[] {
+    const anomalies: EEGAnomaly[] = [];
+    dataNormalized.forEach((areaData) => {
+        const mean = areaData.data.reduce((a, b) => a + b, 0) / areaData.data.length;
+        const stdDev = Math.sqrt(areaData.data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / areaData.data.length);
+        areaData.data.forEach((value, index) => {
+            if (Math.abs(value - mean) > threshold * stdDev) {
+                anomalies.push({
+                    index: index,
+                    value: value,
+                    area: areaData.area,
+                });
+            }
+        });
+    });
+    return anomalies;
   }
-}
 
-mostrarGraficoOccipital(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
-  const series = areas.map((area, index) => {
-      const anomalyData = anomalies
-          .filter(anomaly => anomaly.area === area)
-          .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
-      return {
-          type: 'line',
-          name: area,
-          data: data[index].map((point, i) => [i, point]),
-          marker: {
-              enabled: false
-          },
-          dataLabels: {
-              enabled: true,
-              useHTML: true,
-              formatter: function (): any {
-                  const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
-                  return anomaly ? `<span style="color: black;">●</span>` : null;
-              },
-              x: 0
-          }
-      };
-  });
+  procesarYMostrarDatosNormalizedEEGConAnomaliasOccipital(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
+    try {
+        console.log('Datos EEG para area Occipital:', dataNormalized);
+        // Filtrar áreas que contengan 'Occipital'
+        const areaOccipitalData = dataNormalized.filter(area => area.area.includes('Occipital'));
+        if (areaOccipitalData.length > 0) {
+            const occipitalAreas = areaOccipitalData.map(area => area.area);
+            const occipitalData = areaOccipitalData.map(area => area.data);
+            const occipitalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Occipital'));
+            this.mostrarGraficoOccipital('eeg_anomaly_occipital', occipitalAreas, occipitalData, occipitalAnomalies);
+        } else {
+            console.error('No se encontraron áreas "Occipital" en los datos EEG normalizados.');
+        }
+    } catch (error) {
+        console.error('Error al procesar los datos EEG por area Occipital:', error);
+    }
+  }
 
-  const options: Options = {
-      chart: {
-          renderTo: container,
-          type: 'line',
-          zooming: {
-              type: 'x'
-          },
-          height: 1000
-      },
-      title: {
-          text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Occipital'
-      },
-      xAxis: {
-          title: {
-              text: 'Número de Muestra'
-          }
-      },
-      yAxis: {
-          title: {
-              text: 'Amplitud (µV)'
-          }
-      },
-      tooltip: {
-          shared: true,
-          valueDecimals: 8
-      },
-      plotOptions: {
-          series: {
-              animation: {
-                  duration: 1000
-              },
-              lineWidth: 2,
-          }
-      },
-      series: series as SeriesOptionsType[]
-  };
-  Highcharts.chart(container, options);
-}
+  mostrarGraficoOccipital(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
+    const series = areas.map((area, index) => {
+        const anomalyData = anomalies
+            .filter(anomaly => anomaly.area === area)
+            .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
+        return {
+            type: 'line',
+            name: area,
+            data: data[index].map((point, i) => [i, point]),
+            marker: {
+                enabled: false
+            },
+            dataLabels: {
+                enabled: true,
+                useHTML: true,
+                formatter: function (): any {
+                    const anomaly = anomalyData.find(anomaly => anomaly.x === this.x);
+                    return anomaly ? `<span style="color: black;">●</span>` : null;
+                },
+                x: 0
+            }
+        };
+    });
 
+    const options: Options = {
+        chart: {
+            renderTo: container,
+            type: 'line',
+            zooming: {
+                type: 'x'
+            },
+            height: 1000
+        },
+        title: {
+            text: 'Visualización de Datos EEG Normalizados con Anomalías - Área Occipital'
+        },
+        xAxis: {
+            title: {
+                text: 'Número de Muestra'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Amplitud (µV)'
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueDecimals: 8
+        },
+        plotOptions: {
+            series: {
+                animation: {
+                    duration: 1000
+                },
+                lineWidth: 2,
+            }
+        },
+        series: series as SeriesOptionsType[]
+    };
+    Highcharts.chart(container, options);
+  }
 }
