@@ -1,23 +1,16 @@
 <h1>Seleccionar medicamentos</h1>
-<ng-select [items]="medicamentos$ | async"
-           bindLabel="nombre_comercial"
-           bindValue="id_medicamento"
-           placeholder="{{ placeholderText }}"
-           [multiple]="true" 
-           [closeOnSelect]="false" 
-           [searchable]="true"
-           [(ngModel)]="selectedMedicamentos"
-           (change)="onMedicamentosSelected()" 
-           (clear)="onMedicamentosCleared()">
-  <ng-template ng-option-tmp let-item="item">
-    <span>{{ item.nombre_comercial }}</span> 
-  </ng-template>
-</ng-select>
+<div class="selected-container">
+  <div id="selectedMedicamentos" class="selected-medicamentos"></div>
+</div>
+<div class="select-container">
+  <input type="text" id="medicamentosInput" placeholder="Buscar medicamentos" (input)="filterMedicamentos()">
+  <ul id="medicamentosList" class="hidden"></ul>
+</div>
 <div class="actions">
-  <button mat-button (click)="guardarSeleccion()" class="add" title="Guardar selección de medicamentos">
+  <button class="add" title="Guardar selección de medicamentos" (click)="guardarSeleccion()">
     <i class="fas fa-save" aria-hidden="true"></i>
   </button>
-  <button mat-button (click)="closeDialog()" class="less" title="Cancelar">
+  <button class="less" title="Cancelar" (click)="closeDialog()">
     <i class="fas fa-trash" aria-hidden="true"></i>
-  </button> 
+  </button>
 </div>
