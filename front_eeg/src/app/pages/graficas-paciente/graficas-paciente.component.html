@@ -282,12 +282,12 @@
         </div>
         <div class="space"></div>
         <div class="tab-menu">
-          <button class="tab" (click)="setActiveSectionTab('anomaly')" [class.active]="activeGraphTab === 'anomaly'">EEG con Anomalias</button>
-          <button class="tab" (click)="setActiveSectionTab('anomaly_area1')" [class.active]="activeGraphTab === 'anomaly_area1'">Anomalias Frontales</button>
-          <button class="tab" (click)="setActiveSectionTab('anomaly_area2')" [class.active]="activeGraphTab === 'anomaly_area2'">Anomalias Temporales</button>
-          <button class="tab" (click)="setActiveSectionTab('anomaly_area3')" [class.active]="activeGraphTab === 'anomaly_area3'">Anomalias Centrales</button>
-          <button class="tab" (click)="setActiveSectionTab('anomaly_area4')" [class.active]="activeGraphTab === 'anomaly_area4'">Anomalias Parietales</button>
-          <button class="tab" (click)="setActiveSectionTab('anomaly_area5')" [class.active]="activeGraphTab === 'anomaly_area5'">Anomalias Occipitales</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly')" [class.active]="activeSectionTab === 'anomaly'">EEG con Anomalias</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area1')" [class.active]="activeSectionTab === 'anomaly_area1'">Anomalias Frontales</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area2')" [class.active]="activeSectionTab === 'anomaly_area2'">Anomalias Temporales</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area3')" [class.active]="activeSectionTab === 'anomaly_area3'">Anomalias Centrales</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area4')" [class.active]="activeSectionTab === 'anomaly_area4'">Anomalias Parietales</button>
+          <button class="tab" (click)="setActiveSectionTab('anomaly_area5')" [class.active]="activeSectionTab === 'anomaly_area5'">Anomalias Occipitales</button>
         </div>
         <div class="tab-content">
         <div *ngIf="activeSectionTab === 'anomaly'">

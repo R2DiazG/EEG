@@ -395,7 +395,7 @@ $blue: #2492FF;
         font-size: medium;
   
         &.active {
-          border-bottom: 3px solid #7353ba;
+          border-bottom: 3px solid #7353ba !important;
           font-weight: bold;
           color: #333;
         }
