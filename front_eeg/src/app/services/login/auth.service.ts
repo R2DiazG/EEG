@@ -7,10 +7,10 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private loginUrl = 'http://127.0.0.1:5000/login';
-  private forgotPasswordUrl = 'http://127.0.0.1:5000/solicitar_cambio_contraseña';
-  private currentUserUrl = 'http://127.0.0.1:5000/usuario/actual';
-  private resetPasswordUrl = 'http://127.0.0.1:5000/resetear_contrasena'; // Nueva URL para restablecer contraseña
+  private loginUrl = 'http://35.225.46.139:5000/login';
+  private forgotPasswordUrl = 'http://35.225.46.139:5000/solicitar_cambio_contraseña';
+  private currentUserUrl = 'http://35.225.46.139:5000/usuario/actual';
+  private resetPasswordUrl = 'http://35.225.46.139:5000/resetear_contrasena'; // Nueva URL para restablecer contraseña
 
   constructor(private http: HttpClient) { }
 

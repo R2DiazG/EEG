@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class EegService {
-  private apiUrl = 'http://127.0.0.1:5000/sesiones';
+  private apiUrl = 'http://35.225.46.139:5000/sesiones';
   constructor(private http: HttpClient) { }
   private getHeaders(): HttpHeaders {
     const access_token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
