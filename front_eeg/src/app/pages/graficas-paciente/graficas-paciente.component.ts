@@ -1042,16 +1042,16 @@ cargarDatos() {
                     try {
                         const dataNormalized = JSON.parse(dataNormalizedString);
                         console.log('EEG data areas:', dataNormalized);
-                        const anomalies = this.detectAnomalies(dataNormalized);
+                        const anomalies = this.detectAnomaliesFrontal(dataNormalized);
                         this.procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized, anomalies);
                     } catch (error) {
-                        console.error('Error al parsear los datos EEG data areas frontal:', error);
+                        console.error('Error al parsear los datos EEG por area Frontal:', error);
                     }
                 } else {
-                    console.error('No se encontraron EEGs normalizados para esta sesión.');
+                    console.error('No se encontraron EEGs por area para esta sesión.');
                 }
             },
-            error: (error) => console.error('Error al obtener datos EEG normalizados:', error)
+            error: (error) => console.error('Error al obtener datos EEG por area Frontal:', error)
         });
     } else {
         console.error('ID de sesión es nulo');
@@ -1078,42 +1078,31 @@ detectAnomaliesFrontal(dataNormalized: EEGDataArea[], threshold: number = 3): EE
 
 procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
-        console.log('Datos EEG normalizados:', dataNormalized);
-        const areas = dataNormalized.map(areaData => areaData.area);
-        const data = dataNormalized.map(areaData => areaData.data);
-        let maxAmplitude = Number.MIN_SAFE_INTEGER;
-        let minAmplitude = Number.MAX_SAFE_INTEGER;
-        data.forEach(areaData => {
-            maxAmplitude = Math.max(maxAmplitude, ...areaData);
-            minAmplitude = Math.min(minAmplitude, ...areaData);
-        });
-        const amplitudeRange = maxAmplitude - minAmplitude;
-        const offset = amplitudeRange * 0.5;
-        const extraPadding = 0.2;
-        // Gráfico general
-        this.mostrarGraficoFrontal('eeg_anomaly', areas, data, anomalies, offset, extraPadding);
-        // Gráfico de áreas 'Frontal'
+        console.log('Datos EEG para area Frontal:', dataNormalized);
+        // Filtrar áreas que contengan 'Frontal'
         const areaFrontalData = dataNormalized.filter(area => area.area.includes('Frontal'));
         if (areaFrontalData.length > 0) {
             const frontalAreas = areaFrontalData.map(area => area.area);
             const frontalData = areaFrontalData.map(area => area.data);
             const frontalAnomalies = anomalies.filter(anomaly => anomaly.area.includes('Frontal'));
-            this.mostrarGraficoFrontal('eeg_anomaly_frontal', frontalAreas, frontalData, frontalAnomalies, offset, extraPadding);
+            this.mostrarGraficoFrontal('eeg_anomaly_frontal', frontalAreas, frontalData, frontalAnomalies);
+        } else {
+            console.error('No se encontraron áreas "Frontal" en los datos EEG normalizados.');
         }
     } catch (error) {
-        console.error('Error al procesar los datos EEG data area frontal:', error);
+        console.error('Error al procesar los datos EEG por area Frontal:', error);
     }
 }
 
-mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[], offset: number, extraPadding: number): void {
+mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anomalies: EEGAnomaly[]): void {
     const series = areas.map((area, index) => {
         const anomalyData = anomalies
             .filter(anomaly => anomaly.area === area)
-            .map(anomaly => ({ x: anomaly.index, y: anomaly.value + offset * index }));
+            .map(anomaly => ({ x: anomaly.index, y: anomaly.value }));
         return {
             type: 'line',
             name: area,
-            data: data[index].map((point, i) => [i, point + offset * index]),
+            data: data[index].map((point, i) => [i, point]),
             marker: {
                 enabled: false
             },
@@ -1128,6 +1117,7 @@ mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anom
             }
         };
     });
+
     const options: Options = {
         chart: {
             renderTo: container,
@@ -1138,7 +1128,7 @@ mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anom
             height: 1000
         },
         title: {
-            text: 'Visualización de Datos EEG Normalizados con Anomalías'
+            text: 'Visualización de Datos EEG Normalizados con Anomalías - Áreas Frontal'
         },
         xAxis: {
             title: {
@@ -1148,16 +1138,7 @@ mostrarGraficoFrontal(container: string, areas: string[], data: number[][], anom
         yAxis: {
             title: {
                 text: 'Amplitud (µV)'
-            },
-            labels: {
-                formatter: function () {
-                    const index = Math.round((this.value as number) / offset);
-                    return areas[index] || '';
-                }
-            },
-            tickInterval: offset,
-            min: -extraPadding,
-            max: offset * (areas.length) + extraPadding,
+            }
         },
         tooltip: {
             shared: true,
