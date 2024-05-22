@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MedicamentoService } from '../../services/medicamentos/medicamento.service';
-import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component'; // Asegúrate de tener la ruta correcta
+import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/crear-medicamento-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
@@ -15,8 +15,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class EegSubirDocsComponent {
   selectedFile: File | null = null;
-  //fecha: string = ''; // Asigna un string vacío como valor inicial
-  estadoGeneral: string = ''; // Puede ser 'wakefullness' o cualquier otro valor predeterminado
+  estadoGeneral: string = '';
   resumenSesionActual: string = '';
   idPaciente!: number;
   archivo_eeg!: File;
@@ -40,60 +39,35 @@ export class EegSubirDocsComponent {
     ) {}
 
   ngOnInit() {
-    //this.cargarMedicamentos();
     console.log('Hola', this.route.params)
     this.route.paramMap.subscribe(params => {
-      console.log(params); // Imprime los parámetros de la URL
-      const id_paciente = params.get('id_paciente'); // Asegúrate de que 'idPaciente' coincide con el nombre del parámetro definido en tus rutas.
+      console.log(params);
+      const id_paciente = params.get('id_paciente');
       if (id_paciente) {
         this.idPaciente = +id_paciente;
-        console.log('ID del paciente recibido eeg documentos:', this.idPaciente); // Imprime el id para verificar
+        console.log('ID del paciente recibido eeg documentos:', this.idPaciente);
       } else {
         console.error('No se recibió el ID del paciente');
       }
     });
   }
-
-  // cargarMedicamentos(): void {
-  //   this.medicamentoService.obtenerMedicamentos().subscribe({
-  //     next: (medicamentos) => {
-  //       this.medicamentos = medicamentos;
-  //     },
-  //     error: (error) => console.error('Error al cargar medicamentos:', error)
-  //   });
-  // }
-
-  // agregarMedicamento(valor: string): void {
-  //   const id_medicamento = Number(valor);
-  //   if (!isNaN(id_medicamento)) {
-  //     // Si id es un número y no es NaN, procede con tu lógica
-  //     if (!this.seleccionados.includes(id_medicamento)) {
-  //       this.seleccionados.push(id_medicamento);
-  //     }
-  //     console.log(this.seleccionados);
-  //   }
-  // }
-  
-
+ 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
   }
 
   toggleEstadoEspecifico(estado: string, event: MatCheckboxChange): void {
-    const isChecked = event.checked; // Directamente obtenemos el estado del checkbox
+    const isChecked = event.checked;
   
     if (estado === 'ninguno' && isChecked) {
-      // Si el estado es 'ninguno' y está marcado, desmarca todos los otros y marca 'ninguno'
       Object.keys(this.estadosEspecificos).forEach(key => {
         this.estadosEspecificos[key] = false;
       });
       this.estadosEspecificos['ninguno'] = true;
     } else if (estado !== 'ninguno' && isChecked) {
-      // Si otro estado distinto de 'ninguno' es marcado, asegúrate de que 'ninguno' esté desmarcado
       this.estadosEspecificos['ninguno'] = false;
       this.estadosEspecificos[estado] = true;
     } else {
-      // Esto maneja la deselección de cualquier checkbox, incluyendo 'ninguno'
       this.estadosEspecificos[estado] = isChecked;
     }
   }
@@ -125,7 +99,6 @@ export class EegSubirDocsComponent {
     formData.append('resumen_sesion_actual', this.resumenSesionActual);
     formData.append('id_paciente', this.idPaciente.toString());
   
-    // Iterar sobre los valores de FormData y mostrarlos
     formData.forEach((value, key) => {
       console.log(key + ':' + value);
     });

@@ -12,7 +12,7 @@ import { CrearMedicamentoDialogComponent } from '../crear-medicamento-dialog/cre
 @Component({
   selector: 'app-medicamentos',
   templateUrl: './medicamentos.component.html',
-  styleUrls: ['./medicamentos.component.scss'] // Asegúrate de que el path sea correcto
+  styleUrls: ['./medicamentos.component.scss']
 })
 export class MedicamentosComponent implements OnInit {
   displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'acciones', 'eliminar'];
@@ -40,22 +40,9 @@ export class MedicamentosComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  /*cargarMedicamentos() {
-    this.medicamentoService.obtenerMedicamentos().subscribe({
-      next: (medicamentos) => {
-        this.dataSource.data = medicamentos;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al recuperar medicamentos:', error);
-      }
-    });
-  }*/
-
   cargarMedicamentos() {
     this.medicamentoService.obtenerMedicamentos().subscribe({
       next: (medicamentos) => {
-        // Inicializa isConfirm, isDeleteInitiated, y isDeleted en false para cada medicamento
         this.dataSource.data = medicamentos.map(medicamento => ({
           ...medicamento,
           isConfirm: false,
@@ -79,17 +66,16 @@ export class MedicamentosComponent implements OnInit {
   }
 
   enableEditMode(medicamento: any) {
-    this.editModeMap[medicamento.id_medicamento] = true; // Habilita el modo de edición para el medicamento específico
+    this.editModeMap[medicamento.id_medicamento] = true;
     this.cdr.detectChanges();
   }
 
   saveMedicamento(medicamento: any) {
     if (this.editModeMap[medicamento.id_medicamento]) {
-      // Llama al servicio de actualización con el id y los datos actualizados del medicamento
       this.medicamentoService.actualizarMedicamento(medicamento.id_medicamento, medicamento).subscribe({
         next: (res) => {
           console.log('Medicamento actualizado exitosamente', res);
-          this.editModeMap[medicamento.id_medicamento] = false; // Desactiva el modo de edición
+          this.editModeMap[medicamento.id_medicamento] = false;
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -100,46 +86,16 @@ export class MedicamentosComponent implements OnInit {
   }
 
   cancelEditMode(medicamento: any) {
-    this.editModeMap[medicamento.id_medicamento] = false; // Desactiva el modo de edición
+    this.editModeMap[medicamento.id_medicamento] = false;
     this.cdr.detectChanges();
-    // Aquí deberías también restablecer los valores originales del medicamento si hiciste cambios
   }
-
-  /*eliminarMedicamento(medicamento: any) {
-    // Verifica si ya se ha confirmado la intención de eliminar
-    if (medicamento.isConfirm) {
-      // Realiza la llamada al servicio para eliminar el medicamento
-      this.medicamentoService.eliminarMedicamento(medicamento.id_medicamento).subscribe({
-        next: () => {
-          console.log('Medicamento eliminado exitosamente');
-          this.cargarMedicamentos(); // Recarga la lista de medicamentos
-        },
-        error: (error) => {
-          console.error('Error al eliminar el medicamento:', error);
-          medicamento.isConfirm = false; // Restablece el estado de confirmación en caso de error
-          this.cdr.detectChanges(); // Actualiza la vista si es necesario
-        }
-      });
-    } else {
-      // Establece el estado de confirmación a true para pedir confirmación
-      medicamento.isConfirm = true;
-      this.cdr.detectChanges(); // Asegúrate de que el cambio se refleje en la vista
-  
-      // Restablece el estado de confirmación después de un tiempo si el usuario no confirma
-      setTimeout(() => {
-        medicamento.isConfirm = false;
-        this.cdr.detectChanges(); // Actualiza la vista para reflejar el cambio
-      }, 3000); // Ajusta el tiempo según sea necesario
-    }
-  }*/
 
   eliminarMedicamento(medicamento: any) {
     if (!medicamento.isConfirm && !medicamento.isDeleteInitiated) {
-      // Si es la primera vez que se hace clic, solo se muestra el texto 'Eliminar'
       medicamento.isDeleteInitiated = true;
       this.cdr.detectChanges();
       setTimeout(() => {
-        if (!medicamento.isConfirm) { // Si aún no está confirmado, revertir
+        if (!medicamento.isConfirm) {
           medicamento.isDeleteInitiated = false;
           this.cdr.detectChanges();
         }
@@ -148,30 +104,26 @@ export class MedicamentosComponent implements OnInit {
     }
   
     if (medicamento.isConfirm) {
-      // Realiza la llamada al servicio para eliminar el medicamento
       this.medicamentoService.eliminarMedicamento(medicamento.id_medicamento).subscribe({
         next: () => {
           console.log('Medicamento eliminado exitosamente');
-          medicamento.isDeleted = true; // Marcar el medicamento como eliminado
-          medicamento.isDeleteInitiated = false; // Restablece esto para el próximo uso del botón
-          this.cdr.detectChanges(); // Actualiza la vista
-          this.cargarMedicamentos(); // Recarga la lista de medicamentos
+          medicamento.isDeleted = true;
+          medicamento.isDeleteInitiated = false;
+          this.cdr.detectChanges();
+          this.cargarMedicamentos();
         },
         error: (error) => {
           console.error('Error al eliminar el medicamento:', error);
           medicamento.isConfirm = false;
-          medicamento.isDeleteInitiated = false; // Restablece también esta propiedad en caso de error
-          this.cdr.detectChanges(); // Actualiza la vista si es necesario
+          medicamento.isDeleteInitiated = false;
+          this.cdr.detectChanges();
         }
       });
     } else {
-      // Establece el estado de confirmación a true para pedir confirmación
       medicamento.isConfirm = true;
-      this.cdr.detectChanges(); // Asegúrate de que el cambio se refleje en la vista
-  
-      // Restablece el estado de confirmación y isDeleteInitiated después de un tiempo si el usuario no confirma
+      this.cdr.detectChanges();
       setTimeout(() => {
-        if (!medicamento.isDeleted) { // Si no se ha eliminado, revertir
+        if (!medicamento.isDeleted) {
           medicamento.isConfirm = false;
           medicamento.isDeleteInitiated = false;
           this.cdr.detectChanges();
@@ -183,12 +135,12 @@ export class MedicamentosComponent implements OnInit {
   
   abrirDialogoCrearMedicamento() {
     const dialogRef = this.dialog.open(CrearMedicamentoDialogComponent, {
-      width: '500px', // Ajusta el tamaño según sea necesario
+      width: '500px',
     });
   
     dialogRef.afterClosed().subscribe(result => {
       console.log('El diálogo fue cerrado');
-      this.cargarMedicamentos(); // Recargar la lista de medicamentos tras cerrar el diálogo
+      this.cargarMedicamentos();
     });
   }
 }  

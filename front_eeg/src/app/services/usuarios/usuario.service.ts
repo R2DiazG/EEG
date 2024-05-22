@@ -11,18 +11,15 @@ export class UsuarioService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object  // Inyectar PLATFORM_ID para verificar el entorno de ejecución
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   private getHeaders(): HttpHeaders {
-    // Inicializar headers sin Authorization
     let headers = new HttpHeaders({ 'Content-Type': 'application/json', });
 
-    // Verificar si se está en el lado del cliente
     if (isPlatformBrowser(this.platformId)) {
       const access_token = localStorage.getItem('access_token');
       if (access_token) {
-        // Agregar Authorization solo si se está en el cliente y el token existe
         headers = headers.set('Authorization', `Bearer ${access_token}`);
       }
     }

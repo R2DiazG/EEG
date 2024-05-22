@@ -9,23 +9,15 @@
       <h1>Ver {{patient.nombre}} {{patient.apellido_paterno}}</h1>
     </div>
     <div class="form-actions">
-      <!-- Cambiar aquí para llamar a onSubmit cuando se guarde -->
       <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
         <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
       </button>
     </div>
     <div class="form-actions">
-      <!-- <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirmDelete, 'done': isDeleted}">
-        <i class="icon fas fa-trash" *ngIf="!isConfirmDelete && !isDeleted"></i>
-        <i class="icon fas fa-question-circle" *ngIf="isConfirmDelete && !isDeleted"></i>
-        <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
-        <span class="text">{{ isDeleted ? 'Eliminado' : (isConfirmDelete ? '¿Seguro?' : 'Eliminar') }}</span>
-    </button> -->
     <button class="button-eliminar" (click)="onDeletePatient()" [ngClass]="{'confirm': isConfirm, 'done': isDeleted, 'delete-initiated': isDeleteInitiated && !isConfirm}" title="Eliminar paciente" >
       <i class="icon fas fa-trash" *ngIf="!isConfirm && !isDeleted"></i>
       <i class="icon fas fa-question-circle" *ngIf="isConfirm && !isDeleted"></i>
       <i class="icon fas fa-check-circle" *ngIf="isDeleted"></i>
-      <!-- Actualizado para mostrar 'Delete' solo después del primer clic -->
       <span class="text" *ngIf="isDeleteInitiated">{{ isDeleted ? 'Deleted' : (isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
     </button>
     </div>
@@ -33,18 +25,15 @@
     <div class="tab-menu">
       <button class="tab" id="tab" (click)="setActiveTab('infoPatient')" [class.active]="activeTab === 'infoPatient'">Información del paciente</button>
       <button class="tab" id="tab" (click)="setActiveTab('contactPatient')" [class.active]="activeTab === 'contactPatient'">Contacto del paciente</button>
-      <!-- <button class="tab" id="tab" (click)="setActiveTab('historyPatient')" [class.active]="activeTab === 'historyPatient'">Informacion clinica</button> -->
       <button class="tab" id="tab" (click)="setActiveTab('infoFamily')" [class.active]="activeTab === 'infoFamily'">Contacto de emergencia</button>
       <button class="tab" id="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
     </div>
     <div class="tab-content">
-      <!-- Información del paciente -->
       <div *ngIf="activeTab === 'infoPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
           <div class="form-section">
           <div class="informacionDelPaciente">
           <div class="seccion" >
-            <!-- Nombre -->
             <div *ngIf="!isEditMode; else editNombre" class="respuesta" >
               <label>Nombre:</label>
               {{patient.nombre}}
@@ -55,7 +44,6 @@
               <input type="text" id="firstName" name="firstName" [(ngModel)]="patient.nombre" required>
             </ng-template>
 
-            <!-- Apellido Paterno -->
             <div *ngIf="!isEditMode; else editApellidoPaterno" class="respuesta" >
               <label>Apellido paterno:</label>
               {{patient.apellido_paterno}}
@@ -66,7 +54,6 @@
               <input type="text" id="lastName" name="lastName" [(ngModel)]="patient.apellido_paterno" required>
             </ng-template>
 
-            <!-- Apellido Materno -->
             <div *ngIf="!isEditMode; else editApellidoMaterno" class="respuesta" >
               <label>Apellido materno:</label>
               {{patient.apellido_materno}}
@@ -80,7 +67,6 @@
           </div>
 
           <div class="seccion">
-            <!-- Fecha de Nacimiento -->
           <div *ngIf="!isEditMode; else editFechaNacimiento" class="respuesta" >
             <label>Fecha de nacimiento:</label>
             {{patient.fecha_nacimiento | date:'yyyy-MM-dd'}}
@@ -91,13 +77,11 @@
             <input type="date" id="birthDate" name="birthDate" [(ngModel)]="patient.fecha_nacimiento" required>
           </ng-template>
 
-            <!-- Género guardado -->
             <div *ngIf="!isEditMode" class="respuesta" >
               <label>Género:</label>
               <span>{{ getGeneroDisplay(patient.genero)}}</span>
             </div>
 
-            <!-- Botones de radio para editar -->
             <div *ngIf="isEditMode">
               <label for="gender">Género:</label>
               <div id="gender">
@@ -113,13 +97,11 @@
           </div>
 
           <div class="seccion">
-            <!-- Estado civil guardado -->
             <div *ngIf="!isEditMode" class="respuesta" >
               <label>Estado civil:</label>
               <span>{{ getEstadoCivil(patient.estado_civil) }}</span>
             </div>
 
-            <!-- Botones de radio para editar -->
             <div *ngIf="isEditMode">
               <label for="civilStatus" >Estado civil:</label>
               <a>
@@ -137,13 +119,11 @@
             </div>
             <br>
   
-            <!-- Lateralidad guardada -->
             <div *ngIf="!isEditMode" class="respuesta" >
               <label>Lateralidad:</label>
               <span>{{ getLateralidadDisplay(patient.lateralidad) }}</span>
             </div>
 
-            <!-- Selector para editar Lateralidad -->
             <div *ngIf="isEditMode">
               <label for="laterality">Lateralidad:</label>
               <a>
@@ -158,13 +138,11 @@
             </div>
             <br>
 
-            <!-- Escolaridad guardada -->
             <div *ngIf="!isEditMode" class="respuesta" >
               <label>Escolaridad:</label>
               <span>{{ getEscolaridadDisplay(patient.escolaridad) }}</span>
             </div>
 
-            <!-- Selector para editar Escolaridad -->
             <div *ngIf="isEditMode">
               <label for="educationLevel">Escolaridad:</label>
               <a>
@@ -218,7 +196,6 @@
           </div>
       </div>
       <div class="tab-navigation-buttons">
-        <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
         <button class="acciones" (click)="changeTab('back')" disabled><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
         <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
           <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
@@ -231,17 +208,10 @@
     </form>
   </div>
 
-      <!-- Contacto del paciente-->:
       <div *ngIf="activeTab === 'contactPatient'">
         <form (ngSubmit)="onSubmit()" ngForm>
           <div class="form-section">
           <div class="seccion">
-            <!--
-            <label>Teléfonos celulares:</label>
-            <div *ngFor="let phone of patient.telefonos; let i = index">
-              <input type="text" [id]="'phone' + i" [name]="'phone' + i" [(ngModel)]="patient.telefonos[i].telefono" [readonly]="!isEditMode">
-            -->
-            <!-- Teléfono de casa -->
             <ng-container *ngIf="isEditMode || patient.telefonos[0]?.telefono">
               <div *ngIf="!isEditMode; else editTelefonoCasa" class="respuesta">
                 <label>Teléfono de casa:</label>
@@ -254,7 +224,6 @@
               </ng-template>
             </ng-container>
 
-            <!-- Teléfono móvil -->
             <ng-container *ngIf="isEditMode || patient.telefonos[1]?.telefono">
               <div *ngIf="!isEditMode; else editTelefonoMovil" class="respuesta">
                 <label>Teléfono móvil:</label>
@@ -267,7 +236,6 @@
               </ng-template>
             </ng-container>
 
-            <!-- Teléfono de trabajo -->
             <ng-container *ngIf="isEditMode || patient.telefonos[2]?.telefono">
               <div *ngIf="!isEditMode; else editTelefonoTrabajo" class="respuesta">
                 <label>Teléfono de trabajo:</label>
@@ -279,11 +247,6 @@
                 <input type="text" id="phone2" name="phone2" [(ngModel)]="patient.telefonos[2].telefono" required>
               </ng-template>
             </ng-container>
-
-            <!-- <label>Correos electrónicos:</label>
-            <div *ngFor="let email of patient.correos_electronicos; let i = index">
-              <input type="text" [id]="'email' + i" [name]="'email' + i" [(ngModel)]="patient.correos_electronicos[i].correo_electronico" [readonly]="!isEditMode">
-            </div> -->
 
             <ng-container *ngIf="isEditMode || patient.correos_electronicos[0]?.correo_electronico">
               <div *ngIf="!isEditMode; else editEmailPersonal" class="respuesta">
@@ -321,17 +284,8 @@
               </ng-template>
             </ng-container>
             
-            <!-- <label>Direcciones:</label>
-            <div *ngFor="let address of patient.direcciones; let i = index">
-              <input type="text" [id]="'address' + i" [name]="'address' + i" [(ngModel)]="patient.direcciones[i].calle_numero" placeholder="Calle y número" [readonly]="!isEditMode">
-              <input type="text" [id]="'city' + i" [name]="'city' + i" [(ngModel)]="patient.direcciones[i].ciudad" placeholder="Ciudad" [readonly]="!isEditMode">
-              <input type="text" [id]="'state' + i" [name]="'state' + i" [(ngModel)]="patient.direcciones[i].estado" placeholder="Estado" [readonly]="!isEditMode">
-              <input type="text" [id]="'zipCode' + i" [name]="'zipCode' + i" [(ngModel)]="patient.direcciones[i].codigo_postal" placeholder="Código postal" [readonly]="!isEditMode">
-              <input type="text" [id]="'country' + i" [name]="'country' + i" [(ngModel)]="patient.direcciones[i].pais" placeholder="País" [readonly]="!isEditMode">
-            </div> -->
             </div>
             <div class="seccion">
-            <!-- Código Postal -->
             <div *ngIf="!isEditMode; else editCodigoPostal" class="respuesta">
               <label>Código Postal:</label>
               {{patient.direcciones[0].codigo_postal}}
@@ -342,7 +296,6 @@
               <input type="text" id="zipCode0" name="zipCode0" [(ngModel)]="patient.direcciones[0].codigo_postal" required>
             </ng-template>
             
-            <!-- Calle y Número -->
             <div *ngIf="!isEditMode; else editCalleNumero" class="respuesta">
               <label>Calle y número:</label>
               {{patient.direcciones[0].calle_numero}}
@@ -353,7 +306,6 @@
               <input type="text" id="address0" name="address0" [(ngModel)]="patient.direcciones[0].calle_numero" required>
             </ng-template>
 
-            <!-- Colonia -->
             <div *ngIf="!isEditMode; else editColonia" class="respuesta">
               <label>Colonia:</label>
               {{patient.direcciones[0].colonia}}
@@ -364,7 +316,6 @@
               <input type="text" id="colonia0" name="colonia0" [(ngModel)]="patient.direcciones[0].colonia" required>
             </ng-template>
 
-            <!-- Ciudad -->
             <div *ngIf="!isEditMode; else editCiudad" class="respuesta">
               <label>Ciudad:</label>
               {{patient.direcciones[0].ciudad}}
@@ -375,7 +326,6 @@
               <input type="text" id="city0" name="city0" [(ngModel)]="patient.direcciones[0].ciudad" required>
             </ng-template>
 
-            <!-- Estado -->
             <div *ngIf="!isEditMode; else editEstado" class="respuesta">
               <label>Estado:</label>
               {{patient.direcciones[0].estado}}
@@ -386,7 +336,6 @@
               <input type="text" id="state0" name="state0" [(ngModel)]="patient.direcciones[0].estado" required>
             </ng-template>
 
-            <!-- País -->
             <div *ngIf="!isEditMode; else editPais" class="respuesta">
               <label>País:</label>
               {{patient.direcciones[0].pais}}
@@ -399,7 +348,6 @@
           </div>
         </div>
         <div class="tab-navigation-buttons">
-          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
           <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
           <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
             <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
@@ -412,84 +360,9 @@
         </form>
       </div>
 
-      <!-- Historial del paciente
-      <div *ngIf="activeTab === 'historyPatient'">
-        <form (ngSubmit)="onSubmit()" ngForm>
-          <h2>Informacion clinica</h2>
-          <div class="form-actions">
-            <button type="button" id="edit" (click)="toggleEditMode()">{{ isEditMode ? 'Guardar Cambios' : 'Editar' }}</button>
-          </div>
-          <div class="form-section">
-            <label for="medicalHistory">Historial médico:</label>
-            <textarea id="medicalHistory" name="medicalHistory" [(ngModel)]="patient.historial_medico" required [readonly]="!isEditMode"></textarea>
-            
-            <label for="currentMedication">Medicamentos actuales:</label>
-            <table class="medications-table">
-              <thead>
-                <tr>
-                  <th>Medicamento</th>
-                  Agregar barra de busqueda que consuma obtener_medicamentos()
-                  Sino encuentra el medicamento puede crear uno
-                  <th *ngIf="isEditMode">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let medication of patient.medicamentos_actuales; let i = index">
-                  <td>
-                    <input type="text" name="medication-{{i}}" [(ngModel)]="patient.currentMedications[i]" [readonly]="!isEditMode">
-                    <input type="text" name="medication-{{i}}" [readonly]="!isEditMode">
-                  </td>
-                  <td *ngIf="isEditMode">
-                    <button type="button" id="delete" (click)="removeMedication(i)">Eliminar</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <button type="button" id="add" (click)="addMedication()" *ngIf="isEditMode">Agregar medicamentos</button>
-          </div>
-        </form>
-      </div> -->
-
-      <!-- Información del familiar -->
       <div *ngIf="activeTab === 'infoFamily' && patient && patient.contacto_emergencia">
         <form (ngSubmit)="onSubmit()" ngForm>
           <div class="form-section">
-            <!-- <label for="relativeFirstName">Nombre(s):</label>
-            <input type="text" id="relativeFirstName" name="relativeFirstName" [(ngModel)]="patient.contacto_emergencia.nombre" [readOnly]="!isEditMode">
-      
-            <label for="relativeLastName">Apellido paterno:</label>
-            <input type="text" id="relativeLastName" name="relativeLastName" [(ngModel)]="patient.contacto_emergencia.apellido_paterno" [readOnly]="!isEditMode">
-      
-            <label for="relativeSurname">Apellido materno:</label>
-            <input type="text" id="relativeSurname" name="relativeSurname" [(ngModel)]="patient.contacto_emergencia.apellido_materno" [readOnly]="!isEditMode">
-      
-            <label for="relationship">Parentesco:</label>
-            <input type="text" id="relationship" name="relationship" [(ngModel)]="patient.contacto_emergencia.parentesco" [readOnly]="!isEditMode">
-      
-            <label for="relativePhone">Telefono:</label>
-            <input type="text" id="relativePhone" name="relativePhone" [(ngModel)]="patient.contacto_emergencia.telefono" [readOnly]="!isEditMode">
-      
-            <label for="relativeEmail">Correo electronico:</label>
-            <input type="text" id="relativeEmail" name="relativeEmail" [(ngModel)]="patient.contacto_emergencia.correo_electronico" [readOnly]="!isEditMode">
-      
-            <label for="relativeAddress">Dirección:</label>
-            <input type="text" id="relativeAddress" name="relativeAddress" [(ngModel)]="patient.contacto_emergencia.direccion" [readOnly]="!isEditMode">
-      
-            <label for="relativeCity">Ciudad:</label>
-            <input type="text" id="relativeCity" name="relativeCity" [(ngModel)]="patient.contacto_emergencia.ciudad" [readOnly]="!isEditMode">
-      
-            <label for="relativeState">Estado:</label>
-            <input type="text" id="relativeState" name="relativeState" [(ngModel)]="patient.contacto_emergencia.estado" [readOnly]="!isEditMode">
-      
-            <label for="relativeZipCode">Código postal:</label>
-            <input type="text" id="relativeZipCode" name="relativeZipCode" [(ngModel)]="patient.contacto_emergencia.codigo_postal" [readOnly]="!isEditMode">
-      
-            <label for="relativeCountry">País:</label>
-            <input type="text" id="relativeCountry" name="relativeCountry" [(ngModel)]="patient.contacto_emergencia.pais" [readOnly]="!isEditMode">
-      
-            <label for="relativeNotes">Notas:</label>
-            <textarea id="relativeNotes" name="relativeNotes" [(ngModel)]="patient.contacto_emergencia.notas" [readOnly]="!isEditMode"></textarea> -->
-          
             <div class="seccion">            
             <div *ngIf="!isEditMode; else editRelativeFirstName" class="respuesta">
               <label>Nombre(s):</label>
@@ -632,7 +505,6 @@
           </div>
         </div>
         <div class="tab-navigation-buttons">
-          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
           <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
           <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
             <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
@@ -645,7 +517,6 @@
         </form>
       </div>
 
-      <!-- Consentimiento del paciente -->
       <div *ngIf="activeTab === 'consent'">
         <div class="form-section">
           <div class="seccion">
@@ -662,7 +533,6 @@
           </div>
         </div>
         <div class="tab-navigation-buttons">
-          <!-- Omitir el botón "Anterior" en el primer tab si no lo necesitas -->
           <button class="acciones" (click)="changeTab('back')" title="Anterior"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
           <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()" title="Editar paciente">
             <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
@@ -673,29 +543,6 @@
           <button class="acciones" (click)="changeTab('next')" disabled><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
         </div>
       </div>
-      
-        
-          <!-- 
-            <form (ngSubmit)="onSubmit()" ngForm>
-            <div class="form-actions">
-            <button type="button" class="editar" (click)="isEditMode ? onSubmit() : toggleEditMode()">
-              <i class="icon-edit" [ngClass]="isEditMode ? 'fas fa-save' : 'fas fa-pencil'"></i>
-            </button>
-          </div>
-          <div class="seccion">
-          <div *ngIf="!isEditMode">
-            <label>Consentimiento: </label>
-            <span>{{ getConsentimientoDisplay(this.patient.consentimientos) }}</span>
-          </div>
-          <div *ngIf="isEditMode">
-            <label for="consent">Consentimiento del paciente:</label>
-            <label>
-              <input type="radio" name="occupation" value="1" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente ha dado su consentimiento
-            </label>
-            <label>
-              <input type="radio" name="occupation" value="0" [(ngModel)]="consentimientoTemporal.consentimiento"> El paciente no ha dado su consentimiento
-            </label>
-          </div> -->
     </div>
   </div>
 </div>

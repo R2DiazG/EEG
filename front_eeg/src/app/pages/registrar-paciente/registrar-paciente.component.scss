@@ -263,10 +263,10 @@ label{
 }
 
 .address, .phone, .email{
-  border-radius: 8px; // Bordes redondeados
-  padding: 15px; // Espaciado interno
-  margin-bottom: 20px; // Margen entre cada bloque de dirección
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); // Sombra suave para dar profundidad
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
   input {
     box-sizing: border-box; 
@@ -274,18 +274,17 @@ label{
   }
 }
 
-// Estilo para el botón que permite agregar direcciones
 .addressB, .phoneB, .emailB{
-  display: inline-block; // Hace que el botón sea inline para alinearlo fácilmente
-  background-color: $blue; // Color de fondo
-  color: white; // Color de texto
-  padding: 10px 20px; // Espaciado interno
-  margin-top: 10px; // Margen superior
-  font-size: 1rem; // Tamaño del texto
-  border-radius: 4px; // Bordes redondeados
-  cursor: pointer; // Cambia el cursor a pointer para indicar clickeabilidad
-  border: none; // Elimina el borde
-  transition: background-color 0.3s; // Transición suave del color de fondo
+  display: inline-block;
+  background-color: $blue;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s;
   color: $bg;
   background-color: transparent;
   

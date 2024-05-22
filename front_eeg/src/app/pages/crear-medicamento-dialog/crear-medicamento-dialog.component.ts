@@ -8,7 +8,7 @@ import { MedicamentoService } from '../../services/medicamentos/medicamento.serv
   styleUrls: ['./crear-medicamento-dialog.component.scss']
 })
 export class CrearMedicamentoDialogComponent {
-  medicamento: any = {}; // Este será tu modelo de formulario o datos de medicamento
+  medicamento: any = {};
 
   constructor(
     public dialogRef: MatDialogRef<CrearMedicamentoDialogComponent>,
@@ -16,15 +16,13 @@ export class CrearMedicamentoDialogComponent {
   ) {}
 
   crearMedicamento() {
-    // Lógica para llamar al servicio y crear el medicamento
     this.medicamentoService.crearMedicamento(this.medicamento).subscribe({
       next: (result) => {
         console.log('Medicamento creado exitosamente', result);
-        this.dialogRef.close(result); // Cierra el diálogo y opcionalmente pasa el resultado
+        this.dialogRef.close(result);
       },
       error: (error) => {
         console.error('Error al crear el medicamento', error);
-        // Aquí puedes manejar errores, como mostrar un mensaje al usuario
       }
     });
   }

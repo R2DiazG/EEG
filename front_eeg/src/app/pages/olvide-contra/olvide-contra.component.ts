@@ -24,12 +24,10 @@ export class OlvideContraComponent {
       const email = this.passwordForm.value.email;
       this.authService.forgotPassword(email).subscribe({
         next: (response) => {
-          // Manejar la respuesta de la solicitud de cambio de contraseña aquí
           alert('Se ha enviado un correo electrónico con instrucciones para restablecer su contraseña.');
           this.router.navigate(['/login']);
         },
         error: (error) => {
-          // Manejar el error aquí
           console.error('Error al solicitar el cambio de contraseña', error);
           alert('Hubo un problema al solicitar el cambio de contraseña.');
         }
@@ -40,11 +38,11 @@ export class OlvideContraComponent {
   }
 
   registerUser() {
-    this.router.navigate(['/registrar-psicologo']); // Navega a la ruta de registrar paciente
+    this.router.navigate(['/registrar-psicologo']);
   }
 
   cancelForgetPassword() {
-    this.router.navigate(['/login']); // Navega a la ruta de login
+    this.router.navigate(['/login']);
   }
 
 }

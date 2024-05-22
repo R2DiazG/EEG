@@ -33,7 +33,6 @@
       <button class="tab" (click)="setActiveTab('prob')" [class.active]="activeTab === 'prob'">Pre-diagnóstico</button>
     </div>
     <div class="tab-content">
-      <!-- Content based on the active tab -->
       <div *ngIf="activeTab === 'detailsSesion'">
       <div class="seccionInicial">
       <div class="header">
@@ -43,23 +42,19 @@
               <p>Estado general: <strong>{{estado_general}}</strong></p>
               <p>Estado especifico: <strong> {{estado_especifico}}</strong></p>
               <p>Resumen de la sesión: <strong>{{resumen_sesion_actual}}</strong></p>
-              <!-- Mostrar las Notas del Psicólogo -->
               <div *ngIf="notas_psicologo && !isAddingNote" class="nota-display">
                 <p>Observaciones de la sesión: <strong>{{ notas_psicologo }}</strong></p>
                 <button class="regresar" (click)="iniciarEdicion()" title="Editar observaciones de la sesión">
                   <i class="fas fa-pencil" aria-hidden="true"></i>
                 </button>
               </div>
-              <!-- Editor de Notas -->
               <div *ngIf="isAddingNote" class="nota-editor">
                 <p>Observaciones de la sesión:</p>
                 <textarea class="nota-textarea" [(ngModel)]="notasPsicologoEdit" placeholder="Escribe las notas del psicólogo aquí..."></textarea>
                 <div class="editor-actions">
-                  <!-- Botón para Guardar -->
                   <button class="save" (click)="guardarNotasPsicologo()" title="Guardar cambios">
                     <i class="fas fa-save" aria-hidden="true"></i>
                   </button>
-                  <!-- Botón para Cancelar -->
                   <button class="regresar" (click)="cancelarEdicion()" title="Cancelar cambios">
                     <i class="fas fa-trash" aria-hidden="true"></i>
                   </button>
@@ -94,7 +89,6 @@
     <button class="tab" (click)="setActiveGraphTab('psd')" [class.active]="activeGraphTab === 'psd'">Densidad Espectral de Potencia</button>
     <button class="tab" (click)="setActiveGraphTab('psd-band')" [class.active]="activeGraphTab === 'psd-band'">Densidad Espectral de Potencia por Banda</button>
     <button class="tab" (click)="setActiveGraphTab('pr-band')" [class.active]="activeGraphTab === 'pr-band'">Potencia Relativa por Banda</button>
-    <!-- <button class="tab" (click)="setActiveGraphTab('prob')" [class.active]="activeGraphTab === 'prob'">STFT</button> -->
   </div>
   <div class="tab-content">
     <div *ngIf="activeGraphTab === 'eeg'">
@@ -111,7 +105,6 @@
     </div>
     <div *ngIf="activeGraphTab === 'psd-band'">
       <div class="space"></div>
-      <!-- Dropdown para seleccionar el área -->
       <label>Seleccionar área a visualizar</label>
       <br>
       <select [(ngModel)]="areaSeleccionada" (change)="cargarPSDAreaBandas(idSesion, areaSeleccionada)" class="dropdown" >
@@ -142,7 +135,6 @@
     </div>
     <div *ngIf="activeGraphTab === 'pr-band'">
       <div class="space"></div>
-      <!-- Dropdown para seleccionar el área -->
       <label>Seleccionar área a visualizar</label>
       <br>
       <select [(ngModel)]="areaSeleccionada" (change)="cargarPRAreaBandas(idSesion, areaSeleccionada)" class="dropdown">
@@ -189,9 +181,7 @@
             <br>
             <div class="seccionInicial">
             <div class="table-container">
-          <!--Tabla con todos los medicamentos que es nombre comercial, principio activo, fecha y nota del psicologo-->
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-            <!-- Columnas para medicamentos -->
             <ng-container matColumnDef="nombre_comercial">
               <th mat-header-cell *matHeaderCellDef> Nombre Comercial </th>
               <td mat-cell *matCellDef="let element">{{element.nombre_comercial}}</td>
@@ -208,10 +198,6 @@
               <th mat-header-cell *matHeaderCellDef> Fecha de la sesión</th>
               <td mat-cell *matCellDef="let element">{{element.fecha_sesion}}</td>
             </ng-container>
-            <!-- <ng-container matColumnDef="dosis">
-              <th mat-header-cell *matHeaderCellDef> Dosis </th>
-              <td mat-cell *matCellDef="let element">{{element.dosis}}</td>
-            </ng-container> -->
             <ng-container matColumnDef="notas_psicologo">
               <th mat-header-cell *matHeaderCellDef> Notas del psicólogo</th>
               <td mat-cell *matCellDef="let element">{{element.notas_psicologo}}</td>
@@ -232,7 +218,6 @@
             <p>Estado general: <strong>{{estado_general}}</strong></p>
             <p>Estado especifico: <strong> {{estado_especifico}}</strong></p>
             <p>Resumen de la sesión: <strong>{{resumen_sesion_actual}}</strong></p>
-            <!-- Mostrar las Notas del Psicólogo -->
             <div *ngIf="notas_psicologo" class="nota-display">
               <p>Observaciones de la sesión: <strong>{{ notas_psicologo }}</strong></p>
             </div>

@@ -1,10 +1,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <div class="container">
   <div class="header">
-    <img src="assets/img/logo.png"> <!--Agregar logo-->
+    <img src="assets/img/logo.png">
   </div>
 <div class="login-container">
-  <!--<form (ngSubmit)="onSubmit()" #loginForm="ngForm">-->
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="name">Nombre</label>
@@ -46,11 +45,6 @@
       </form>
       
   <div>
-    <!--<label for="forgot-email">Por favor ingrese su dirección de correo electrónico:</label>-->
-    <!--<input type="email" id="forgot-email" class="form-control" [(ngModel)]="forgotPasswordEmail" (keyup.enter)="onForgotPassword()" placeholder="Correo electrónico">-->
-    <!--<input type="email" id="forgot-email" class="form-control" (keyup.enter)="onForgotPassword()" placeholder="Correo electrónico">-->
-    <!--<button (click)="onForgotPassword()" class="btn btn-secondary">Enviar</button>
-    <button (click)="toggleForgotPassword()" class="btn btn-secondary">Regresar</button>-->
   </div> 
 </div>
 </div>

@@ -17,21 +17,21 @@ $blue: #2492FF;
     flex: 1;
     padding: 20px;
     margin: 3rem 8rem 0rem 17rem;
-    max-width: 100%; // Ancho máximo
-    width: 100%; // Asegura que se ajuste al contenedor padre
+    max-width: 100%;
+    width: 100%;
     background-color: #fff;
     justify-content: right;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     @media (max-width: 768px) {
-      width: auto; // Ocupa el ancho completo en pantallas pequeñas
-      margin: 10px; // Margen reducido para pantallas pequeñas
+      width: auto;
+      margin: 10px;
       max-width: none;
     }
 
     .header {
       display: flex;
-      align-items: center; // Keep this if you want to align items in the center vertically
+      align-items: center;
       width: 100%;
       justify-content: space-between;
       align-items: baseline;
@@ -40,12 +40,12 @@ $blue: #2492FF;
     
     .right {
       display: flex;
-      align-items: center; // Align items vertically inside the .right div
+      align-items: center;
     }
     
     .left {
       display: flex;
-      align-items: center; /* Alinea los elementos verticalmente */
+      align-items: center;
       width: 100%;
       padding: 0;
       align-items: baseline;
@@ -148,18 +148,18 @@ $blue: #2492FF;
   }
 
 .form-group select {
-  width: 100%; /* Full width */
-  padding: 0.5rem; /* Padding to match the date input */
-  margin-bottom: 0.625rem; /* Margin to match the date input */
-  border: 1px solid #ccc; /* Border to match the date input */
-  border-radius: 4px; /* Border radius to match the date input */
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; /* Font to match the date input */
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.625rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .form-group select:focus {
   outline: none;
-  border-color: #80bdff; /* Focus border color */
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus box shadow to match the date input */
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
       .form-group {

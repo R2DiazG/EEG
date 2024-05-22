@@ -2,7 +2,7 @@
 <div class="container">
   <div class="header">
     <div class="left">
-      <img src="assets/img/logo.png"> <!--Agregar logo-->
+      <img src="assets/img/logo.png">
     </div>
     <div class="right">
       <label>¿Eres parte de la UDEM?</label>
@@ -14,21 +14,11 @@
       <div class="form-group">
         <label for="username">Usuario</label>
         <input type="username" id="username" class="form-control" formControlName="username" placeholder="Ingrese su nombre de usuario">
-        <!-- Utiliza 'get' para acceder de forma segura a los controles del formulario -->
         <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="alert alert-danger">
           El correo electrónico es obligatorio y debe ser un correo válido.
         </div>
       </div>
-      
-      <!-- <div class="form-group">
-        <label for="contraseña">Contraseña</label>
-        Asegúrate de que el 'type' y 'formControlName' sean consistentes
-        <input type="password" id="contraseña" class="form-control" formControlName="contraseña" placeholder="Ingrese su contraseña">
-        Utiliza 'get' para acceder de forma segura a los controles del formulario
-        <div *ngIf="loginForm.get('contraseña')?.invalid && loginForm.get('contraseña')?.touched" class="alert alert-danger">
-          La contraseña es obligatoria.
-        </div>
-      </div> -->
+
 
       <div class="form-group">
         <label for="contraseña">Contraseña</label>

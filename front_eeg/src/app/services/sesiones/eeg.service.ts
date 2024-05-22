@@ -42,7 +42,6 @@ export class EegService {
   }
 
   crearNuevaSesion(datosSesion: FormData): Observable<any> {
-    // Nota: Usamos FormData para manejar la carga de archivos.
     return this.http.post(`${this.apiUrl}/nueva`, datosSesion, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -72,13 +71,11 @@ export class EegService {
     const url = `${this.apiUrl}/pacientes/${idPaciente}/sesiones/fechas`;
     return this.http.get<any[]>(url, { headers: this.getHeaders() })
       .pipe(
-        // Suponiendo que el servidor devuelve las sesiones ordenadas por fecha en forma ascendente
         map(sesiones => sesiones.length > 0 ? sesiones[sesiones.length - 1] : undefined)
       );
   }
 
   actualizarSesion(idSesion: number, datosSesion: any): Observable<any> {
-    // Dependiendo de si necesitas subir archivos aquí, puede que necesites usar FormData como en crearNuevaSesion
     const url = `${this.apiUrl}/${idSesion}`;
     return this.http.put(url, datosSesion, { headers: this.getHeaders() });
   }

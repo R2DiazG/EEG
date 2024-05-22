@@ -1,8 +1,6 @@
-// Importaciones
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-// Definición de colores y estilos base
 $bg: #313841;
 $red: #F34541;
 $black: #1D242B;
@@ -37,36 +35,35 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  border-radius: 20px; // Bordes redondeados para el contenedor de búsqueda
-  padding: 0.5rem 3rem; // Espaciado interno alrededor del input
+  border-radius: 20px;
+  padding: 0.5rem 3rem;
   margin-left: 2rem;
-  width: 100%; // Ancho completo para el contenedor de búsqueda
+  width: 100%;
 
   .search-icon {
     position: absolute;
-    left: 1rem; // Alinea el ícono de búsqueda dentro del padding del contenedor
-    color: #5F6368; // Color del ícono
-    font-size: 1.5rem; // Tamaño del ícono
+    left: 1rem;
+    color: #5F6368;
+    font-size: 1.5rem;
   }
 
   .search-input {
-    flex-grow: 1; // Permite que el input crezca para llenar el espacio
-    border: none; // Elimina el borde del input
-    outline: none; // Elimina el contorno cuando está enfocado
-    background-color: transparent; // Fondo transparente para el input
-    padding-left: 2.5rem; // Espacio para el ícono de búsqueda
-    height: 100%; // Altura para llenar el contenedor de búsqueda
-    border-radius: 20px; // Bordes redondeados para el input
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    padding-left: 2.5rem;
+    height: 100%;
+    border-radius: 20px;
     border: solid #F1F3F4;
     width: 100%;
 
     &::placeholder {
-      color: #ccc; // Color para el placeholder
+      color: #ccc;
     }
 
     &:focus {
-      // Estilos opcionales para cuando el input está enfocado
-      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5); // Un sutil contorno azul alrededor del input
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5);
     }
   }
 }
@@ -137,11 +134,10 @@ body {
 }
 
     .mat-icon-button {
-      color: #bbbdf6; /* Esto definiría el currentColor como rojo para el fill del SVG dentro de este botón */
+      color: #bbbdf6;
     }
     
 
-// Estilos del contenedor principal
 .container {
   display: flex;
   flex-direction: row;
@@ -189,7 +185,7 @@ body {
 
   .table-container {
     overflow-y: auto;
-    max-height: 61vh; // Puedes ajustar esto según sea necesario
+    max-height: 61vh;
   }
 
   table {
@@ -202,7 +198,6 @@ body {
       padding: 8px;
       vertical-align: middle;
       
-      // Estilos para los elementos dentro de las celdas
       input, select, button {
         margin-top: 4px;
         margin-bottom: 4px;
@@ -234,7 +229,6 @@ body {
   }
 }
 
-// Botones de acción
 .button-eliminar {
   display: flex;
   align-items: center;
@@ -247,7 +241,7 @@ body {
 
   .icon {
     font-size: 1.5rem;
-    color: $bg; // Asegúrate de que $bg esté definido y sea el color deseado
+    color: $bg;
     margin-right: 0.5rem;
     margin-left: 0.25rem;
   }
@@ -280,9 +274,8 @@ body {
     .text { color: white; }
   }
 
-  // Nuevo estado para cuando isDeleteInitiated es true
   &.delete-initiated:not(.confirm):not(.done) {
-    background-color: $red; // Asegúrate de que $red esté definido y sea el color deseado
+    background-color: $red;
     .icon.fas.fa-trash {
       display: inline-block;
       color: white;

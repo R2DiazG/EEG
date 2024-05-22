@@ -38,7 +38,7 @@ p{
 
 .header {
   display: flex;
-  align-items: center; /* Alinea los elementos verticalmente */
+  align-items: center;
   width: 100%;
   padding: 0;
   align-items: baseline;
@@ -46,7 +46,7 @@ p{
 
 .left {
   display: flex;
-  align-items: center; /* Alinea los elementos verticalmente */
+  align-items: center;
   width: 100%;
   padding: 0;
   align-items: baseline;
@@ -62,14 +62,14 @@ p{
   flex: 1;
   padding: 20px;
   margin: 3rem 8rem 0rem 17rem;
-  width: calc(100% - 200px); // Ajuste para el ancho del sidebar
+  width: calc(100% - 200px);
   max-width: 100%;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   @media (max-width: 768px) {
-    width: auto; // Ocupa el ancho completo en pantallas pequeñas
-    margin: 10px; // Margen reducido para pantallas pequeñas
+    width: auto;
+    margin: 10px;
     max-width: none;
   }
   
@@ -163,7 +163,7 @@ label{
         flex: none;
         width: 50%;
         padding: 10px;
-        padding-right: 40px; // Make room for the toggle button
+        padding-right: 40px;
         border: 1px solid $input-border-color;
         border-radius: 4px;
         background-color: $input-background-color;
@@ -185,7 +185,7 @@ label{
 
         i {
             color: $button-icon-color;
-            font-size: 1.25rem; // Size of the eye icon
+            font-size: 1.25rem;
         }
     }
 }

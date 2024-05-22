@@ -56,10 +56,9 @@ interface EEGDataBand {
 })
 
 export class GraficasPacienteComponent implements OnInit {
-  //Sesion actual
-  activeTab: string = 'detailsSesion'; // Tab activa por defecto
-  idSesion!: number; // Declarar idSesion como propiedad del componente
-  sesiones: any[] = []; // Almacenará las fechas de las sesiones
+  activeTab: string = 'detailsSesion';
+  idSesion!: number;
+  sesiones: any[] = [];
   selectedSesionId!: number;
   idPaciente!: number;
   fechaSesion!: string;
@@ -71,23 +70,19 @@ export class GraficasPacienteComponent implements OnInit {
   activeGraphTab = 'eeg';
   activeSectionTab = 'anomaly';
 
-  // Notas del psicólogo
   isAddingNote: boolean = false;
   fechaSesionActual!: string;
   notasPsicologoEdit!: string;
 
-  // Eliminar sesion
   isConfirm: boolean = false;
   isDeleted: boolean = false;
   isDeleteInitiated: boolean = false;
 
-  //Medicamentos
   displayedColumns: string[] = ['nombre_comercial', 'principio_activo', 'presentacion', 'fecha_sesion', 'notas_psicologo'];
   dataSource = new MatTableDataSource<any>([]);
   searchControl = new FormControl('');
   selectedMedicamentos: number[] = [];
 
-  //EEG
   private plotly: any;
   caracteristicas: number[] = [];
 
@@ -188,11 +183,11 @@ onDeleteSesion(): void {
     this.pacienteService.eliminarSesionPorPaciente(this.idPaciente, this.idSesion).subscribe({
       next: () => {
         console.log('Sesion eliminada con éxito.');
-        this.resetDeleteState(true); // Reset y actualización de vista post-eliminación
+        this.resetDeleteState(true);
       },
       error: (error) => {
         console.error('Error al eliminar la sesion:', error);
-        this.resetDeleteState(false); // Solo resetea el estado sin cargar nueva sesión
+        this.resetDeleteState(false);
       }
     });
   } else {
@@ -225,14 +220,13 @@ private resetDeleteState(success: boolean) {
 }
 
 iniciarEdicion() {
-  this.notasPsicologoEdit = this.notas_psicologo; // Carga las notas existentes para edición
+  this.notasPsicologoEdit = this.notas_psicologo;
   this.isAddingNote = true;
 }
 
-// Cancelar la edición de las notas
 cancelarEdicion() {
-  this.notasPsicologoEdit = ''; // Limpia el área de texto de edición
-  this.isAddingNote = false; // Oculta el editor
+  this.notasPsicologoEdit = '';
+  this.isAddingNote = false;
 }
 
 getLastSession(idPaciente: number): void {
@@ -255,17 +249,14 @@ getLastSession(idPaciente: number): void {
 
 onAgregarNotasClick(): void {
   this.notasPsicologoEdit = this.notas_psicologo || '';
-  this.isAddingNote = true; // Muestra el input de texto
+  this.isAddingNote = true;
 }
 
-// Método para guardar las notas del psicólogo
 guardarNotasPsicologo(): void {
   if (this.idSesion && this.notasPsicologoEdit.trim()) {
     this.eegService.actualizarNotasPsicologoSesion(this.idSesion, this.notasPsicologoEdit).subscribe({
       next: (response) => {
-        // Actualizamos ambas variables para asegurarse de que la vista y el cuadro de edición estén sincronizados
         this.notas_psicologo = this.notasPsicologoEdit;
-        // Oculta el input de texto después de guardar
         this.isAddingNote = false;
         console.log(response.mensaje);
       },
@@ -362,7 +353,7 @@ onSesionChange() {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log('Medicamentos seleccionados:', result);
-        this.selectedMedicamentos = result; // Actualizamos la lista con el resultado del diálogo
+        this.selectedMedicamentos = result;
       }
     });
   }
@@ -373,27 +364,25 @@ onSesionChange() {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
-    this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
+    this.cargarDatos();
   }
 
 setActiveGraphTab(tabName: string) {
   this.activeGraphTab = tabName;
-  this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
+  this.cargarDatos();
 }
 
 setActiveSectionTab(tabName: string) {
   this.activeSectionTab = tabName;
-  this.cargarDatos(); // Llamamos a cargarDatos cada vez que se cambia el tab
+  this.cargarDatos();
 }
 
 cargarDatos() {
   switch(this.activeTab) {
     case 'detailsSesion':
-      // Cargamos datos relacionados con los detalles de la sesión
       this.cargarDatosDeEeg(this.idSesion);
       break;
     case 'meds':
-      // Cargamos el historial de medicamentos
       this.cargarMedicamentos();
       break;
     case 'prob':
@@ -443,10 +432,8 @@ cargarDatos() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const dataNormalizedString = response.normalized_eegs[0].data_normalized;
             try {
-              // Parsea la cadena JSON para convertirla en un objeto/array JavaScript
               const dataNormalized = JSON.parse(dataNormalizedString);
               console.log('EEG normalizados:', dataNormalized);
-              // Ahora con dataNormalized como un objeto/array lo pasamos a la función
               this.procesarYMostrarDatosNormalizedEEG(dataNormalized);
             } catch (error) {
               console.error('Error al parsear los datos EEG normalizados:', error);
@@ -465,7 +452,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEG(dataNormalizedString: EEGData): void {
     try {
       console.log('Datos EEG normalizados:', dataNormalizedString);
-        // Parsea la cadena JSON para convertirla en un objeto JavaScript
         console.log('Datos EEG normalizados:', dataNormalizedString.names);
         console.log('Datos EEG normalizados:', dataNormalizedString.data);
         const { names, data } = dataNormalizedString;
@@ -476,16 +462,14 @@ cargarDatos() {
           minAmplitude = Math.min(minAmplitude, ...channelData);
         });
         const amplitudeRange = maxAmplitude - minAmplitude;
-        const offset = amplitudeRange * 0.5; // Un 10% del rango como desplazamiento
+        const offset = amplitudeRange * 0.5;
         const extraPadding = 0.2;
-        // Transformamos los datos en series para Highcharts
         const series = names.map((name, index) => {
           return {
             name: name,
             data: data[index].map((point, i) => [i, point + offset * index]),
           };
         });
-        // Determinamos el rango mínimo y máximo para el eje Y basado en los desplazamientos aplicados
         let minOffsetApplied = Math.min(...series.map(serie => Math.min(...serie.data.map(point => point[1]))));
         let maxOffsetApplied = Math.max(...series.map(serie => Math.max(...serie.data.map(point => point[1]))));
         const options: Options = {
@@ -511,16 +495,13 @@ cargarDatos() {
             },
             labels: {
               formatter: function () {
-                // Calcula el índice basado en la posición actual y el desplazamiento fijo
-                // Esto asume que los canales están igualmente espaciados y el primer canal está en '0'
                 const index = Math.round((this.value as number) / offset);
-                // Devuelve el nombre del canal o un string vacío si el índice es inválido
                 return names[index] || '';
               }
             },
-            tickInterval: offset, // Establecemos un intervalo de tick apropiado
+            tickInterval: offset,
             min: -extraPadding,
-            max: offset * (names.length-1) + extraPadding, // Ajustamos el rango máximo según la cantidad de canales
+            max: offset * (names.length-1) + extraPadding,
           },
           accessibility: {
             screenReaderSection: {
@@ -585,7 +566,6 @@ cargarDatos() {
     }
   }
 
-  // Función para cargar los datos EEG y procesarlos para mostrarlos en Highcharts
   cargarDatosEEG(): void {
     console.log('cargarDatosEEG psd');
     if (this.idSesion) {
@@ -612,30 +592,19 @@ cargarDatos() {
     }
   }
 
-  // Función para procesar los datos EEG y mostrarlos usando Highcharts
   procesarYMostrarDatosPSD(dataPSDArray: EEGDataPSD[]): void {
-    // Hay que asegurarse de que 'dataPSD' está en el formato correcto para Highcharts, por ejemplo, dataPSD podría ser algo así:
-    // [
-    //   { name: "Canal 1", data: [...], pointStart: frecuenciaInicial, pointInterval: intervaloEntreFrecuencias },
-    //   { name: "Canal 2", data: [...], pointStart: frecuenciaInicial, pointInterval: intervaloEntreFrecuencias },
-    //   ...
-    // ]
-    // Transforma los datos PSD en series para Highcharts
     const series = dataPSDArray.map((channelData) => {
-      // Mapea los datos de cada canal a un formato de puntos que Highcharts pueda entender
       const dataPoints = channelData.data.map((value, index) => ({
         x: channelData.pointStart + (index * channelData.pointInterval),
         y: value
       }));
-      // Devuelve un objeto que corresponde a la estructura de serie de Highcharts
       return {
         name: channelData.name,
         data: dataPoints,
-        pointStart: channelData.pointStart, // Esto se coloca fuera del map de los datos
-        pointInterval: channelData.pointInterval // Esto también se coloca fuera
+        pointStart: channelData.pointStart,
+        pointInterval: channelData.pointInterval
       };
     });
-    // Opciones para Highcharts
     const options: Options = {
       chart: {
         type: 'line',
@@ -686,7 +655,7 @@ cargarDatos() {
           if (response.normalized_eegs && response.normalized_eegs.length > 0) {
             const stftData = JSON.parse(response.normalized_eegs[0].data_stft);
             console.log('Datos STFT:', stftData);
-            const channelData = stftData.find((d: any) => d.name === 'Fp1'); // Encuentra los datos del canal Fp1
+            const channelData = stftData.find((d: any) => d.name === 'Fp1');
             console.log('Datos del canal Fp1:', channelData);
             if (channelData) {
               console.log('Datos STFT para el canal Fp1:', channelData);
@@ -711,14 +680,11 @@ cargarDatos() {
       console.error('No data available to render.');
       return;
     }
-    // Configuración de dimensiones y márgenes para el gráfico
     const margin = { top: 20, right: 20, bottom: 30, left: 50 },
       width = 960 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
       console.log('Margin', margin)
-    // Eliminar cualquier gráfico anterior
     d3.select('#spectrogramDiv').select('svg').remove();
-    // Crear elemento SVG y configurar dimensiones
     const svg = d3.select('spectrogramDiv')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
@@ -730,22 +696,19 @@ cargarDatos() {
     const frequenciesExtent = d3.extent(channelData.frequencies) as unknown as [number, number];
     console.log('T',timesExtent)
     console.log('F',frequenciesExtent)
-    // Escalas para los ejes X e Y
     const x = d3.scaleLinear()
       .domain(timesExtent)
       .range([0, width]);
     const y = d3.scaleLinear()
-      .domain(frequenciesExtent) // Asumiendo que channelData.frequencies es un array con las frecuencias
+      .domain(frequenciesExtent)
       .range([height, 0]);
       console.log('x',x)
       console.log('y',y)
-    // Eje X y Eje Y
     svg.append('g')
       .attr('transform', 'translate(0,' + height + ')')
       .call(d3.axisBottom(x));
     svg.append('g')
       .call(d3.axisLeft(y));
-    // Mapeo de los datos a rectángulos para el espectrograma
     const rectWidth = width / channelData.times.length;
     const rectHeight = height / channelData.frequencies.length;
     console.log('width', rectWidth)
@@ -1062,7 +1025,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEGConAnomaliasFrontal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
       try {
           console.log('Datos EEG para area Frontal:', dataNormalized);
-          // Filtrar áreas que contengan 'Frontal'
           const areaFrontalData = dataNormalized.filter(area => area.area.includes('Frontal'));
           if (areaFrontalData.length > 0) {
               const frontalAreas = areaFrontalData.map(area => area.area);
@@ -1187,7 +1149,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEGConAnomaliasTemporal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
         console.log('Datos EEG para area Temporal:', dataNormalized);
-        // Filtrar áreas que contengan 'Temporal'
         const areaTemporalData = dataNormalized.filter(area => area.area.includes('Temporal'));
         if (areaTemporalData.length > 0) {
             const temporalAreas = areaTemporalData.map(area => area.area);
@@ -1312,7 +1273,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEGConAnomaliasCentral(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
         console.log('Datos EEG para area Central:', dataNormalized);
-        // Filtrar áreas que contengan 'Central'
         const areaCentralData = dataNormalized.filter(area => area.area.includes('Central'));
         if (areaCentralData.length > 0) {
             const centralAreas = areaCentralData.map(area => area.area);
@@ -1437,7 +1397,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEGConAnomaliasParietal(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
         console.log('Datos EEG para area Parietal:', dataNormalized);
-        // Filtrar áreas que contengan 'Parietal'
         const areaParietalData = dataNormalized.filter(area => area.area.includes('Parietal'));
         if (areaParietalData.length > 0) {
             const parietalAreas = areaParietalData.map(area => area.area);
@@ -1562,7 +1521,6 @@ cargarDatos() {
   procesarYMostrarDatosNormalizedEEGConAnomaliasOccipital(dataNormalized: EEGDataArea[], anomalies: EEGAnomaly[] = []): void {
     try {
         console.log('Datos EEG para area Occipital:', dataNormalized);
-        // Filtrar áreas que contengan 'Occipital'
         const areaOccipitalData = dataNormalized.filter(area => area.area.includes('Occipital'));
         if (areaOccipitalData.length > 0) {
             const occipitalAreas = areaOccipitalData.map(area => area.area);

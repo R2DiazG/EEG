@@ -29,8 +29,8 @@ $blue: #2492FF;
 }
 
 .header h1 {
-  margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
-  font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+  margin: 0;
+  font-size: 1.5rem;
   align-items: baseline;
 }
 
@@ -43,8 +43,8 @@ $blue: #2492FF;
   flex: 1;
   padding: 1rem;
   margin: 3rem 8rem 0rem 17rem;
-  max-width: 100%; // Ancho máximo
-  width: 100%; // Asegura que se ajuste al contenedor padre
+  max-width: 100%;
+  width: 100%;
   background-color: #fff;
   justify-content: right;
   border-radius: 8px;
@@ -76,7 +76,6 @@ $blue: #2492FF;
     background-color: #ebebfc;
     border-radius: 8px;
     padding: 1rem;
-    // Further styles for tab content based on your design
   }
 
   .consultations-table {
@@ -137,7 +136,6 @@ $blue: #2492FF;
     background-color: #45a049;
   }
   
-  /* Estilos para botones dentro de la celda de acciones */
   .consultations-table .form-actions {
     text-align: right;
   }
@@ -159,7 +157,7 @@ $blue: #2492FF;
     }
   
     input[type="text"] {
-      width: calc(100% - 10px); // Se ajusta para tener en cuenta el padding
+      width: calc(100% - 10px);
       padding: 5px;
       margin: 5px 0;
       box-sizing: border-box;
@@ -273,7 +271,7 @@ $blue: #2492FF;
 
   .icon {
     font-size: 1.5rem;
-    color: $bg; // Asegúrate de que $bg esté definido y sea el color deseado
+    color: $bg;
     margin-right: 0.5rem;
     margin-left: 0.25rem;
   }
@@ -283,7 +281,6 @@ $blue: #2492FF;
     opacity: 1;
   }
 
-  // Estilos de confirmación y eliminación
   &.confirm {
     .icon.fas.fa-trash { display: none; }
     .icon.fas.fa-question-circle {
@@ -306,9 +303,8 @@ $blue: #2492FF;
     .text { color: white; }
   }
 
-  // Nuevo estado para cuando isDeleteInitiated es true
   &.delete-initiated:not(.confirm):not(.done) {
-    background-color: $red; // Asegúrate de que $red esté definido y sea el color deseado
+    background-color: $red;
     .icon.fas.fa-trash {
       display: inline-block;
       color: white;
@@ -388,17 +384,17 @@ $blue: #2492FF;
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
-    justify-content: center; // Cambia la dirección del flex en dispositivos móviles
+    justify-content: center;
   }
   .sidebar {
-    flex: 0 0 auto; // Permite que el sidebar se ajuste al contenido
-    height: auto; // Permite que el sidebar se ajuste en altura
+    flex: 0 0 auto;
+    height: auto;
   }
   .patient-register-container {
-    flex: 1 0 auto; // Permite que el contenedor se ajuste automáticamente
-    margin: 10px; // Reduce el margen para pantallas pequeñas
-    width: calc(100% - 20px); // Ajusta el ancho para tener en cuenta el padding
-    max-width: none; // Anula el max-width en dispositivos móviles
+    flex: 1 0 auto;
+    margin: 10px;
+    width: calc(100% - 20px);
+    max-width: none;
     .form-section {
       input[type="text"],
       input[type="tel"],

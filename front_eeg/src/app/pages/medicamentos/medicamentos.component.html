@@ -15,7 +15,6 @@
       </div>
       <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        <!-- Columnas para medicamentos -->
         <ng-container matColumnDef="nombre_comercial">
           <th mat-header-cell *matHeaderCellDef> Nombre Comercial </th>
           <td mat-cell *matCellDef="let element">
@@ -51,20 +50,6 @@
             </ng-template>
           </td>
         </ng-container> 
-        
-        <!-- <ng-container matColumnDef="dosis">
-          <th mat-header-cell *matHeaderCellDef> Dosis </th>
-          <td mat-cell *matCellDef="let element">
-            <div *ngIf="!editModeMap[element.id_medicamento]; else editDosis">
-              {{ element.dosis }}
-            </div>
-            <ng-template #editDosis>
-              <input [(ngModel)]="element.dosis" type="text" class="table-input" />
-            </ng-template>
-          </td>
-        </ng-container> -->
-
-        <!-- Acciones Column -->
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef> Editar </th>
           <td mat-cell *matCellDef="let element">
@@ -80,29 +65,13 @@
           </td>
         </ng-container>
 
-        <!-- Columna para acciones como eliminar o ver detalles -->
         <ng-container matColumnDef="eliminar">
             <th mat-header-cell *matHeaderCellDef> Eliminar </th>
             <td mat-cell *matCellDef="let element">
-              <!-- <button class="eliminar-button" (click)="eliminarMedicamento(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted}">
-                <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
-                <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
-                <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
-                <span class="text">{{ element.isDeleted ? 'Eliminado' : (element.isConfirm ? '¿Seguro?' : 'Eliminar') }}</span>
-              </button> -->
-
-              <!-- <button class="button-eliminar" (click)="eliminarMedicamento(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted, 'delete-initiated': element.isDeleteInitiated && !element.isConfirm}">
-                <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
-                <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
-                <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
-                <span class="text">{{ element.isDeleted ? 'Eliminado' : (element.isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
-              </button> -->
-
               <button class="button-eliminar" (click)="eliminarMedicamento(element)" [ngClass]="{'confirm': element.isConfirm, 'done': element.isDeleted, 'delete-initiated': element.isDeleteInitiated && !element.isConfirm}" title="Eliminar medicamento">
                 <i class="icon fas fa-trash" *ngIf="!element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-question-circle" *ngIf="element.isConfirm && !element.isDeleted"></i>
                 <i class="icon fas fa-check-circle" *ngIf="element.isDeleted"></i>
-                <!-- Actualizado para mostrar 'Delete' solo después del primer clic -->
                 <span class="text" *ngIf="element.isDeleteInitiated">{{ element.isDeleted ? 'Deleted' : (element.isConfirm ? '¿Estas seguro?' : 'Eliminar') }}</span>
               </button>
               

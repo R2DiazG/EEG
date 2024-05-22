@@ -51,8 +51,8 @@ $input-placeholder-color: #ccc;
     border-radius: 5px;
     background-color: #333;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    color: white; // As the text is white
-    position: relative; // For absolute positioning of children
+    color: white;
+    position: relative;
 
     @media (max-width: 768px) {
         margin: 0.7rem;
@@ -89,7 +89,7 @@ $input-placeholder-color: #ccc;
             flex: none;
             width: 90%;
             padding: 10px;
-            padding-right: 40px; // Make room for the toggle button
+            padding-right: 40px;
             border: 1px solid $input-border-color;
             border-radius: 4px;
             background-color: $input-background-color;
@@ -100,19 +100,18 @@ $input-placeholder-color: #ccc;
             position: absolute;
             display: flex;
             justify-content: flex-end;
-            //right: 10px;
             top: 25%;
             transform: translateY(-50%);
             background: transparent;
             border: none;
             cursor: pointer;
-            outline: none; // No outline on focus
+            outline: none;
             width: 5rem;
             margin-left: 75%;
 
             i {
                 color: $button-icon-color;
-                font-size: 1.25rem; // Size of the eye icon
+                font-size: 1.25rem;
             }
         }
     }
@@ -154,8 +153,8 @@ $input-placeholder-color: #ccc;
         color: #007bff;
         cursor: pointer;
         text-decoration: none;
-        display: block; // Ensure it's a block to have margin
-        margin-top: 10px; // Margin top for link
+        display: block;
+        margin-top: 10px;
 
         &:hover {
             text-decoration: underline;
@@ -163,13 +162,12 @@ $input-placeholder-color: #ccc;
     }
 
     .alert {
-        display: none; // Hide by default, can be shown with JS if needed
+        display: none;
     }
 }
 
-// Responsive typography adjustments
 @media (max-width: 768px) {
     body {
-        font-size: 14px; // Smaller font size for mobile
+        font-size: 14px;
     }
 }

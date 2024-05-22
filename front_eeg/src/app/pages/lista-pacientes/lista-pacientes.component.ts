@@ -19,7 +19,7 @@ export class ListaPacientesComponent implements OnInit {
   public editModeMap: { [userId: number]: boolean } = {};
   searchControl = new FormControl('');
   idUsuarioActual!: number;
-  idRol!: number; // Agregado para almacenar el rol del usuario
+  idRol!: number;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -28,7 +28,7 @@ export class ListaPacientesComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private eegService: EegService, 
-    private authService: AuthService // Inyecta el AuthService aquí
+    private authService: AuthService 
   ) { }
 
   ngOnInit(): void {
@@ -36,7 +36,7 @@ export class ListaPacientesComponent implements OnInit {
       next: (user) => {
         if (user && user.id_usuario) {
           this.idUsuarioActual = user.id_usuario;
-          this.idRol = user.id_rol; // Almacena el id_rol obtenido
+          this.idRol = user.id_rol;
           this.loadUsers();
         } else {
           console.error('ID de usuario no disponible. Redirigiendo a la página de inicio de sesión.');
@@ -103,50 +103,16 @@ export class ListaPacientesComponent implements OnInit {
     }
   }
 
-  /*
-  onDeletePatient(patient: any) {
-    if (this.idUsuarioActual === null) {
-        console.error('Error: ID de usuario no disponible.');
-        return; // Salir temprano si idUsuarioActual es null
-    }
-
-    if (patient.isConfirm) {
-        // Usar aserción de tipo para afirmar que this.idUsuarioActual no es null
-        this.pacienteService.eliminarPaciente(this.idUsuarioActual!, patient.id_paciente).subscribe({
-            next: (resp) => {
-                console.log('Paciente eliminado:', resp);
-                // Ahora es seguro llamar a loadUsers, asumiendo que this.idUsuarioActual no es null
-                this.loadUsers(this.idUsuarioActual!); // Usar aserción de tipo aquí también
-            },
-            error: (error) => {
-                console.error('Error al eliminar paciente:', error);
-                patient.isConfirm = false;
-                this.cdr.detectChanges();
-            }
-        });
-    } else {
-        patient.isConfirm = true;
-        this.cdr.detectChanges();
-        setTimeout(() => {
-            patient.isConfirm = false;
-            this.cdr.detectChanges();
-        }, 3000);
-    }
-}*/
-
+  
 onDeletePatient(patient: any) {
-  // Verifica si el idUsuarioActual está disponible
   if (!this.idUsuarioActual) {
     console.error('Error: ID de usuario no disponible.');
     return;
   }
 
-  // Inicia el proceso de confirmación para la eliminación
   if (!patient.isConfirm && !patient.isDeleteInitiated) {
     patient.isDeleteInitiated = true;
     this.cdr.detectChanges();
-    
-    // Establece un timeout para revertir el estado si no hay confirmación
     setTimeout(() => {
       if (!patient.isConfirm) {
         patient.isDeleteInitiated = false;
@@ -157,25 +123,22 @@ onDeletePatient(patient: any) {
   }
 
   if (patient.isConfirm) {
-    // Verifica el rol del usuario para determinar qué servicio usar para la eliminación
     if (this.idRol === 1) {
-      // Usuario administrador elimina a cualquier paciente
       this.pacienteService.eliminarPacienteAdmin(patient.id_paciente).subscribe({
         next: (response) => {
           console.log('Paciente eliminado exitosamente:', response);
-          patient.isDeleted = true; // Marca al paciente como eliminado
-          this.loadUsers(); // Recarga la lista de pacientes
+          patient.isDeleted = true;
+          this.loadUsers();
           this.cdr.detectChanges();
         },
         error: (error) => {
           console.error('Error al eliminar el paciente:', error);
-          patient.isConfirm = false; // Revierte la confirmación
-          patient.isDeleteInitiated = false; // Cancela el inicio de la eliminación
+          patient.isConfirm = false;
+          patient.isDeleteInitiated = false;
           this.cdr.detectChanges();
         }
       });
     } else if (this.idRol === 2) {
-      // Usuario regular elimina solo a sus pacientes asignados
       this.pacienteService.eliminarPaciente(this.idUsuarioActual, patient.id_paciente).subscribe({
         next: (response) => {
           console.log('Paciente eliminado exitosamente:', response);
@@ -192,11 +155,9 @@ onDeletePatient(patient: any) {
       });
     }
   } else {
-    // Solicita confirmación en el segundo clic
     patient.isConfirm = true;
     this.cdr.detectChanges();
     
-    // Si el usuario no confirma dentro de 3 segundos, revertir
     setTimeout(() => {
       if (!patient.isDeleted) {
         patient.isConfirm = false;
@@ -206,58 +167,6 @@ onDeletePatient(patient: any) {
     }, 3000);
   }
 }
-
-/*
-onDeletePatient(patient: any) {
-  if (this.idUsuarioActual === null) {
-    console.error('Error: ID de usuario no disponible.');
-    return; // Salir temprano si idUsuarioActual es null
-  }
-
-  // Inicializar el proceso de eliminación en el primer clic
-  if (!patient.isConfirm && !patient.isDeleteInitiated) {
-    patient.isDeleteInitiated = true;
-    this.cdr.detectChanges();
-    // Establece un timeout para revertir el estado si no hay confirmación
-    setTimeout(() => {
-      if (!patient.isConfirm) { // Si aún no está confirmado, revertir
-        patient.isDeleteInitiated = false;
-        this.cdr.detectChanges();
-      }
-    }, 3000);
-    return;
-  }
-
-  if (patient.isConfirm) {
-    this.pacienteService.eliminarPaciente(this.idUsuarioActual, patient.id_paciente).subscribe({
-      next: (resp) => {
-        console.log('Paciente eliminado:', resp);
-        patient.isDeleted = true;
-        patient.isDeleteInitiated = false;
-        this.loadUsers();
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al eliminar paciente:', error);
-        patient.isConfirm = false;
-        patient.isDeleteInitiated = false;
-        this.cdr.detectChanges();
-      }
-    });
-  } else {
-    // Solicitar confirmación en el segundo clic
-    patient.isConfirm = true;
-    this.cdr.detectChanges();
-    // Si el usuario no confirma dentro de 3 segundos, revertir
-    setTimeout(() => {
-      if (!patient.isDeleted) { // Si no se ha eliminado, revertir
-        patient.isConfirm = false;
-        patient.isDeleteInitiated = false;
-        this.cdr.detectChanges();
-      }
-    }, 3000);
-  }
-}*/
 
 getLastSession(idPaciente: number): void {
   console.log('Obteniendo la última sesión para el paciente con ID:', idPaciente);

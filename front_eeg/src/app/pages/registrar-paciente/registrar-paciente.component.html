@@ -16,7 +16,6 @@
         <button class="tab" (click)="setActiveTab('consent')" [class.active]="activeTab === 'consent'">Consentimiento</button>
       </div>
   <div class="tab-content">
-        <!-- Información del paciente -->
     <div *ngIf="activeTab === 'infoPatient'">
           <div class="seccion">
             <div class="form-section">
@@ -110,7 +109,6 @@
             <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
           </div>
   </div>
-          <!-- Contacto del paciente -->
           <div *ngIf="activeTab === 'contactPatient'">
             <div class="form-section">
               <div class="seccion">
@@ -269,7 +267,6 @@
       <button class="acciones" (click)="changeTab('next')" title="Siguiente"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
     </div>
   </div>
-  <!-- Consentimiento del paciente -->
   <div *ngIf="activeTab === 'consent'">
     <div class="form-section">
       <div class="seccion">

@@ -1,7 +1,6 @@
 <div class="container-usuario">
   <div *ngIf="userInfo">
       <p>
-        <!-- <i class="fas fa-user-circle" aria-hidden="true"></i> -->
           <label *ngIf="userInfo.id_rol === 1">Administrador:&nbsp;</label>
           <label *ngIf="userInfo.id_rol === 2">Psicólogo:&nbsp;</label>
           <label>{{ userInfo.nombre}}&nbsp;</label>

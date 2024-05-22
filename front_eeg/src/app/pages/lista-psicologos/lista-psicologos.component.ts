@@ -38,7 +38,6 @@ export class ListaPsicologosComponent implements OnInit {
     console.log('Token from localStorage:', localStorage.getItem('access_token'));
     this.searchControl.valueChanges
       .subscribe(value => {
-        // Se proporciona una cadena vacía como valor por defecto si value es null
         this.applyFilter(value || '');
       });
   }
@@ -58,19 +57,17 @@ export class ListaPsicologosComponent implements OnInit {
   }  
 
   loadUsers() {
-    // Comprueba si window está definido, lo que indica que estamos en el navegador
     if (typeof window !== 'undefined') {
       console.log('Token from localStorage:', localStorage.getItem('access_token'));
       this.usuarioService.obtenerUsuarios().subscribe({ 
         next: (data) => {
-          // Inicializamos las propiedades isConfirm e isDeleted para cada usuario
           this.dataSource.data = data.map(user => ({
-            ...user, // Mantenemos las propiedades existentes del usuario
-            isConfirm: false, // Agregamos la propiedad isConfirm inicializada en false
-            isDeleted: false,  // Agregamos la propiedad isDeleted inicializada en false
-            isDeleteInitiated: false // Agregamos la propiedad isDeleteInitiated inicializada en false
+            ...user,
+            isConfirm: false,
+            isDeleted: false, 
+            isDeleteInitiated: false
           }));
-          this.dataSource.paginator = this.paginator; // Asigna el paginator a la nueva data
+          this.dataSource.paginator = this.paginator;
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -78,29 +75,22 @@ export class ListaPsicologosComponent implements OnInit {
         }
       });
     } else {
-      // Maneja el caso cuando no estás en un entorno de navegador
       console.log('localStorage no está disponible en este entorno.');
     }
   } 
 
   toggleAprobacion(user: any): void {
-    // Guarda el estado original de aprobación en caso de que necesitemos revertirlo
     const originalAprobacion = user.aprobacion;
   
-    // Cambia el estado de aprobación en el front end primero para reactividad de la UI
     user.aprobacion = !user.aprobacion;
   
-    // Llama al servicio para actualizar el estado de aprobación en el backend
     this.usuarioService.cambiarAprobacionUsuario(user.id_usuario, !user.aprobacion).subscribe({
       next: (response) => {
-        // Actualización exitosa
         console.log('Aprobación actualizada correctamente', response);
       },
       error: (error) => {
-        // En caso de error, revierte al estado original
         user.aprobacion = originalAprobacion;
         console.error('Error al actualizar la aprobación', error);
-        // Informar al usuario del fallo mediante una notificación/alerta
       }
     });
   }
@@ -121,80 +111,43 @@ export class ListaPsicologosComponent implements OnInit {
     { id: 2, name: 'Psicólogo' },
   ];
 
-  // onDeleteUser(user: any) {
-  //   if (user.isConfirm) {
-  //     // Usuario ya confirmado, proceder a eliminar
-  //     console.log('Token from localStorage:', localStorage.getItem('access_token'));
-  //     console.log('Eliminando usuario', user.id_usuario);
-  //     this.usuarioService.eliminarUsuario(user.id_usuario).subscribe({
-  //       next: (resp) => {
-  //         console.log('Usuario eliminado', resp);
-  //         user.isDeleted = true; // Marcar como eliminado
-  //         console.log('User:', user.isDeleted);
-  //         this.cdr.detectChanges(); // Actualizar la vista
-  //         this.loadUsers(); // Cargar de nuevo los usuarios
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al eliminar usuario', error);
-  //         user.isConfirm = false; // Restablecer el estado
-  //         this.cdr.detectChanges(); // Actualizar la vista
-  //       }
-  //     });
-  //   } else {
-  //     // No confirmado, marcar como confirmado
-  //     user.isConfirm = true;
-  //     this.cdr.detectChanges(); // Actualizar la vista para mostrar "¿Estás seguro?"
-  //     setTimeout(() => {
-  //       user.isConfirm = false;
-  //       this.cdr.detectChanges(); // Volver a mostrar el icono de la papelera después de 3 segundos
-  //     }, 3000);
-  //   }
-  // }
-
   onDeleteUser(user: any) {
-    // Si es la primera vez que se hace clic, mostrar el mensaje 'Delete'
     if (!user.isConfirm && !user.isDeleteInitiated) {
       user.isDeleteInitiated = true;
       this.cdr.detectChanges();
-          // Establece un timeout para revertir el estado si no hay confirmación
     setTimeout(() => {
-      if (!user.isConfirm) { // Si aún no está confirmado, revertir
+      if (!user.isConfirm) { 
         user.isDeleteInitiated = false;
         this.cdr.detectChanges();
       }
     }, 3000);
-      // No continúes al estado de confirmación aún
       return;
     }
   
     if (user.isConfirm) {
-      // Usuario ya confirmado, proceder a eliminar
       console.log('Token from localStorage:', localStorage.getItem('access_token'));
       console.log('Eliminando usuario', user.id_usuario);
       this.usuarioService.eliminarUsuario(user.id_usuario).subscribe({
         next: (resp) => {
           console.log('Usuario eliminado', resp);
-          user.isDeleted = true; // Marcar como eliminado
-          user.isDeleteInitiated = false; // Restablece esto para el próximo uso del botón
+          user.isDeleted = true;
+          user.isDeleteInitiated = false;
           console.log('User:', user.isDeleted);
-          this.cdr.detectChanges(); // Actualizar la vista
-          this.loadUsers(); // Cargar de nuevo los usuarios
+          this.cdr.detectChanges();
+          this.loadUsers();
         },
         error: (error) => {
           console.error('Error al eliminar usuario', error);
-          user.isConfirm = false; // Restablecer el estado
-          user.isDeleteInitiated = false; // Restablece esto para manejar errores correctamente
-          this.cdr.detectChanges(); // Actualizar la vista
+          user.isConfirm = false;
+          user.isDeleteInitiated = false;
+          this.cdr.detectChanges();
         }
       });
     } else {
-      // Marcar como confirmado para el próximo clic
       user.isConfirm = true;
-      this.cdr.detectChanges(); // Actualizar la vista para mostrar "¿Estás seguro?"
-      
-      // Establecer un tiempo límite para restablecer el estado si el usuario no confirma
+      this.cdr.detectChanges();
       setTimeout(() => {
-        if (!user.isDeleted) { // Si no se ha eliminado, revertir
+        if (!user.isDeleted) {
           user.isConfirm = false;
           user.isDeleteInitiated = false;
           this.cdr.detectChanges();
@@ -217,7 +170,6 @@ export class ListaPsicologosComponent implements OnInit {
   }
 
   saveUser(user: any): void {
-    // Preparar el modelo de usuario para la actualización
     const updatedUser = {
       nombre: user.nombre,
       apellidos: user.apellidos,
@@ -225,25 +177,19 @@ export class ListaPsicologosComponent implements OnInit {
       correo: user.correo,
       id_rol: user.id_rol,
       aprobacion: user.aprobacion
-      // Incluye todos los campos que necesites actualizar
     };
   
-    // Llamada al servicio para actualizar el usuario
     this.usuarioService.actualizarUsuario(user.id_usuario, updatedUser).subscribe({
       next: (response) => {
         console.log('Usuario actualizado exitosamente', response);
-        // Aquí manejarías la respuesta y realizarías acciones como refrescar la lista de usuarios si es necesario
-        // Por ejemplo, podrías recargar la lista de usuarios para obtener la versión más reciente desde el servidor
         this.loadUsers();
       },
       error: (error) => {
         console.error('Error al actualizar usuario', error);
-        // Aquí manejarías errores, por ejemplo, mostrando un mensaje al usuario
       },
       complete: () => {
-        // Esto se ejecutará independientemente de que la actualización haya sido exitosa o no
-        this.editModeMap[user.id_usuario] = false; // Salir del modo de edición
-        this.cdr.detectChanges(); // Detecta los cambios para actualizar la vista
+        this.editModeMap[user.id_usuario] = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -256,8 +202,7 @@ export class ListaPsicologosComponent implements OnInit {
     this.router.navigate(['/admin-registra-psicologo']);
   }
 
-  viewDetails(user: any) { // Asegúrate de pasar el usuario a la función
-    // Aquí podrías pasar el ID del usuario o cualquier otra información relevante
-    this.router.navigate(['/ver-paciente', user.id]); // Suponiendo que cada usuario tiene una propiedad 'id'
+  viewDetails(user: any) {
+    this.router.navigate(['/ver-paciente', user.id]);
   }
 }

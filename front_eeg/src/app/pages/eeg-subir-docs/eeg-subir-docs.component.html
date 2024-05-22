@@ -3,18 +3,11 @@
   <div class="eeg-upload-container">
     <div class="header">
       <div class="left">
-        <!-- <button (click)="onCancel()" class="return" title="Regresar">
-          <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        </button> -->
         <h1>Nueva sesión</h1>
       </div>
     </div>
     <app-info-paciente  [id_paciente]="idPaciente"></app-info-paciente>
     <div class="upload-form">
-    <!--  <div class="form-group">
-        <label for="eegDate">Ingresa la fecha de la toma del electroencefalograma:</label>
-        <input type="date" id="eegDate" [(ngModel)]="fecha" name="eegDate" required>
-      </div>-->
 
       <label>Estado del paciente:</label>
       <div class="form-group">
@@ -24,19 +17,6 @@
           <mat-radio-button value="Sedación">Sedación</mat-radio-button>
           <mat-radio-button value="Ayuno">Ayuno</mat-radio-button>
         </mat-radio-group>
-<!--         
-        <label>
-          <input type="radio" id="stateWakefullness" name="estadoGeneral" value="Vigilia" [(ngModel)]="estadoGeneral"> Vigilia
-        </label>
-        <label>
-          <input type="radio" id="stateSleep" name="estadoGeneral" value="Sueño" [(ngModel)]="estadoGeneral"> Sueño
-        </label>
-        <label>
-          <input type="radio" id="stateSedation" name="estadoGeneral" value="Sedación" [(ngModel)]="estadoGeneral"> Sedación
-        </label>
-        <label>
-          <input type="radio" id="stateAnesthesia" name="estadoGeneral" value="Ayuno" [(ngModel)]="estadoGeneral"> Ayuno
-        </label> -->
       </div>
 
       <label>Específico:</label>
@@ -70,15 +50,7 @@
                       [checked]="estadosEspecificos['ninguno']">
           Ninguno
         </mat-checkbox>
-      </div>      
- 
-<!-- <select #selectMedicamento (change)="agregarMedicamento(selectMedicamento.value)">
-  <option value="" disabled selected>Selecciona un medicamento</option>
-  <option *ngFor="let medicamento of medicamentos" [value]="medicamento.id">
-    {{ medicamento.nombre }}
-  </option>
-</select> -->
-
+      </div>
       <div class="form-group">
         <label for="description">Resumen de la sesión:</label>
         <textarea id="description" [(ngModel)]="resumenSesionActual" name="description"></textarea>
@@ -90,16 +62,12 @@
         <input type="file" id="file" (change)="onFileSelected($event)" name="file" [(ngModel)]="archivo_eeg" >
       </div>
       <div class="header">
-        <!-- <div class="left"> -->
           <button (click)="onUpload()" class="upload" title="Subir archivo" >
             <i class="fa fa-upload" aria-hidden="true"></i>
           </button>
-        <!-- </div>
-        <div class="right"> -->
           <button (click)="onCancel()" class="cancel" title="Cancelar">
             <i class="fa fa-times" aria-hidden="true"></i>
           </button>
-        <!-- </div> -->
       </div>
     </div>
   </div>

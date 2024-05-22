@@ -9,7 +9,7 @@ import { th } from 'date-fns/locale';
   providedIn: 'root'
 })
 export class PacienteService {
-  private apiUrl = 'http://127.0.0.1:5000'; // URL base del API
+  private apiUrl = 'http://127.0.0.1:5000';
 
   constructor(private http: HttpClient) { }
 

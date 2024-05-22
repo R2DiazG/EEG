@@ -4,10 +4,7 @@
   </div> 
   <nav class="nav-menu">
     <a (click)="navigateTo('lista-pacientes')" routerLink="/lista-pacientes" routerLinkActive="active" class="nav-link">Pacientes</a>
-    <!--<a routerLink="/editar-paciente" routerLinkActive="active" class="nav-link">Ver paciente</a>
-    <a routerLink="/graficas-paciente" routerLinkActive="active" class="nav-link">Sesiones del paciente</a> -->
     <a (click)="navigateTo('medicamentos')" routerLink="/medicamentos" routerLinkActive="active" class="nav-link">Medicamentos</a>
-    <!-- Utiliza *ngIf para condicionar la visualización de este enlace basado en el id_rol del usuario -->
     <a *ngIf="userInfo?.id_rol === 1" (click)="navigateTo('lista-psicologos')" routerLink="/lista-psicologos" routerLinkActive="active" class="nav-link">Psicólogos</a>
     <a (click)="logout()" class="nav-link">Cerrar sesión</a>
   </nav>

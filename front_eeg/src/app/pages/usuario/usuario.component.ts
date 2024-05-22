@@ -18,7 +18,6 @@ export class UsuarioComponent {
   ngOnInit(): void {
     this.authService.getCurrentUser().subscribe({
       next: (user) => {
-        // Asegúrate de que tu backend esté enviando 'id_rol' en la respuesta
         this.userInfo = { 
           nombre: user.nombre, 
           apellidos: user.apellidos, 
@@ -35,7 +34,6 @@ export class UsuarioComponent {
   logout(): void {
     this.authService.logout();
     console.log('Usuario ha cerrado la sesión');
-    // Navegar de vuelta al login después del logout
     this.router.navigate(['/login']);
   }
 

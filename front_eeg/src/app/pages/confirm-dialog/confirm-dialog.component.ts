@@ -15,11 +15,11 @@ export class ConfirmDialogComponent {
   ) {}
   
   onConfirm() {
-    this.confirmEvent.emit(true); // Emit true when confirmed
+    this.confirmEvent.emit(true);
   }
   
   onDismiss() {
-    this.dialogRef.close(false);// Emit false when dismissed/canceled
+    this.dialogRef.close(false);
   }
 }
 

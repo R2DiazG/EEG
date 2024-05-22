@@ -1,8 +1,6 @@
-// Importaciones
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "@fortawesome/fontawesome-free/css/all.css";
 
-// Definición de colores y estilos base
 $bg: #313841;
 $red: #F34541;
 $black: #1D242B;
@@ -21,21 +19,21 @@ $blue: #2492FF;
     flex: 1;
     padding: 20px;
     margin: 3rem 8rem 0rem 17rem;
-    max-width: 100%; // Ancho máximo
-    width: 100%; // Asegura que se ajuste al contenedor padre
+    max-width: 100%;
+    width: 100%;
     background-color: #fff;
     justify-content: right;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     @media (max-width: 768px) {
-      width: auto; // Ocupa el ancho completo en pantallas pequeñas
-      margin: 10px; // Margen reducido para pantallas pequeñas
+      width: auto;
+      margin: 10px;
       max-width: none;
     }
 
     .header {
       display: flex;
-      align-items: center; // Keep this if you want to align items in the center vertically
+      align-items: center;
       width: 100%;
       align-items: baseline;
       padding: 0;
@@ -43,12 +41,12 @@ $blue: #2492FF;
     
     .right {
       display: flex;
-      align-items: center; // Align items vertically inside the .right div
+      align-items: center;
     }
     
     .left {
       display: flex;
-      align-items: center; /* Alinea los elementos verticalmente */
+      align-items: center;
       width: 100%;
       padding: 0;
       align-items: baseline;
@@ -66,8 +64,8 @@ $blue: #2492FF;
     }
     
     .header h1 {
-      margin: 0; /* Elimina el margen predeterminado del h1 para un mejor control */
-      font-size: 1.5rem; /* Ajusta el tamaño del texto si es necesario */
+      margin: 0;
+      font-size: 1.5rem;
       align-items: baseline;
     }
 
@@ -81,7 +79,6 @@ $blue: #2492FF;
       background-color: transparent;
       margin: 0.5rem;
       cursor: pointer;
-      //margin-bottom: 20px;
     }
       .regresar {
         color: $bg;
@@ -132,35 +129,33 @@ $blue: #2492FF;
        margin: 1rem 1rem 1rem 0;
        select {
          width: 100%;
-         padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
-         border: 1px solid #ddd; // Un borde gris claro
-         border-radius: 4px; // Bordes redondeados
-         appearance: none; // Esto elimina la flecha nativa del dropdown
-         background-color: #fff; // Fondo blanco
-         font-size: 16px; // Tamaño de la fuente a tu gusto
-         // Ajusta el padding derecho para hacer espacio para el icono
-         padding-right: 40px; // Asegúrate de tener suficiente espacio para el icono
+         padding: 10px 15px 10px 15px;
+         border: 1px solid #ddd;
+         border-radius: 4px;
+         appearance: none;
+         background-color: #fff;
+         font-size: 16px;
+         padding-right: 40px;
          &:focus {
            outline: none;
-           border-color: #aaa; // Cambia el color del borde cuando está enfocado
+           border-color: #aaa;
          }
          option {
-           color: #666; // Cambia el color del texto de las opciones
+           color: #666;
          }
         
          option:disabled {
            color: #999;
          }
        }
-   // Agregar el icono de FontAwesome con una clase
        .fa-sort-desc {
          position: absolute;
          top: 50%;
          right: 15px;
-         pointer-events: none; // Asegura que el icono no interfiera con el clic en el select
+         pointer-events: none;
          transform: translateY(-50%);
-         font-size: 16px; // Ajusta el tamaño del icono según necesites
-         color: #333;  //El color del icono
+         font-size: 16px;
+         color: #333;
        }
      }
      .seccion{
@@ -185,33 +180,32 @@ $blue: #2492FF;
       display: flex;
       align-items: center;
       position: relative;
-      border-radius: 20px; // Bordes redondeados para el contenedor de búsqueda
-      padding: 0.5rem 3rem; // Espaciado interno alrededor del input
+      border-radius: 20px;
+      padding: 0.5rem 3rem;
       margin-left: 2rem;
-      width: 100%; // Ancho completo para el contenedor de búsqueda
+      width: 100%;
       .search-icon {
         position: absolute;
-        left: 1.5rem; // Alinea el ícono de búsqueda dentro del padding del contenedor
-        color: #5F6368; // Color del ícono
-        font-size: 1rem; // Tamaño del ícono
+        left: 1.5rem;
+        color: #5F6368;
+        font-size: 1rem;
       }
       .search-input {
-        flex-grow: 1; // Permite que el input crezca para llenar el espacio
-        border: none; // Elimina el borde del input
-        outline: none; // Elimina el contorno cuando está enfocado
-        background-color: transparent; // Fondo transparente para el input
-        padding-left: 2.5rem; // Espacio para el ícono de búsqueda
-        height: 100%; // Altura para llenar el contenedor de búsqueda
-        border-radius: 20px; // Bordes redondeados para el input
+        flex-grow: 1;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        padding-left: 2.5rem;
+        height: 100%;
+        border-radius: 20px;
         border: solid #F1F3F4;
         background-color: white;
         width: 100%;
         &::placeholder {
-          color: #5F6368; // Color para el placeholder
+          color: #5F6368;
         }
         &:focus {
-          // Estilos opcionales para cuando el input está enfocado
-          box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5); // Un sutil contorno azul alrededor del input
+          box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5);
         }
       }
     }
@@ -223,52 +217,50 @@ $blue: #2492FF;
     .dropdown {
       position: relative;
       margin: 1rem 1rem 1rem 0;
-      width: 50%; // Asegura que el contenedor ocupe el ancho disponible
-      padding: 10px 15px 15px 15px; // Ajusta el padding según necesites
-      border: 1px solid #ddd; // Un borde gris claro
-      border-radius: 4px; // Bordes redondeados
+      width: 50%;
+      padding: 10px 15px 15px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
       select {
         width: 100%;
-        padding: 10px 15px 10px 15px; // Ajusta el padding según necesites
-        border: 1px solid #ddd; // Un borde gris claro
-        border-radius: 4px; // Bordes redondeados
-        background-color: #fff; // Fondo blanco
-        font-size: 16px; // Tamaño de la fuente a tu gusto
+        padding: 10px 15px 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fff;
+        font-size: 16px;
           &:focus {
               outline: none;
-              border-color: #888; // Color de borde más oscuro al enfocar
+              border-color: #888;
           }
   
           option {
-              color: #333; // Color más oscuro para mejor legibilidad
+              color: #333;
           }
   
           option:disabled {
-              color: #ccc; // Color más claro para opciones deshabilitadas
+              color: #ccc;
           }
       }
   
-      // Estilizando el ícono de la flecha
       &:after {
-          content: '\25BC'; // Ícono de flecha hacia abajo
+          content: '\25BC';
           position: absolute;
-          right: 8px; // Ajusta el posicionamiento derecho para alinear con el diseño
+          right: 8px;
           top: 50%;
           transform: translateY(-50%);
-          pointer-events: none; // Asegura que el ícono no sea clickable
-          color: #333; // Color del ícono
+          pointer-events: none;
+          color: #333;
           font-size: 14px;
       }
   
-      // Cambio de ícono cuando el select está activo
       &:focus-within:after {
-          content: '\25B2'; // Cambia a ícono de flecha hacia arriba cuando está abierto
+          content: '\25B2';
       }
   }  
   
     .table-container {
       overflow-y: auto;
-      max-height: 61vh; // Puedes ajustar esto según sea necesario
+      max-height: 61vh;
     }
 
     table {
@@ -280,7 +272,6 @@ $blue: #2492FF;
         padding: 8px;
         vertical-align: middle;
         
-        // Estilos para los elementos dentro de las celdas
         input, select, button {
           margin-top: 4px;
           margin-bottom: 4px;
@@ -304,7 +295,7 @@ $blue: #2492FF;
 
   .icon {
     font-size: 1.5rem;
-    color: $bg; // Asegúrate de que $bg esté definido y sea el color deseado
+    color: $bg;
     margin-right: 0.5rem;
     margin-left: 0.25rem;
   }
@@ -314,7 +305,6 @@ $blue: #2492FF;
     opacity: 1;
   }
 
-  // Estilos de confirmación y eliminación
   &.confirm {
     .icon.fas.fa-trash { display: none; }
     .icon.fas.fa-question-circle {
@@ -337,9 +327,8 @@ $blue: #2492FF;
     .text { color: white; }
   }
 
-  // Nuevo estado para cuando isDeleteInitiated es true
   &.delete-initiated:not(.confirm):not(.done) {
-    background-color: $red; // Asegúrate de que $red esté definido y sea el color deseado
+    background-color: $red;
     .icon.fas.fa-trash {
       display: inline-block;
       color: white;
@@ -370,18 +359,18 @@ $blue: #2492FF;
       }
       
       .nota-textarea {
-        width: 100%; /* Ajusta al ancho deseado */
-        height: 10rem; /* Ajusta al alto deseado */
+        width: 100%;
+        height: 10rem;
         margin-bottom: 10px;
         padding: 10px;
         font-size: 16px;
-        border: 1px solid #ccc; /* Un borde ligero */
-        resize: none; /* Evita que el usuario cambie el tamaño */
+        border: 1px solid #ccc;
+        resize: none;
       }
       
       .nota-textarea:focus {
         outline: none;
-        border-color: #999; /* Cambia el color del borde al hacer focus */
+        border-color: #999;
       }
 
     .tab-menu {

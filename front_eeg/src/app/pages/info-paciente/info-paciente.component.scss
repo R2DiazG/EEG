@@ -1,4 +1,3 @@
-/* patient-info.component.scss */
 .patient-info-container {
       padding-top: 1.5rem;
       padding-bottom: .5rem;
@@ -8,7 +7,6 @@
       margin-top: 1rem;
       justify-content: space-between;
       background-color: #ebebfc;
-      /* text-align: center; */
       display: flex;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -18,27 +16,26 @@
   
     .patient-basic-info {
       display: grid;
-      grid-template-columns: repeat(4, 1fr); // Divide el espacio en 4 columnas iguales
-      gap: 1rem; // Espacio entre elementos
-      margin-bottom: 1rem; // Margen debajo de la sección de información básic
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
   
       span {
-        display: block; // Asegura que cada elemento se muestre en su propia línea en pantallas pequeñas
+        display: block;
         font-size: 1.2rem;
       }
     }
   
     .patient-clinical-info {
       p {
-        margin: 0; // Elimina el margen por defecto del párrafo
+        margin: 0;
       }
     }
   }
   
-  // Estilos responsivos para pantallas más pequeñas
   @media (max-width: 768px) {
     .patient-basic-info {
-      grid-template-columns: repeat(2, 1fr); // Dos columnas en pantallas pequeñas
+      grid-template-columns: repeat(2, 1fr);
     }
   }
   

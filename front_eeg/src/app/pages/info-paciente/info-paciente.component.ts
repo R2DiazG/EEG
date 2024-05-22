@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; // Importa Router y ActivatedRoute juntos
+import { ActivatedRoute, Router } from '@angular/router';
 import { PacienteService } from '../../services/pacientes/paciente.service';
 import { InfoPaciente } from '../../models/info-paciente.model';
 import { AuthService } from '../../services/login/auth.service';
@@ -50,7 +50,6 @@ export class InfoPacienteComponent implements OnInit {
   }
 
   cargarDetallesPaciente(): void {
-    // Asumiendo que el ID del paciente se obtiene de la ruta, directamente aquí.
     const id_sesion = this.route.snapshot.paramMap.get('id_sesion');
     console.log(this.route.params)
     if(this.id_paciente){

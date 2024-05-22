@@ -5,30 +5,30 @@ $green: #38B87C;
 $blue: #2492FF;
 
 .container {
-    position: relative; // Esto es necesario para que la posición absoluta del hijo se base en este contenedor
+    position: relative;
   }
   
   .container-usuario {
-    position: absolute; // Esto saca al div de la secuencia normal del documento y permite posicionarlo exactamente donde quieras
-    top: 0; // Alinea el div con la parte superior del contenedor
-    right: 0; // Alinea el div con el lado derecho del contenedor
-    z-index: 10; // Asegura que el div se muestre por encima de otros elementos si es necesario
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
     max-width: fit-content;
   
     display: flex;
-    align-items: center; // Centra el contenido del div verticalmente
-    padding: 20px; // Agrega un poco de espacio alrededor del contenido dentro del div
+    align-items: center;
+    padding: 20px;
   
     .fas.fa-user-circle {
-      margin-right: 10px; // Agrega un espacio entre el icono y el texto
-      font-size: 24px; // Ajusta esto según el tamaño deseado para el icono
+      margin-right: 10px;
+      font-size: 24px;
     }
   
     p {
-      margin: 0; // Elimina el margen por defecto de los párrafos
-      color: $bg; // Cambia el color del texto si es necesario
-      font-size: 14px; // Ajusta esto al tamaño de fuente deseado
-      padding-right: 1rem; // Agrega un poco de espacio a la derecha del texto
+      margin: 0;
+      color: $bg;
+      font-size: 14px;
+      padding-right: 1rem;
     }
     .logout{
       align-items: center;

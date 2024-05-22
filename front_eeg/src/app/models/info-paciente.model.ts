@@ -3,7 +3,6 @@ export class InfoPaciente {
     nombre?: string;
     apellido_paterno?: string;
     apellido_materno?: string;
-    // Asegúrate de que la fecha de nacimiento pueda ser manejada consistentemente como Date o como string
     fecha_nacimiento?: Date | string;  
     id_genero?: number;
     id_estado_civil?: number;
@@ -20,19 +19,17 @@ export class InfoPaciente {
     ocupacion?: 'Estudiante' | 'Empleado' | 'Empresario' | 'Independiente' | 'Desempleado';
     lateralidad?: 'Izquierda' | 'Derecha' | 'ambidextrous';
 
-    // Arrays inicializados para evitar problemas de "Object is possibly 'undefined'."
     telefonos: { telefono: string }[] = [];
     correos_electronicos: { correo_electronico: string }[] = [];
     direcciones: {
         calle_numero: string;
-        colonia?: string; // Opcional
+        colonia?: string;
         ciudad: string;
         estado: string;
         pais: string;
         codigo_postal: string;
     }[] = [];
 
-    // Información de contacto de emergencia, opcional pero estructurada para claridad
     contacto_emergencia: {
         nombre?: string;
         apellido_paterno?: string;
@@ -49,13 +46,6 @@ export class InfoPaciente {
         telefono: string;
     } = {} as any;
 
-    // Los consentimientos se manejan como un array de objetos con la estructura dada
-    /*
-    consentimientos: {
-        audioUrl: string;
-        fecha_registro: string;
-    } = { audioUrl: '', fecha_registro: '' };
-    */
     consentimientos: {
         consentimiento: number; 
         fecha_registro: string;
